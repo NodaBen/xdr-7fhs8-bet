@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Daily Diamond — Friday, July 17, 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Wix+Madefor+Text:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: oklch(0.972 0.012 92);
+    --paper-2: oklch(0.945 0.016 95);
+    --card: oklch(0.99 0.006 95);
+    --ink: oklch(0.26 0.035 175);
+    --ink-2: oklch(0.42 0.03 175);
+    --muted: oklch(0.55 0.025 170);
+    --green: oklch(0.52 0.11 158);
+    --green-soft: oklch(0.52 0.11 158 / .1);
+    --green-ring: oklch(0.52 0.11 158 / .3);
+    --gold: oklch(0.68 0.125 82);
+    --gold-soft: oklch(0.68 0.125 82 / .13);
+    --gold-deep: oklch(0.55 0.12 78);
+    --red: oklch(0.56 0.17 26);
+    --red-soft: oklch(0.56 0.17 26 / .09);
+    --hair: oklch(0.85 0.02 100);
+    --hair-soft: oklch(0.89 0.015 100);
+    --sp1:4px;--sp2:8px;--sp3:12px;--sp4:16px;--sp5:24px;--sp6:32px;
+    --disp:'Bricolage Grotesque',sans-serif;
+    --body:'Wix Madefor Text',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{font-family:var(--body);color:var(--ink);background:var(--paper-2);padding:clamp(12px,2.5vw,36px);font-size:13px;line-height:1.5}
+  .sheet{
+    max-width:1420px;margin:0 auto;background:var(--paper);border-radius:20px;position:relative;overflow:hidden;
+    box-shadow:0 24px 70px -30px oklch(0.3 0.05 170 / .35), 0 0 0 1px var(--hair-soft);
+    padding:var(--sp5) var(--sp6) var(--sp4);
+  }
+  .sheet::before{content:"";position:absolute;top:-220px;right:-180px;width:620px;height:620px;border:1.5px solid oklch(0.52 0.11 158 / .1);transform:rotate(45deg);border-radius:44px;pointer-events:none}
+  .sheet::after{content:"";position:absolute;top:-160px;right:-120px;width:500px;height:500px;border:1.5px solid oklch(0.68 0.125 82 / .12);transform:rotate(45deg);border-radius:36px;pointer-events:none}
+
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .rise{opacity:0;animation:rise .6s cubic-bezier(.19,1,.22,1) forwards}
+  .d1{animation-delay:.04s}.d2{animation-delay:.12s}.d3{animation-delay:.2s}.d4{animation-delay:.28s}.d5{animation-delay:.36s}
+  @media (prefers-reduced-motion:reduce){.rise{animation:none;opacity:1}}
+
+  /* ============ TOP BAR ============ */
+  .topbar{display:flex;align-items:center;gap:var(--sp5);flex-wrap:wrap;padding-bottom:var(--sp3);border-bottom:2px solid var(--ink);position:relative;z-index:1}
+  .wordmark{display:flex;align-items:center;gap:12px}
+  .ball-logo{
+    width:36px;height:36px;border-radius:50%;background:var(--card);position:relative;overflow:hidden;flex-shrink:0;
+    box-shadow:inset -3px -4px 0 oklch(0.85 0.02 100 / .8), 0 0 0 1.5px var(--ink), 0 3px 8px -3px oklch(0.3 0.05 170 / .4);
+  }
+  .ball-logo::before,.ball-logo::after{content:"";position:absolute;top:-7px;bottom:-7px;width:21px;border:2px dashed var(--red);border-radius:50%}
+  .ball-logo::before{left:-13px;border-left:none}
+  .ball-logo::after{right:-13px;border-right:none}
+  .wordmark h1{font-family:var(--disp);font-weight:800;font-size:clamp(24px,2.6vw,30px);letter-spacing:-.02em;line-height:1}
+  .wordmark .sub{font-family:var(--disp);font-weight:500;font-size:12.5px;color:var(--muted)}
+  .datebox{font-family:var(--disp);font-weight:700;font-size:14px}
+  .datebox span{color:var(--muted);font-weight:500}
+  .top-chips{margin-left:auto;display:flex;gap:var(--sp2);flex-wrap:wrap}
+  .chip{font-size:10.5px;font-weight:700;padding:5px 12px;border-radius:100px;letter-spacing:.02em}
+  .chip.gold{background:var(--gold-soft);color:var(--gold-deep);box-shadow:inset 0 0 0 1px oklch(0.68 0.125 82 / .35)}
+  .chip.green{background:var(--green-soft);color:var(--green);box-shadow:inset 0 0 0 1px var(--green-ring)}
+  .chip.plain{background:var(--paper-2);color:var(--ink-2);box-shadow:inset 0 0 0 1px var(--hair)}
+  .stitchline{height:7px;margin-top:2px;position:relative;z-index:1;background:repeating-linear-gradient(115deg, transparent 0 7px, oklch(0.56 0.17 26 / .45) 7px 9.5px, transparent 9.5px 16px)}
+
+  /* ============ ZONE LABEL ============ */
+  .zone-label{
+    font-family:var(--disp);font-weight:700;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);display:flex;align-items:center;gap:9px;margin:var(--sp4) 0 var(--sp3);position:relative;z-index:1;
+  }
+  .zone-label::after{content:"";flex:1;height:1px;background:var(--hair)}
+  .zone-label b{color:var(--ink);font-weight:800}
+  .zone-label .icn{color:var(--ink-2)}
+
+  /* ============ PICK ROWS — full width, fixed height ============ */
+  .picks{display:flex;flex-direction:column;gap:var(--sp2);position:relative;z-index:1}
+  .pick{
+    display:grid;grid-template-columns:36px minmax(240px,1fr) minmax(320px,1.15fr) 120px 56px 116px;
+    gap:var(--sp4);align-items:center;height:64px;
+    padding:0 var(--sp4) 0 var(--sp3);border-radius:12px;
+    background:var(--card);box-shadow:0 0 0 1px var(--hair-soft), 0 2px 8px -4px oklch(0.3 0.05 170 / .15);
+    transition:transform .25s cubic-bezier(.19,1,.22,1), box-shadow .25s;
+  }
+  .pick:hover{transform:translateY(-2px);box-shadow:0 0 0 1px var(--hair), 0 10px 24px -10px oklch(0.3 0.05 170 / .3)}
+  .pick.lock{
+    background:linear-gradient(115deg, oklch(0.96 0.035 92), var(--card) 55%);
+    box-shadow:0 0 0 1.5px oklch(0.68 0.125 82 / .5), 0 6px 20px -8px oklch(0.68 0.125 82 / .4);
+  }
+  .pick .num{font-family:var(--disp);font-weight:800;font-size:22px;line-height:1;color:var(--ink-2);text-align:center}
+  .pick.lock .num{color:var(--gold-deep)}
+  .pick-head .nm{font-family:var(--disp);font-weight:800;font-size:15px;letter-spacing:-.015em;display:flex;align-items:center;gap:8px}
+  .pick-head .gm{font-size:10.5px;color:var(--muted);font-weight:500;margin-top:2px}
+  .lock-flag{font-family:var(--disp);font-weight:800;font-size:9px;letter-spacing:.1em;text-transform:uppercase;background:var(--gold);color:oklch(0.99 0.01 95);padding:2px 8px;border-radius:5px}
+  .ev{display:flex;flex-wrap:wrap;gap:5px}
+  .ev span{font-size:10.5px;font-weight:600;color:var(--ink-2);background:var(--paper-2);border-radius:6px;padding:3px 8px;box-shadow:inset 0 0 0 1px var(--hair-soft);white-space:nowrap}
+  .ev span.up{color:var(--green);background:var(--green-soft);box-shadow:inset 0 0 0 1px var(--green-ring)}
+  .ev span.dn{color:var(--red);background:var(--red-soft);box-shadow:inset 0 0 0 1px oklch(0.56 0.17 26 / .25)}
+  .edge-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+  .edge-meta .n{font-weight:800;font-size:12.5px}
+  .edge-meta .n em{font-style:normal;color:var(--muted);font-weight:500;font-size:10px}
+  .edge-meta .bar{width:76px;height:4px;border-radius:3px;background:var(--paper-2);overflow:hidden;box-shadow:inset 0 0 0 1px var(--hair-soft)}
+  .edge-meta .bar i{display:block;height:100%;background:var(--green);border-radius:3px}
+  .pick.lock .edge-meta .bar i{background:var(--gold)}
+  .prob{font-size:9.5px;color:var(--muted);font-weight:600;white-space:nowrap}
+  .prob b{color:var(--green);font-weight:800}
+  .pick.lock .prob b{color:var(--gold-deep)}
+  .units{font-family:var(--disp);font-weight:800;font-size:18px;text-align:center}
+  .units.gold{color:var(--gold-deep)}
+  .price{
+    font-family:var(--disp);font-weight:800;font-size:15px;letter-spacing:-.01em;
+    color:var(--green);background:var(--green-soft);border-radius:8px;
+    box-shadow:inset 0 0 0 1.5px var(--green-ring);white-space:nowrap;
+    width:116px;height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .price small{font-family:var(--body);font-weight:600;font-size:8.5px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase}
+  .unit-key{font-size:10.5px;color:var(--muted);padding:var(--sp2) var(--sp1) 0;font-weight:500;position:relative;z-index:1}
+  .unit-key b{color:var(--ink-2);font-weight:700}
+
+  /* ============ LOCK BANNER — full width ============ */
+  .marquee{
+    margin-top:var(--sp4);border-radius:14px;position:relative;overflow:hidden;z-index:1;
+    background:linear-gradient(120deg, oklch(0.93 0.06 90), oklch(0.96 0.035 95) 55%, oklch(0.93 0.06 90));
+    box-shadow:inset 0 0 0 1.5px oklch(0.68 0.125 82 / .45), 0 8px 24px -12px oklch(0.68 0.125 82 / .5);
+    padding:var(--sp3) var(--sp5);
+    display:flex;align-items:center;gap:var(--sp5);flex-wrap:wrap;
+  }
+  .marquee::after{content:"◆";position:absolute;right:14px;bottom:-26px;font-size:100px;color:oklch(0.68 0.125 82 / .13);line-height:1}
+  .marquee .k{font-family:var(--disp);font-weight:800;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);display:flex;align-items:center;gap:7px}
+  .marquee .p{font-family:var(--disp);font-weight:800;font-size:21px;letter-spacing:-.02em}
+  .marquee .stats{display:flex;gap:var(--sp6);margin-left:auto;flex-wrap:wrap}
+  .marquee .stat{text-align:right}
+  .marquee .stat .v{font-family:var(--disp);font-weight:800;font-size:15px}
+  .marquee .stat .l{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);margin-top:1px}
+
+  /* ============ THREE EQUAL PANELS ============ */
+  .boards{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp4);margin-top:var(--sp4);position:relative;z-index:1;align-items:stretch}
+  .panel{background:var(--card);border-radius:14px;padding:var(--sp3) var(--sp4);box-shadow:0 0 0 1px var(--hair-soft), 0 2px 8px -4px oklch(0.3 0.05 170 / .12);display:flex;flex-direction:column}
+  .panel h3{
+    font-family:var(--disp);font-weight:800;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;
+    display:flex;align-items:center;gap:8px;padding-bottom:var(--sp2);margin-bottom:var(--sp1);
+    border-bottom:1px solid var(--hair-soft);
+  }
+  .panel h3 .icn{width:15px;height:15px}
+  .panel.props h3{color:var(--green)}
+  .panel.parlays h3{color:var(--gold-deep)}
+  .panel.pass h3{color:var(--red)}
+  .pi{padding:7px 0;display:flex;flex-direction:column;gap:2px}
+  .pi + .pi{border-top:1px solid var(--hair-soft)}
+  .pi-t{display:flex;justify-content:space-between;gap:10px;font-weight:700;font-size:11.5px}
+  .pi-odds{font-family:var(--disp);font-weight:700;font-size:11px;white-space:nowrap;color:var(--green)}
+  .panel.parlays .pi-odds{color:var(--gold-deep)}
+  .panel.pass .pi-odds{color:var(--red)}
+  .pi-d{font-size:10.5px;color:var(--muted);line-height:1.45}
+  .pi-d .st{color:var(--gold-deep);letter-spacing:.08em;font-size:9px}
+
+  /* ============ HOUSE RULES + FOOTER ============ */
+  .rule-strip{
+    margin-top:var(--sp4);border-radius:12px;background:var(--red-soft);position:relative;z-index:1;
+    box-shadow:inset 0 0 0 1px oklch(0.56 0.17 26 / .22);
+    padding:var(--sp2) var(--sp4);font-size:11px;color:var(--ink-2);line-height:1.5;
+  }
+  .rule-strip b{color:var(--red);font-weight:800;font-family:var(--disp)}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:var(--sp5);flex-wrap:wrap;margin-top:var(--sp3);padding-top:var(--sp3);border-top:1px solid var(--hair);position:relative;z-index:1}
+  .src{font-size:9.5px;color:var(--muted);line-height:1.55;max-width:100ch}
+  .src b{color:var(--ink-2);font-weight:700}
+  .btn{
+    font-family:var(--disp);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;
+    color:oklch(0.99 0.01 95);background:var(--ink);border:none;cursor:pointer;
+    padding:11px 24px;border-radius:100px;transition:transform .2s cubic-bezier(.19,1,.22,1), background .2s;
+  }
+  .btn:hover{transform:translateY(-2px);background:var(--green)}
+  .icn{flex-shrink:0;display:inline-block;vertical-align:middle}
+
+  /* ============ PRINT: LETTER LANDSCAPE ============ */
+  @media print{
+    body{background:#fff;padding:0}
+    .sheet{box-shadow:none;border-radius:0;max-width:100%;padding:10px 14px}
+    .btn{display:none}
+    .rise{animation:none;opacity:1}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    @page{size:letter landscape;margin:4mm}
+    /* v5.1 print scale (Benjamin, 2026-07-16): fonts outrank one-page fit.
+       zoom 1.0 = +43% type vs the old .7; card now paginates to 2 pages,
+       break-inside rules below keep every element whole. */
+    .sheet{zoom:1.0}
+    .pick:hover{transform:none}
+    /* letter-landscape width falls below the 1080px mobile breakpoint, and that
+       block is declared later in this stylesheet — !important restores desktop layout in print */
+    .pick{grid-template-columns:36px minmax(240px,1fr) minmax(320px,1.15fr) 120px 56px 116px !important;height:80px !important;padding:0 var(--sp4) 0 var(--sp3) !important;row-gap:0 !important}
+    .pick .ev{grid-column:auto !important}
+    .edge-meta{display:flex !important}
+    .units{display:block !important}
+    .boards{grid-template-columns:repeat(3,1fr) !important;margin-top:var(--sp3)}
+    /* v5.1 print (Benjamin, 2026-07-16): two-page layout — use page 1 fully.
+       Rhythm opened up; old one-page compression removed. */
+    .picks{gap:14px}
+    .zone-label{margin:var(--sp5) 0 var(--sp4)}
+    .unit-key{padding-top:var(--sp3)}
+    .marquee{margin-top:var(--sp5);padding:18px var(--sp5)}
+    .boards{page-break-before:always;break-before:page;margin-top:0 !important}
+    .rule-strip{margin-top:var(--sp4)}
+    .foot{margin-top:var(--sp3);padding-top:var(--sp3)}
+    /* Safari print bug: blurred box-shadows rasterize as solid grey boxes.
+       Keep crisp 1px/1.5px outline rings, drop every blurred layer. */
+    .pick{box-shadow:0 0 0 1px var(--hair-soft) !important}
+    .pick.lock{box-shadow:0 0 0 1.5px oklch(0.68 0.125 82 / .5) !important}
+    .panel{box-shadow:0 0 0 1px var(--hair-soft) !important}
+    .marquee{box-shadow:inset 0 0 0 1.5px oklch(0.68 0.125 82 / .45) !important}
+    .ball-logo{box-shadow:inset -3px -4px 0 oklch(0.85 0.02 100 / .8), 0 0 0 1.5px var(--ink) !important}
+    /* never split an element across pages */
+    .pick,.panel,.marquee,.rule-strip{break-inside:avoid;page-break-inside:avoid}
+  }
+  @media (max-width:1080px){
+    .pick{grid-template-columns:32px 1fr 110px;height:auto;padding:10px 12px;row-gap:6px}
+    .pick .ev{grid-column:1 / -1}
+    .edge-meta,.units{display:none}
+    .boards{grid-template-columns:1fr}
+  }
+  /* ===== v5.1 mobile type scale (Benjamin, 2026-07-16) =====
+     Fonts only, ~1.3x, <=640px. No layout/spacing/structure changes.
+     Desktop screen rendering is untouched. */
+  @media (max-width:640px){
+    body{font-size:17px}
+    .wordmark h1{font-size:30px}
+    .wordmark .sub{font-size:16px}
+    .datebox{font-size:18px}
+    .chip{font-size:13.5px}
+    .zone-label{font-size:15px}
+    .pick .num{font-size:26px}
+    .pick-head .nm{font-size:19px}
+    .pick-head .gm{font-size:13.5px}
+    .lock-flag{font-size:11.5px}
+    .ev span{font-size:13.5px}
+    .prob{font-size:12.5px}
+    .price{font-size:19px}
+    .price small{font-size:11px}
+    .unit-key{font-size:13.5px}
+    .marquee .k{font-size:13px}
+    .marquee .p{font-size:25px}
+    .marquee .stat .v{font-size:19px}
+    .marquee .stat .l{font-size:11.5px}
+    .panel h3{font-size:15.5px}
+    .pi-t{font-size:15px}
+    .pi-odds{font-size:14px}
+    .pi-d{font-size:13.5px}
+    .pi-d .st{font-size:11.5px}
+    .rule-strip{font-size:14px}
+    .src{font-size:12px}
+    .btn{font-size:15px}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="topbar rise d1">
+    <div class="wordmark">
+      <div class="ball-logo" aria-hidden="true"></div>
+      <h1>The Daily Diamond</h1>
+      <span class="sub">MLB Value Card</span>
+    </div>
+    <div class="datebox">Friday, July 17 <span>· Full Slate · 15 Games</span></div>
+    <div class="top-chips">
+      <span class="chip gold">Model v1 · FG + Savant + MLB API</span>
+      <span class="chip green">Snapshot: Jul 17, 3:06 PM ET</span>
+      <span class="chip green">Lines: draftkings · 14/15</span>
+    </div>
+  </div>
+  <div class="stitchline" aria-hidden="true"></div>
+
+  <div class="zone-label rise d2"><svg class="icn" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 20 L18 4"/><path d="M20 20 L6 4"/><circle cx="4" cy="20" r="1.6" fill="currentColor" stroke="none"/><circle cx="20" cy="20" r="1.6" fill="currentColor" stroke="none"/></svg><b>Best Bets</b> ranked by Edge Score · bet only at target or better</div>
+
+  <div class="picks rise d2">
+    <div class="pick">
+      <div class="num">1</div>
+      <div class="pick-head">
+        <span class="nm">Twins Moneyline</span>
+        <div class="gm">MIN @ CHC · 8:05 ET · Ober vs Rea</div>
+      </div>
+      <div class="ev"><span class="dn">opp SP weak 23/100</span></div>
+      <div class="edge-meta"><span class="n">82<em>/100</em></span><div class="bar"><i style="width:82%"></i></div><span class="prob"><b>54.0%</b> vs 44.6%</span></div>
+      <div class="units">1U</div>
+      <div class="price">−100<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">2</div>
+      <div class="pick-head">
+        <span class="nm">Yankees Moneyline</span>
+        <div class="gm">LAD @ NYY · 7:05 ET · Sasaki vs Cole</div>
+      </div>
+      <div class="ev"><span class="up">SP score 64/100</span><span class="dn">opp SP weak 37/100</span></div>
+      <div class="edge-meta"><span class="n">82<em>/100</em></span><div class="bar"><i style="width:82%"></i></div><span class="prob"><b>62.0%</b> vs 51.2%</span></div>
+      <div class="units">1U</div>
+      <div class="price">−138<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">3</div>
+      <div class="pick-head">
+        <span class="nm">Rockies Moneyline</span>
+        <div class="gm">CIN @ COL · 8:40 ET · Singer vs Hughes</div>
+      </div>
+      <div class="ev"><span class="up">pen edge +19</span></div>
+      <div class="edge-meta"><span class="n">80<em>/100</em></span><div class="bar"><i style="width:80%"></i></div><span class="prob"><b>61.1%</b> vs 53.5%</span></div>
+      <div class="units">2U</div>
+      <div class="price">−130<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">4</div>
+      <div class="pick-head">
+        <span class="nm">Nationals Moneyline</span>
+        <div class="gm">WSH @ ATH · 9:40 ET · Cavalli vs Jump</div>
+      </div>
+      <div class="ev"><span class="up">SP score 75/100</span><span class="up">off edge +48</span><span class="dn">opp bats cold 24/100</span></div>
+      <div class="edge-meta"><span class="n">80<em>/100</em></span><div class="bar"><i style="width:80%"></i></div><span class="prob"><b>65.1%</b> vs 57.5%</span></div>
+      <div class="units">1U</div>
+      <div class="price">−157<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">5</div>
+      <div class="pick-head">
+        <span class="nm">Braves Moneyline</span>
+        <div class="gm">TEX @ ATL · 7:15 ET · Quantrill vs Sale</div>
+      </div>
+      <div class="ev"><span class="up">SP score 89/100</span><span class="dn">opp SP weak 21/100</span><span class="up">pen edge +27</span></div>
+      <div class="edge-meta"><span class="n">80<em>/100</em></span><div class="bar"><i style="width:80%"></i></div><span class="prob"><b>79.4%</b> vs 67.2%</span></div>
+      <div class="units">1U</div>
+      <div class="price">−307<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">6</div>
+      <div class="pick-head">
+        <span class="nm">Pirates Moneyline</span>
+        <div class="gm">PIT @ CLE · 7:10 ET · Jones vs Williams</div>
+      </div>
+      <div class="ev"><span class="up">SP score 81/100</span><span class="up">off edge +60</span><span class="dn">opp bats cold 21/100</span></div>
+      <div class="edge-meta"><span class="n">80<em>/100</em></span><div class="bar"><i style="width:80%"></i></div><span class="prob"><b>60.0%</b> vs 47.9%</span></div>
+      <div class="units">1U</div>
+      <div class="price">−127<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">7</div>
+      <div class="pick-head">
+        <span class="nm">Jays Moneyline</span>
+        <div class="gm">CWS @ TOR · 7:15 ET · Kay vs Miles</div>
+      </div>
+      <div class="ev"><span class="up">SP score 73/100</span><span class="dn">opp SP weak 33/100</span><span class="up">pen edge +48</span></div>
+      <div class="edge-meta"><span class="n">79<em>/100</em></span><div class="bar"><i style="width:79%"></i></div><span class="prob"><b>71.0%</b> vs 57.6%</span></div>
+      <div class="units">1U</div>
+      <div class="price">−203<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">8</div>
+      <div class="pick-head">
+        <span class="nm">Orioles Moneyline</span>
+        <div class="gm">BAL @ HOU · 8:10 ET · Kremer vs Lambert</div>
+      </div>
+      <div class="ev"><span class="up">SP score 65/100</span><span class="up">pen edge +28</span><span class="up">off edge +12</span></div>
+      <div class="edge-meta"><span class="n">78<em>/100</em></span><div class="bar"><i style="width:78%"></i></div><span class="prob"><b>65.2%</b> vs 50.7%</span></div>
+      <div class="units">1U</div>
+      <div class="price">−158<small>or better</small></div>
+    </div>
+  </div>
+  <div class="unit-key rise d3"><b>Units</b> — 1U standard · 2U extra confidence · 3U lock of the day · 4U–5U rare: 7%+ edge AND sharp confirmation</div>
+
+  <div class="marquee rise d3">
+    <div>
+      <div class="k"><svg class="icn" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3 H21 V12 L12 22 L3 12 Z"/></svg>Top Board · Pending Lines</div>
+      <div class="p">Minnesota Twins Moneyline</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="v">82/100</div><div class="l">Edge Score</div></div>
+      <div class="stat"><div class="v">1 Units</div><div class="l">Stake</div></div>
+      <div class="stat"><div class="v">−100↑</div><div class="l">Target</div></div>
+      <div class="stat"><div class="v">54%</div><div class="l">Model Win</div></div>
+    </div>
+  </div>
+
+  <div class="boards rise d4">
+    <div class="panel props">
+      <h3><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 21 L19 5"/><circle cx="5" cy="21" r="1.6" fill="currentColor" stroke="none"/><circle cx="19.5" cy="10.5" r="2.6" stroke-width="1.8"/></svg>Prop Rankings</h3>
+      <div class="pi"><div class="pi-t"><span>Props Watchlist</span><span class="pi-odds">awaiting lines</span></div><div class="pi-d"><span class="st">★</span> Prop markets are not priced on the current odds tier. Candidates listed at line-post; no price = no play.</div></div>
+    </div>
+    <div class="panel parlays">
+      <h3><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 L21 12 L12 21 L3 12 Z"/><rect x="10.6" y="1.6" width="3" height="3" fill="currentColor" stroke="none" transform="rotate(45 12 3)"/><rect x="19.6" y="10.6" width="3" height="3" fill="currentColor" stroke="none" transform="rotate(45 21 12)"/><rect x="1.6" y="10.6" width="3" height="3" fill="currentColor" stroke="none" transform="rotate(45 3 12)"/></svg>Parlays</h3>
+      <div class="pi"><div class="pi-t"><span>Best Value · Twins ML + Yankees ML</span><span class="pi-odds">≈ +245</span></div><div class="pi-d">Joint 33.5% model vs 29.0% implied at target prices.</div></div>
+      <div class="pi"><div class="pi-t"><span>Sprinkle · Twins + Yankees + Rockies</span><span class="pi-odds">≈ +510</span></div><div class="pi-d">0.5U max. Joint 20.4% at targets. All legs model-backed.</div></div>
+    </div>
+    <div class="panel pass">
+      <h3><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="M9 7.5 V16.5 M15 7.5 L9.5 12 L15 16.5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Pass / Pivot</h3>
+      <div class="pi"><div class="pi-t"><span>7 other games analyzed</span><span class="pi-odds">no angle</span></div><div class="pi-d">Full slate reviewed. Games without a qualified edge are not shown — no pick is a position.</div></div>
+    </div>
+  </div>
+
+  <div class="rule-strip rise d5">
+    <b>HOUSE RULES —</b> Every pick is conditional on its target price. If the book opens worse than the number, the play is OFF. 1 of 15 games carry degraded data (unannounced starters); edges re-run at the 11 AM game-day snapshot.
+  </div>
+
+  <div class="foot rise d5">
+    <div class="src">
+      <b>Sources:</b> statsapi.mlb.com · fangraphs.com · baseballsavant.mlb.com · odds via draftkings (fetched Jul 17, 3:06 PM ET). Odds move — confirm price and starters before betting. Model outputs are expected value, not predictions; no outcome is guaranteed. Bet responsibly, within your bankroll. If gambling stops being fun: 1-800-GAMBLER.
+    </div>
+    <button class="btn" onclick="window.print()">Save as PDF</button>
+  </div>
+</div>
+</body>
+</html>
