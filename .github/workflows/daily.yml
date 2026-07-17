@@ -1,0 +1,76 @@
+name: Daily Diamond build
+
+on:
+  schedule:
+    - cron: '0 15 * * *'    # 11:00 AM ET (EDT): morning card build
+    - cron: '0 22 * * *'    # 6:00 PM ET: line-check rebuild + freeze pick-time odds
+    - cron: '25 22 * * *'   # 6:25 PM ET: closer snap before early slate
+    - cron: '25 1 * * *'    # 9:25 PM ET: closer snap before late slate
+    - cron: '0 13 * * *'    # 9:00 AM ET: grade yesterday, append K archive
+  workflow_dispatch: {}      # "Run" button in GitHub mobile app -> runs build
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: daily-diamond
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+
+      - name: Build card (morning + line-check + manual)
+        if: github.event.schedule == '0 15 * * *' || github.event.schedule == '0 22 * * *' || github.event_name == 'workflow_dispatch'
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          DATE=$(TZ=America/New_York date +%F)
+          python run_daily.py "$DATE"
+          python render.py "$DATE"
+          cp "daily_diamond_${DATE}.html" docs/index.html
+          mkdir -p docs/archive
+          cp "daily_diamond_${DATE}.html" "docs/archive/${DATE}.html"
+          cp picks.json "docs/archive/${DATE}_picks.json"
+          # CLV baseline is merge-filled inside run_daily.py (per-game first real line)
+
+      - name: Snap closers (pre-early + pre-late slate)
+        if: github.event.schedule == '25 22 * * *' || github.event.schedule == '25 1 * * *'
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          DATE=$(TZ=America/New_York date +%F)
+          python grade.py snap "$DATE"
+
+      - name: Grade yesterday (results + CLV + K archive)
+        if: github.event.schedule == '0 13 * * *'
+        run: |
+          DATE=$(TZ=America/New_York date -d yesterday +%F)
+          cp "docs/archive/${DATE}_picks.json" picks.json 2>/dev/null || true
+          python grade.py grade "$DATE" | tee "docs/archive/${DATE}_grade.txt"
+
+      - name: Publish
+        run: |
+          git config user.name "daily-diamond-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add docs/ closers_*.json picktime_odds_*.json grades_archive.jsonl slate.json picks.json model_output.json odds_map.json raw_odds_response.json 2>/dev/null || true
+          git commit -m "run $(TZ=America/New_York date '+%F %H:%M %Z')" || echo "no changes"
+          git push
+
+      - name: Alert on failure (opens a GitHub issue -> email/push via app)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          WHEN=$(TZ=America/New_York date '+%F %H:%M %Z')
+          gh issue create \
+            --title "Daily Diamond run FAILED — $WHEN" \
+            --body "Scheduled run failed (schedule: ${{ github.event.schedule || 'manual' }}). No card/closers were produced. Check the Actions log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            || echo "issue create failed (non-fatal)"
