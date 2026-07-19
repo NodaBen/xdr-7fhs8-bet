@@ -1,0 +1,65 @@
+{
+ "823523": {
+  "home": "New York Yankees",
+  "away": "Los Angeles Dodgers",
+  "commence": "2026-07-19T23:21:00Z",
+  "book": "draftkings",
+  "homeML": 112,
+  "awayML": -135,
+  "total": 9.0,
+  "all_books": [
+   {
+    "book": "fanduel",
+    "homeML": 114,
+    "awayML": -134
+   },
+   {
+    "book": "betonlineag",
+    "homeML": 118,
+    "awayML": -130
+   },
+   {
+    "book": "lowvig",
+    "homeML": 118,
+    "awayML": -130
+   },
+   {
+    "book": "mybookieag",
+    "homeML": 112,
+    "awayML": -132
+   },
+   {
+    "book": "draftkings",
+    "homeML": 112,
+    "awayML": -135
+   },
+   {
+    "book": "betmgm",
+    "homeML": 115,
+    "awayML": -140
+   },
+   {
+    "book": "bovada",
+    "homeML": 116,
+    "awayML": -139
+   },
+   {
+    "book": "betus",
+    "homeML": 122,
+    "awayML": -135
+   },
+   {
+    "book": "betrivers",
+    "homeML": 114,
+    "awayML": -129
+   }
+  ],
+  "homeML_novig": 0.4477,
+  "awayML_novig": 0.5523,
+  "books_used": 9,
+  "book_spread": 0.0139,
+  "fetched_at": "2026-07-19T22:36:09.689652+00:00",
+  "source": "theoddsapi",
+  "snapped_at": "2026-07-19T22:36:09.690019+00:00"
+ }
+}
