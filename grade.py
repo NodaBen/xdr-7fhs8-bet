@@ -69,7 +69,25 @@ def snap(date, cached=False):
         closers[pk] = rec
         kept += 1
     json.dump(closers, open(fn, 'w'), indent=1)
-    print(f'[snap] {kept} pre-start lines updated -> {fn} ({len(closers)} total games held)')
+
+    # v6.2 coverage assertions: a silent zero-keep snap is the failure mode that
+    # killed 07-17/07-18 CLV. Count how many slate games had NOT started at snap
+    # time; if any were still open and we kept nothing, the snap genuinely failed.
+    snapped = _t(fetched)
+    unstarted = 0
+    for g in slate:
+        gt = _t(g.get('gameDate'))
+        if gt and snapped and snapped < gt:
+            unstarted += 1
+    cov = len(closers)
+    print(f'[snap] {kept} pre-start lines updated -> {fn} '
+          f'({cov}/{len(slate)} slate games held | {unstarted} still unstarted at snap)')
+    if unstarted > 0 and kept == 0:
+        sys.exit(f'[snap] FAIL: {unstarted} games had not started yet but 0 lines were '
+                 f'captured. Odds feed empty or slate.json stale. Closers will be missing.')
+    if unstarted == 0:
+        print('[snap] note: entire slate already underway - nothing left to capture. '
+              'If this is the FIRST snap of the day, the schedule is running too late.')
 
 
 def _rebuild_from_raw(raw, slate):
@@ -156,7 +174,8 @@ def grade(date):
     picktime = _load(f'picktime_odds_{date}.json', {})
     fin = finals(date)
     if not closers:
-        sys.exit('[grade] no closers file — run snap mode on game night first')
+        sys.exit('[grade] FAIL: closers_%s.json missing or empty. No CLV is recoverable '
+                 'for this date. Check that the snap jobs ran BEFORE first pitch.' % date)
 
     rows, gsum = [], {'n': 0, 'w': 0, 'l': 0, 'fired': 0, 'pl': 0.0,
                       'clv_pts': [], 'model_p': [], 'close_nv': [], 'brier_m': [], 'brier_c': []}
