@@ -6,45 +6,45 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 8.0
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
+   "total": 4.5
   },
   "sides": {
    "away": {
     "team": "Chicago White Sox",
     "sp": "Sean Burke",
     "cats": {
-     "sp": 84.9,
-     "off": 54.5,
-     "pen": 34.5,
-     "mkt": 51.1,
+     "sp": 85.0,
+     "off": 46.5,
+     "pen": 36.2,
+     "mkt": 91.4,
      "sit": 44.0,
-     "mu": 48.5
+     "mu": 49.0
     },
-    "composite": 62.41,
-    "model_prob": 0.7272,
-    "fair_ML": -267,
-    "implied": 0.5327,
-    "novig": 0.5112,
-    "edge_pct": 19.45
+    "composite": 64.71,
+    "model_prob": 0.784,
+    "fair_ML": -363,
+    "implied": 0.9655,
+    "novig": 0.9136,
+    "edge_pct": -18.15
    },
    "home": {
     "team": "Toronto Blue Jays",
     "sp": "Trey Yesavage",
     "cats": {
-     "sp": 31.0,
-     "off": 31.8,
-     "pen": 81.0,
-     "mkt": 48.9,
+     "sp": 31.3,
+     "off": 28.5,
+     "pen": 86.7,
+     "mkt": 8.6,
      "sit": 56.0,
      "mu": 50.0
     },
-    "composite": 42.8,
-    "model_prob": 0.2728,
-    "fair_ML": 267,
-    "implied": 0.5122,
-    "novig": 0.4888,
-    "edge_pct": -23.94
+    "composite": 38.93,
+    "model_prob": 0.216,
+    "fair_ML": 363,
+    "implied": 0.098,
+    "novig": 0.0864,
+    "edge_pct": 11.8
    }
   },
   "flags": [],
@@ -57,7 +57,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
    "total": 7.5
   },
   "sides": {
@@ -66,36 +66,36 @@
     "sp": "Yoshinobu Yamamoto",
     "cats": {
      "sp": 74.1,
-     "off": 61.5,
-     "pen": 84.2,
-     "mkt": 51.6,
+     "off": 60.7,
+     "pen": 93.8,
+     "mkt": 80.8,
      "sit": 44.0,
      "mu": 56.8
     },
-    "composite": 67.59,
-    "model_prob": 0.7299,
-    "fair_ML": -270,
-    "implied": 0.5434,
-    "novig": 0.5159,
-    "edge_pct": 18.65
+    "composite": 71.74,
+    "model_prob": 0.7912,
+    "fair_ML": -379,
+    "implied": 0.8649,
+    "novig": 0.8079,
+    "edge_pct": -7.37
    },
    "home": {
     "team": "New York Yankees",
     "sp": "Cam Schlittler",
     "cats": {
      "sp": 40.0,
-     "off": 49.4,
-     "pen": 65.8,
-     "mkt": 48.4,
+     "off": 47.2,
+     "pen": 71.7,
+     "mkt": 19.2,
      "sit": 56.0,
      "mu": 24.0
     },
-    "composite": 47.71,
-    "model_prob": 0.2701,
-    "fair_ML": 270,
-    "implied": 0.5025,
-    "novig": 0.4841,
-    "edge_pct": -23.24
+    "composite": 45.1,
+    "model_prob": 0.2088,
+    "fair_ML": 379,
+    "implied": 0.2004,
+    "novig": 0.1921,
+    "edge_pct": 0.84
    }
   },
   "flags": [
@@ -107,50 +107,53 @@
   "game": "Los Angeles Dodgers @ New York Yankees",
   "gamePk": 823521,
   "venue": "Yankee Stadium",
-  "odds_meta": null,
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
+   "total": 9.0
+  },
   "sides": {
    "away": {
     "team": "Los Angeles Dodgers",
     "sp": null,
     "cats": {
      "sp": 38.0,
-     "off": 61.5,
-     "pen": 84.2,
-     "mkt": 50.0,
+     "off": 60.7,
+     "pen": 93.8,
+     "mkt": 54.2,
      "sit": 44.0,
      "mu": 50.0
     },
-    "composite": 52.78,
-    "model_prob": 0.5613,
-    "fair_ML": -128,
-    "implied": null,
-    "novig": null,
-    "edge_pct": null
+    "composite": 54.45,
+    "model_prob": 0.5831,
+    "fair_ML": -140,
+    "implied": 0.5671,
+    "novig": 0.5419,
+    "edge_pct": 1.6
    },
    "home": {
     "team": "New York Yankees",
     "sp": null,
     "cats": {
      "sp": 38.0,
-     "off": 49.4,
-     "pen": 65.8,
-     "mkt": 50.0,
+     "off": 47.2,
+     "pen": 71.7,
+     "mkt": 45.8,
      "sit": 56.0,
      "mu": 50.0
     },
-    "composite": 47.85,
-    "model_prob": 0.4387,
-    "fair_ML": 128,
-    "implied": null,
-    "novig": null,
-    "edge_pct": null
+    "composite": 47.74,
+    "model_prob": 0.4169,
+    "fair_ML": 140,
+    "implied": 0.4785,
+    "novig": 0.4581,
+    "edge_pct": -6.16
    }
   },
   "flags": [
    "SP TBD \u2014 replacement-level assumed",
-   "no odds posted \u2014 market neutral",
-   "SP TBD \u2014 replacement-level assumed",
-   "no odds posted \u2014 market neutral"
+   "SP TBD \u2014 replacement-level assumed"
   ],
   "data_quality": "DEGRADED"
  },
@@ -161,7 +164,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
    "total": 8.5
   },
   "sides": {
@@ -170,36 +173,36 @@
     "sp": "Shane McClanahan",
     "cats": {
      "sp": 67.5,
-     "off": 45.4,
-     "pen": 54.5,
-     "mkt": 47.1,
+     "off": 47.2,
+     "pen": 53.2,
+     "mkt": 53.4,
      "sit": 44.0,
-     "mu": 55.3
+     "mu": 55.2
     },
-    "composite": 55.97,
-    "model_prob": 0.415,
-    "fair_ML": 141,
-    "implied": 0.4902,
-    "novig": 0.4709,
-    "edge_pct": -7.52
+    "composite": 56.86,
+    "model_prob": 0.424,
+    "fair_ML": 136,
+    "implied": 0.5652,
+    "novig": 0.5342,
+    "edge_pct": -14.12
    },
    "home": {
     "team": "Boston Red Sox",
     "sp": "Sonny Gray",
     "cats": {
      "sp": 74.6,
-     "off": 53.2,
+     "off": 56.4,
      "pen": 60.0,
-     "mkt": 52.9,
+     "mkt": 46.6,
      "sit": 56.0,
      "mu": 50.0
     },
-    "composite": 62.84,
-    "model_prob": 0.585,
-    "fair_ML": -141,
-    "implied": 0.5556,
-    "novig": 0.5291,
-    "edge_pct": 2.94
+    "composite": 62.99,
+    "model_prob": 0.576,
+    "fair_ML": -136,
+    "implied": 0.5,
+    "novig": 0.4658,
+    "edge_pct": 7.6
    }
   },
   "flags": [],
@@ -212,45 +215,45 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 8.5
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
+   "total": 12.5
   },
   "sides": {
    "away": {
     "team": "New York Mets",
     "sp": "Nolan McLean",
     "cats": {
-     "sp": 74.3,
-     "off": 51.9,
-     "pen": 80.8,
-     "mkt": 54.4,
+     "sp": 74.5,
+     "off": 38.9,
+     "pen": 75.8,
+     "mkt": 87.2,
      "sit": 44.0,
-     "mu": 46.0
+     "mu": 45.7
     },
-    "composite": 64.72,
-    "model_prob": 0.6674,
-    "fair_ML": -201,
-    "implied": 0.5671,
-    "novig": 0.5436,
-    "edge_pct": 10.03
+    "composite": 64.06,
+    "model_prob": 0.6761,
+    "fair_ML": -209,
+    "implied": 0.9438,
+    "novig": 0.8718,
+    "edge_pct": -26.77
    },
    "home": {
     "team": "Philadelphia Phillies",
     "sp": "Alan Rangel",
     "cats": {
-     "sp": 49.9,
-     "off": 28.1,
-     "pen": 92.5,
-     "mkt": 45.6,
+     "sp": 50.5,
+     "off": 38.0,
+     "pen": 86.7,
+     "mkt": 12.8,
      "sit": 56.0,
-     "mu": 48.4
+     "mu": 48.2
     },
-    "composite": 50.79,
-    "model_prob": 0.3326,
-    "fair_ML": 201,
-    "implied": 0.4785,
-    "novig": 0.4564,
-    "edge_pct": -14.59
+    "composite": 49.34,
+    "model_prob": 0.3239,
+    "fair_ML": 209,
+    "implied": 0.1205,
+    "novig": 0.1282,
+    "edge_pct": 20.34
    }
   },
   "flags": [],
@@ -263,45 +266,45 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 9.0
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
+   "total": 8.5
   },
   "sides": {
    "away": {
     "team": "Texas Rangers",
     "sp": "Nathan Eovaldi",
     "cats": {
-     "sp": 89.7,
-     "off": 59.9,
-     "pen": 36.7,
-     "mkt": 52.3,
+     "sp": 89.5,
+     "off": 67.0,
+     "pen": 41.3,
+     "mkt": 29.2,
      "sit": 44.0,
-     "mu": 36.6
+     "mu": 36.7
     },
-    "composite": 65.76,
-    "model_prob": 0.6959,
-    "fair_ML": -229,
-    "implied": 0.5455,
-    "novig": 0.5233,
-    "edge_pct": 15.04
+    "composite": 65.84,
+    "model_prob": 0.6771,
+    "fair_ML": -210,
+    "implied": 0.3215,
+    "novig": 0.2925,
+    "edge_pct": 35.56
    },
    "home": {
     "team": "Atlanta Braves",
     "sp": "Grant Holmes",
     "cats": {
-     "sp": 35.0,
+     "sp": 35.2,
      "off": 55.4,
-     "pen": 75.8,
-     "mkt": 47.7,
+     "pen": 72.0,
+     "mkt": 70.8,
      "sit": 56.0,
-     "mu": 43.7
+     "mu": 42.7
     },
-    "composite": 49.2,
-    "model_prob": 0.3041,
-    "fair_ML": 229,
-    "implied": 0.5,
-    "novig": 0.4767,
-    "edge_pct": -19.59
+    "composite": 51.03,
+    "model_prob": 0.3229,
+    "fair_ML": 210,
+    "implied": 0.7429,
+    "novig": 0.7075,
+    "edge_pct": -42.0
    }
   },
   "flags": [],
@@ -314,45 +317,45 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 7.0
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
+   "total": 6.5
   },
   "sides": {
    "away": {
     "team": "Pittsburgh Pirates",
     "sp": "Paul Skenes",
     "cats": {
-     "sp": 74.4,
-     "off": 83.3,
-     "pen": 50.2,
-     "mkt": 53.9,
+     "sp": 74.5,
+     "off": 80.9,
+     "pen": 36.3,
+     "mkt": 58.8,
      "sit": 44.0,
-     "mu": 56.4
+     "mu": 56.8
     },
-    "composite": 68.27,
-    "model_prob": 0.6252,
-    "fair_ML": -167,
-    "implied": 0.5671,
-    "novig": 0.5386,
-    "edge_pct": 5.81
+    "composite": 66.15,
+    "model_prob": 0.6281,
+    "fair_ML": -169,
+    "implied": 0.6269,
+    "novig": 0.588,
+    "edge_pct": 0.12
    },
    "home": {
     "team": "Cleveland Guardians",
     "sp": "Joey Cantillo",
     "cats": {
-     "sp": 73.2,
-     "off": 30.5,
-     "pen": 76.3,
-     "mkt": 46.1,
+     "sp": 73.3,
+     "off": 27.5,
+     "pen": 68.7,
+     "mkt": 41.2,
      "sit": 56.0,
-     "mu": 38.0
+     "mu": 37.9
     },
-    "composite": 58.04,
-    "model_prob": 0.3748,
-    "fair_ML": 167,
-    "implied": 0.4785,
-    "novig": 0.4614,
-    "edge_pct": -10.37
+    "composite": 55.67,
+    "model_prob": 0.3719,
+    "fair_ML": 169,
+    "implied": 0.4367,
+    "novig": 0.412,
+    "edge_pct": -6.48
    }
   },
   "flags": [],
@@ -365,8 +368,8 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 8.0
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
+   "total": 8.5
   },
   "sides": {
    "away": {
@@ -374,36 +377,36 @@
     "sp": "Brandon Young",
     "cats": {
      "sp": 46.1,
-     "off": 65.5,
-     "pen": 46.3,
-     "mkt": 48.2,
+     "off": 56.9,
+     "pen": 46.0,
+     "mkt": 46.2,
      "sit": 44.0,
-     "mu": 41.3
+     "mu": 41.6
     },
-    "composite": 50.89,
-    "model_prob": 0.6012,
-    "fair_ML": -151,
-    "implied": 0.4975,
-    "novig": 0.4819,
-    "edge_pct": 10.37
+    "composite": 48.51,
+    "model_prob": 0.597,
+    "fair_ML": -148,
+    "implied": 0.4854,
+    "novig": 0.4622,
+    "edge_pct": 11.16
    },
    "home": {
     "team": "Houston Astros",
     "sp": "Hunter Brown",
     "cats": {
-     "sp": 33.0,
-     "off": 55.5,
-     "pen": 34.8,
-     "mkt": 51.8,
+     "sp": 33.2,
+     "off": 48.5,
+     "pen": 31.0,
+     "mkt": 53.8,
      "sit": 56.0,
-     "mu": 42.2
+     "mu": 42.7
     },
-    "composite": 42.68,
-    "model_prob": 0.3988,
-    "fair_ML": 151,
-    "implied": 0.5495,
-    "novig": 0.5181,
-    "edge_pct": -15.07
+    "composite": 40.65,
+    "model_prob": 0.403,
+    "fair_ML": 148,
+    "implied": 0.5595,
+    "novig": 0.5378,
+    "edge_pct": -15.65
    }
   },
   "flags": [],
@@ -416,8 +419,8 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 10.0
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
+   "total": 9.5
   },
   "sides": {
    "away": {
@@ -425,36 +428,36 @@
     "sp": "Germ\u00e1n M\u00e1rquez",
     "cats": {
      "sp": 40.0,
-     "off": 35.6,
-     "pen": 55.2,
-     "mkt": 45.6,
+     "off": 38.5,
+     "pen": 57.3,
+     "mkt": 48.7,
      "sit": 44.0,
      "mu": 50.0
     },
-    "composite": 42.33,
-    "model_prob": 0.5251,
+    "composite": 43.67,
+    "model_prob": 0.5262,
     "fair_ML": -111,
-    "implied": 0.4785,
-    "novig": 0.4565,
-    "edge_pct": 4.66
+    "implied": 0.5122,
+    "novig": 0.4869,
+    "edge_pct": 1.4
    },
    "home": {
     "team": "Kansas City Royals",
     "sp": "Noah Cameron",
     "cats": {
-     "sp": 37.0,
-     "off": 50.5,
+     "sp": 37.1,
+     "off": 56.6,
      "pen": 13.5,
-     "mkt": 54.4,
+     "mkt": 51.3,
      "sit": 56.0,
      "mu": 50.0
     },
-    "composite": 40.32,
-    "model_prob": 0.4749,
+    "composite": 41.57,
+    "model_prob": 0.4738,
     "fair_ML": 111,
-    "implied": 0.5671,
-    "novig": 0.5435,
-    "edge_pct": -9.22
+    "implied": 0.5349,
+    "novig": 0.5131,
+    "edge_pct": -6.11
    }
   },
   "flags": [
@@ -469,7 +472,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
    "total": 8.0
   },
   "sides": {
@@ -478,36 +481,36 @@
     "sp": "Eury P\u00e9rez",
     "cats": {
      "sp": 40.0,
-     "off": 58.0,
-     "pen": 47.3,
-     "mkt": 45.6,
+     "off": 58.7,
+     "pen": 48.2,
+     "mkt": 45.9,
      "sit": 44.0,
-     "mu": 43.1
+     "mu": 42.3
     },
-    "composite": 46.54,
-    "model_prob": 0.4335,
-    "fair_ML": 131,
+    "composite": 46.83,
+    "model_prob": 0.4165,
+    "fair_ML": 140,
     "implied": 0.4785,
-    "novig": 0.4555,
-    "edge_pct": -4.5
+    "novig": 0.4585,
+    "edge_pct": -6.2
    },
    "home": {
     "team": "Milwaukee Brewers",
     "sp": "Robert Gasser",
     "cats": {
      "sp": 46.7,
-     "off": 54.8,
-     "pen": 58.2,
-     "mkt": 54.4,
+     "off": 58.6,
+     "pen": 63.3,
+     "mkt": 54.1,
      "sit": 56.0,
-     "mu": 47.0
+     "mu": 46.8
     },
-    "composite": 51.89,
-    "model_prob": 0.5665,
-    "fair_ML": -131,
+    "composite": 53.57,
+    "model_prob": 0.5835,
+    "fair_ML": -140,
     "implied": 0.5671,
-    "novig": 0.5445,
-    "edge_pct": -0.06
+    "novig": 0.5415,
+    "edge_pct": 1.64
    }
   },
   "flags": [
@@ -522,7 +525,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
    "total": 7.5
   },
   "sides": {
@@ -530,37 +533,37 @@
     "team": "Minnesota Twins",
     "sp": "Zebby Matthews",
     "cats": {
-     "sp": 41.8,
-     "off": 60.8,
-     "pen": 28.3,
-     "mkt": 40.0,
+     "sp": 42.1,
+     "off": 60.0,
+     "pen": 28.8,
+     "mkt": 39.0,
      "sit": 44.0,
-     "mu": 40.8
+     "mu": 40.7
     },
-    "composite": 44.48,
-    "model_prob": 0.3013,
-    "fair_ML": 232,
-    "implied": 0.4184,
-    "novig": 0.4002,
-    "edge_pct": -11.71
+    "composite": 44.34,
+    "model_prob": 0.2857,
+    "fair_ML": 250,
+    "implied": 0.4049,
+    "novig": 0.3896,
+    "edge_pct": -11.92
    },
    "home": {
     "team": "Chicago Cubs",
     "sp": "Shota Imanaga",
     "cats": {
      "sp": 67.4,
-     "off": 63.5,
-     "pen": 48.0,
-     "mkt": 60.0,
+     "off": 68.2,
+     "pen": 48.3,
+     "mkt": 61.0,
      "sit": 56.0,
-     "mu": 45.5
+     "mu": 45.4
     },
-    "composite": 61.3,
-    "model_prob": 0.6987,
-    "fair_ML": -232,
-    "implied": 0.6283,
-    "novig": 0.5998,
-    "edge_pct": 7.04
+    "composite": 62.67,
+    "model_prob": 0.7143,
+    "fair_ML": -250,
+    "implied": 0.6416,
+    "novig": 0.6104,
+    "edge_pct": 7.27
    }
   },
   "flags": [],
@@ -573,7 +576,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
    "total": 11.0
   },
   "sides": {
@@ -581,37 +584,37 @@
     "team": "Cincinnati Reds",
     "sp": "Hunter Greene",
     "cats": {
-     "sp": 85.5,
-     "off": 45.2,
-     "pen": 19.2,
-     "mkt": 56.7,
+     "sp": 85.6,
+     "off": 45.9,
+     "pen": 13.3,
+     "mkt": 60.3,
      "sit": 44.0,
-     "mu": 37.3
+     "mu": 37.0
     },
-    "composite": 58.25,
-    "model_prob": 0.7715,
-    "fair_ML": -338,
-    "implied": 0.5902,
-    "novig": 0.5667,
-    "edge_pct": 18.13
+    "composite": 57.93,
+    "model_prob": 0.7533,
+    "fair_ML": -305,
+    "implied": 0.631,
+    "novig": 0.6026,
+    "edge_pct": 12.23
    },
    "home": {
     "team": "Colorado Rockies",
     "sp": "Ryan Feltner",
     "cats": {
-     "sp": 30.2,
-     "off": 27.1,
-     "pen": 35.2,
-     "mkt": 43.3,
+     "sp": 30.6,
+     "off": 34.6,
+     "pen": 35.5,
+     "mkt": 39.7,
      "sit": 56.0,
-     "mu": 50.3
+     "mu": 50.1
     },
-    "composite": 33.91,
-    "model_prob": 0.2285,
-    "fair_ML": 338,
-    "implied": 0.4566,
-    "novig": 0.4333,
-    "edge_pct": -22.81
+    "composite": 35.6,
+    "model_prob": 0.2467,
+    "fair_ML": 305,
+    "implied": 0.4149,
+    "novig": 0.3974,
+    "edge_pct": -16.82
    }
   },
   "flags": [],
@@ -624,7 +627,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
    "total": 10.5
   },
   "sides": {
@@ -632,37 +635,37 @@
     "team": "Washington Nationals",
     "sp": "Foster Griffin",
     "cats": {
-     "sp": 82.4,
-     "off": 86.4,
-     "pen": 30.0,
-     "mkt": 56.0,
+     "sp": 82.2,
+     "off": 85.7,
+     "pen": 31.2,
+     "mkt": 57.6,
      "sit": 44.0,
-     "mu": 36.3
+     "mu": 35.9
     },
-    "composite": 68.86,
-    "model_prob": 0.8052,
-    "fair_ML": -413,
-    "implied": 0.5885,
-    "novig": 0.5604,
-    "edge_pct": 21.67
+    "composite": 68.9,
+    "model_prob": 0.7682,
+    "fair_ML": -331,
+    "implied": 0.5984,
+    "novig": 0.5762,
+    "edge_pct": 16.98
    },
    "home": {
     "team": "Athletics",
     "sp": "Jacob Lopez",
     "cats": {
-     "sp": 45.2,
-     "off": 30.7,
-     "pen": 32.7,
-     "mkt": 44.0,
+     "sp": 45.4,
+     "off": 44.1,
+     "pen": 40.7,
+     "mkt": 42.4,
      "sit": 56.0,
      "mu": 50.0
     },
-    "composite": 40.48,
-    "model_prob": 0.1948,
-    "fair_ML": 413,
-    "implied": 0.4566,
-    "novig": 0.4396,
-    "edge_pct": -26.18
+    "composite": 44.94,
+    "model_prob": 0.2318,
+    "fair_ML": 331,
+    "implied": 0.4484,
+    "novig": 0.4238,
+    "edge_pct": -21.66
    }
   },
   "flags": [],
@@ -675,45 +678,45 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 9.0
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
+   "total": 9.5
   },
   "sides": {
    "away": {
     "team": "Detroit Tigers",
     "sp": "Casey Mize",
     "cats": {
-     "sp": 80.9,
-     "off": 35.1,
-     "pen": 59.3,
-     "mkt": 58.0,
+     "sp": 81.0,
+     "off": 40.9,
+     "pen": 64.5,
+     "mkt": 56.7,
      "sit": 44.0,
-     "mu": 48.7
+     "mu": 49.0
     },
-    "composite": 60.37,
-    "model_prob": 0.7193,
-    "fair_ML": -256,
-    "implied": 0.6094,
-    "novig": 0.58,
-    "edge_pct": 10.99
+    "composite": 62.52,
+    "model_prob": 0.7621,
+    "fair_ML": -320,
+    "implied": 0.5902,
+    "novig": 0.5667,
+    "edge_pct": 17.19
    },
    "home": {
     "team": "Los Angeles Angels",
     "sp": "Ryan Johnson",
     "cats": {
      "sp": 39.3,
-     "off": 29.8,
-     "pen": 59.0,
-     "mkt": 42.0,
+     "off": 23.2,
+     "pen": 53.5,
+     "mkt": 43.3,
      "sit": 56.0,
      "mu": 47.0
     },
-    "composite": 41.55,
-    "model_prob": 0.2807,
-    "fair_ML": 256,
-    "implied": 0.4367,
-    "novig": 0.42,
-    "edge_pct": -15.6
+    "composite": 39.23,
+    "model_prob": 0.2379,
+    "fair_ML": 320,
+    "implied": 0.4566,
+    "novig": 0.4333,
+    "edge_pct": -21.87
    }
   },
   "flags": [],
@@ -726,45 +729,45 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 7.5
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
+   "total": 7.0
   },
   "sides": {
    "away": {
     "team": "San Francisco Giants",
     "sp": "Robbie Ray",
     "cats": {
-     "sp": 21.2,
-     "off": 54.7,
-     "pen": 33.2,
-     "mkt": 38.4,
+     "sp": 21.4,
+     "off": 48.7,
+     "pen": 34.0,
+     "mkt": 35.7,
      "sit": 44.0,
-     "mu": 50.8
+     "mu": 51.0
     },
-    "composite": 35.55,
-    "model_prob": 0.2306,
-    "fair_ML": 334,
-    "implied": 0.4032,
-    "novig": 0.3835,
-    "edge_pct": -17.26
+    "composite": 34.0,
+    "model_prob": 0.2287,
+    "fair_ML": 337,
+    "implied": 0.3731,
+    "novig": 0.3572,
+    "edge_pct": -14.44
    },
    "home": {
     "team": "Seattle Mariners",
     "sp": "Logan Gilbert",
     "cats": {
      "sp": 83.1,
-     "off": 33.0,
-     "pen": 43.8,
-     "mkt": 61.7,
+     "off": 27.0,
+     "pen": 43.3,
+     "mkt": 64.3,
      "sit": 56.0,
      "mu": 50.0
     },
-    "composite": 59.65,
-    "model_prob": 0.7694,
-    "fair_ML": -334,
-    "implied": 0.6429,
-    "novig": 0.6165,
-    "edge_pct": 12.65
+    "composite": 58.31,
+    "model_prob": 0.7713,
+    "fair_ML": -337,
+    "implied": 0.6721,
+    "novig": 0.6428,
+    "edge_pct": 9.92
    }
   },
   "flags": [],
@@ -777,7 +780,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
+   "fetched_at": "2026-07-19T18:09:48.846148+00:00",
    "total": 9.0
   },
   "sides": {
@@ -786,36 +789,36 @@
     "sp": "Andre Pallante",
     "cats": {
      "sp": 44.9,
-     "off": 33.5,
-     "pen": 27.7,
-     "mkt": 47.9,
+     "off": 33.3,
+     "pen": 29.7,
+     "mkt": 46.7,
      "sit": 44.0,
      "mu": 50.0
     },
-    "composite": 39.86,
-    "model_prob": 0.5292,
-    "fair_ML": -112,
-    "implied": 0.5,
-    "novig": 0.4789,
-    "edge_pct": 2.92
+    "composite": 40.0,
+    "model_prob": 0.5229,
+    "fair_ML": -110,
+    "implied": 0.4902,
+    "novig": 0.4671,
+    "edge_pct": 3.27
    },
    "home": {
     "team": "Arizona Diamondbacks",
     "sp": "Eduardo Rodriguez",
     "cats": {
-     "sp": 26.6,
-     "off": 33.0,
-     "pen": 54.3,
-     "mkt": 52.1,
+     "sp": 26.8,
+     "off": 34.2,
+     "pen": 55.5,
+     "mkt": 53.3,
      "sit": 56.0,
-     "mu": 44.9
+     "mu": 44.4
     },
-    "composite": 37.52,
-    "model_prob": 0.4708,
-    "fair_ML": 112,
-    "implied": 0.5455,
-    "novig": 0.5211,
-    "edge_pct": -7.47
+    "composite": 38.17,
+    "model_prob": 0.4771,
+    "fair_ML": 110,
+    "implied": 0.5575,
+    "novig": 0.5329,
+    "edge_pct": -8.04
    }
   },
   "flags": [],
