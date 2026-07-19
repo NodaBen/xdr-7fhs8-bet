@@ -1,29 +1,23 @@
 [
  {
-  "pick": "Baltimore Orioles ML",
-  "game": "Baltimore Orioles @ Houston Astros",
-  "gamePk": 824168,
-  "venue": "Daikin Park",
-  "model_prob": 0.6012,
-  "fair_ML": -151,
-  "implied": 0.4975,
-  "edge_pct": 10.37,
-  "edge_score": 82.6,
+  "pick": "Minnesota Twins ML",
+  "game": "Minnesota Twins @ Chicago Cubs",
+  "gamePk": 824657,
+  "venue": "Wrigley Field",
+  "model_prob": 0.5144,
+  "fair_ML": -106,
+  "implied": 0.4255,
+  "edge_pct": 8.89,
+  "edge_score": 82.2,
   "units": 1,
   "gated": true,
-  "divergence": 0.1193,
-  "target_price": -128,
-  "condition": "OFF unless -128 or better at DK",
+  "divergence": 0.1035,
+  "target_price": 111,
+  "condition": "OFF unless 111 or better at DK",
   "chips": [
    {
-    "stat": "opp SP weak",
-    "value": "33/100",
-    "dir": "-",
-    "tone": "red"
-   },
-   {
-    "stat": "off edge",
-    "value": "+10",
+    "stat": "SP score",
+    "value": "74/100",
     "dir": "+",
     "tone": "green"
    }
@@ -31,38 +25,161 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 8.0
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 8.5
   },
   "flags": [],
   "data_quality": "FULL",
   "rank": 1
  },
  {
-  "pick": "New York Mets ML",
-  "game": "New York Mets @ Philadelphia Phillies",
-  "gamePk": 823439,
-  "venue": "Citizens Bank Park",
-  "model_prob": 0.6674,
-  "fair_ML": -201,
-  "implied": 0.5671,
-  "edge_pct": 10.03,
-  "edge_score": 82.1,
+  "pick": "Atlanta Braves ML",
+  "game": "Texas Rangers @ Atlanta Braves",
+  "gamePk": 824899,
+  "venue": "Truist Park",
+  "model_prob": 0.6192,
+  "fair_ML": -163,
+  "implied": 0.5327,
+  "edge_pct": 8.65,
+  "edge_score": 81.3,
   "units": 1,
   "gated": true,
-  "divergence": 0.1238,
-  "target_price": -168,
-  "condition": "OFF unless -168 or better at DK",
+  "divergence": 0.1079,
+  "target_price": -138,
+  "condition": "OFF unless -138 or better at DK",
   "chips": [
    {
     "stat": "SP score",
-    "value": "74/100",
+    "value": "70/100",
     "dir": "+",
     "tone": "green"
    },
    {
+    "stat": "pen edge",
+    "value": "+39",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 9.0
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "rank": 2
+ },
+ {
+  "pick": "San Diego Padres ML",
+  "game": "San Diego Padres @ Kansas City Royals",
+  "gamePk": 824088,
+  "venue": "Kauffman Stadium",
+  "model_prob": 0.6124,
+  "fair_ML": -158,
+  "implied": 0.5261,
+  "edge_pct": 8.63,
+  "edge_score": 81.1,
+  "units": 1,
+  "gated": true,
+  "divergence": 0.11,
+  "target_price": -134,
+  "condition": "OFF unless -134 or better at DK",
+  "chips": [
+   {
+    "stat": "opp SP weak",
+    "value": "18/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "pen edge",
+    "value": "+32",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 11.0
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "rank": 3
+ },
+ {
+  "pick": "Chicago White Sox ML",
+  "game": "Chicago White Sox @ Toronto Blue Jays",
+  "gamePk": 822790,
+  "venue": "Rogers Centre",
+  "model_prob": 0.6053,
+  "fair_ML": -153,
+  "implied": 0.5192,
+  "edge_pct": 8.61,
+  "edge_score": 81.1,
+  "units": 1,
+  "gated": true,
+  "divergence": 0.1095,
+  "target_price": -130,
+  "condition": "OFF unless -130 or better at DK",
+  "chips": [
+   {
+    "stat": "opp SP weak",
+    "value": "13/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
     "stat": "off edge",
-    "value": "+24",
+    "value": "+23",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp bats cold",
+    "value": "31/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 9.5
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "rank": 4
+ },
+ {
+  "pick": "Washington Nationals ML",
+  "game": "Washington Nationals @ Athletics",
+  "gamePk": 824979,
+  "venue": "Sutter Health Park",
+  "model_prob": 0.6127,
+  "fair_ML": -158,
+  "implied": 0.5349,
+  "edge_pct": 7.78,
+  "edge_score": 80.4,
+  "units": 1,
+  "gated": true,
+  "divergence": 0.1019,
+  "target_price": -134,
+  "condition": "OFF unless -134 or better at DK",
+  "chips": [
+   {
+    "stat": "opp SP weak",
+    "value": "38/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "off edge",
+    "value": "+58",
     "dir": "+",
     "tone": "green"
    },
@@ -76,77 +193,104 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 8.5
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 11.5
   },
   "flags": [],
   "data_quality": "FULL",
-  "rank": 2
+  "rank": 5
  },
  {
-  "pick": "Detroit Tigers ML",
-  "game": "Detroit Tigers @ Los Angeles Angels",
-  "gamePk": 824007,
-  "venue": "Angel Stadium",
-  "model_prob": 0.7193,
-  "fair_ML": -256,
-  "implied": 0.6094,
-  "edge_pct": 10.99,
-  "edge_score": 80.6,
-  "units": 1,
-  "gated": true,
-  "divergence": 0.1393,
-  "target_price": -212,
-  "condition": "OFF unless -212 or better at DK",
+  "pick": "Baltimore Orioles ML",
+  "game": "Baltimore Orioles @ Houston Astros",
+  "gamePk": 824169,
+  "venue": "Daikin Park",
+  "model_prob": 0.5855,
+  "fair_ML": -141,
+  "implied": 0.5238,
+  "edge_pct": 6.17,
+  "edge_score": 79.1,
+  "units": 2,
+  "gated": false,
+  "divergence": 0.0872,
+  "target_price": -118,
+  "condition": "OFF unless -118 or better at DK",
   "chips": [
    {
-    "stat": "SP score",
-    "value": "81/100",
+    "stat": "opp SP weak",
+    "value": "28/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "pen edge",
+    "value": "+13",
     "dir": "+",
     "tone": "green"
-   },
-   {
-    "stat": "opp SP weak",
-    "value": "39/100",
-    "dir": "-",
-    "tone": "red"
-   },
-   {
-    "stat": "opp bats cold",
-    "value": "30/100",
-    "dir": "-",
-    "tone": "red"
    }
   ],
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
    "total": 9.0
   },
   "flags": [],
   "data_quality": "FULL",
-  "rank": 3
+  "rank": 6
  },
  {
-  "pick": "Chicago Cubs ML",
-  "game": "Minnesota Twins @ Chicago Cubs",
-  "gamePk": 824653,
-  "venue": "Wrigley Field",
-  "model_prob": 0.6987,
-  "fair_ML": -232,
-  "implied": 0.6283,
-  "edge_pct": 7.04,
-  "edge_score": 79.4,
+  "pick": "Miami Marlins ML",
+  "game": "Miami Marlins @ Milwaukee Brewers",
+  "gamePk": 823763,
+  "venue": "American Family Field",
+  "model_prob": 0.5086,
+  "fair_ML": -104,
+  "implied": 0.4566,
+  "edge_pct": 5.2,
+  "edge_score": 78.7,
   "units": 2,
   "gated": false,
-  "divergence": 0.0989,
-  "target_price": -189,
-  "condition": "OFF unless -189 or better at DK",
+  "divergence": 0.0741,
+  "target_price": 116,
+  "condition": "OFF unless 116 or better at DK",
   "chips": [
    {
     "stat": "SP score",
-    "value": "67/100",
+    "value": "69/100",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 8.0
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "rank": 7
+ },
+ {
+  "pick": "Seattle Mariners ML",
+  "game": "San Francisco Giants @ Seattle Mariners",
+  "gamePk": 823116,
+  "venue": "T-Mobile Park",
+  "model_prob": 0.6447,
+  "fair_ML": -181,
+  "implied": 0.6109,
+  "edge_pct": 3.38,
+  "edge_score": 76.6,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0633,
+  "target_price": -153,
+  "condition": "OFF unless -153 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "71/100",
     "dir": "+",
     "tone": "green"
    },
@@ -158,7 +302,7 @@
    },
    {
     "stat": "pen edge",
-    "value": "+20",
+    "value": "+16",
     "dir": "+",
     "tone": "green"
    }
@@ -166,329 +310,32 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 7.5
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "rank": 4
- },
- {
-  "pick": "Seattle Mariners ML",
-  "game": "San Francisco Giants @ Seattle Mariners",
-  "gamePk": 823113,
-  "venue": "T-Mobile Park",
-  "model_prob": 0.7694,
-  "fair_ML": -334,
-  "implied": 0.6429,
-  "edge_pct": 12.65,
-  "edge_score": 79.2,
-  "units": 1,
-  "gated": true,
-  "divergence": 0.1529,
-  "target_price": -270,
-  "condition": "OFF unless -270 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "83/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp SP weak",
-    "value": "21/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 7.5
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "rank": 5
- },
- {
-  "pick": "Pittsburgh Pirates ML",
-  "game": "Pittsburgh Pirates @ Cleveland Guardians",
-  "gamePk": 824411,
-  "venue": "Progressive Field",
-  "model_prob": 0.6252,
-  "fair_ML": -167,
-  "implied": 0.5671,
-  "edge_pct": 5.81,
-  "edge_score": 78.5,
-  "units": 2,
-  "gated": false,
-  "divergence": 0.0866,
-  "target_price": -138,
-  "condition": "OFF unless -138 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "74/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "off edge",
-    "value": "+53",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp bats cold",
-    "value": "30/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
    "total": 7.0
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "rank": 6
- },
- {
-  "pick": "Texas Rangers ML",
-  "game": "Texas Rangers @ Atlanta Braves",
-  "gamePk": 824897,
-  "venue": "Truist Park",
-  "model_prob": 0.6959,
-  "fair_ML": -229,
-  "implied": 0.5455,
-  "edge_pct": 15.04,
-  "edge_score": 77.2,
-  "units": 1,
-  "gated": true,
-  "divergence": 0.1726,
-  "target_price": -191,
-  "condition": "OFF unless -191 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "90/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp SP weak",
-    "value": "35/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 9.0
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "rank": 7
- },
- {
-  "pick": "St. Louis Cardinals ML",
-  "game": "St. Louis Cardinals @ Arizona Diamondbacks",
-  "gamePk": 825057,
-  "venue": "Chase Field",
-  "model_prob": 0.5292,
-  "fair_ML": -112,
-  "implied": 0.5,
-  "edge_pct": 2.92,
-  "edge_score": 77.1,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0503,
-  "target_price": 104,
-  "condition": "OFF unless 104 or better at DK",
-  "chips": [
-   {
-    "stat": "opp SP weak",
-    "value": "27/100",
-    "dir": "-",
-    "tone": "red"
-   },
-   {
-    "stat": "opp bats cold",
-    "value": "33/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 9.0
   },
   "flags": [],
   "data_quality": "FULL",
   "rank": 8
  },
  {
-  "pick": "Boston Red Sox ML",
-  "game": "Tampa Bay Rays @ Boston Red Sox",
-  "gamePk": 824739,
-  "venue": "Fenway Park",
-  "model_prob": 0.585,
-  "fair_ML": -141,
-  "implied": 0.5556,
-  "edge_pct": 2.94,
+  "pick": "Cincinnati Reds ML",
+  "game": "Cincinnati Reds @ Colorado Rockies",
+  "gamePk": 824331,
+  "venue": "Coors Field",
+  "model_prob": 0.565,
+  "fair_ML": -130,
+  "implied": 0.5392,
+  "edge_pct": 2.58,
   "edge_score": 76.6,
   "units": 0,
   "gated": false,
-  "divergence": 0.0559,
-  "target_price": -120,
-  "condition": "OFF unless -120 or better at DK",
+  "divergence": 0.0496,
+  "target_price": -111,
+  "condition": "OFF unless -111 or better at DK",
   "chips": [
-   {
-    "stat": "SP score",
-    "value": "75/100",
-    "dir": "+",
-    "tone": "green"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 8.5
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "rank": 9
- },
- {
-  "pick": "Washington Nationals ML",
-  "game": "Washington Nationals @ Athletics",
-  "gamePk": 824978,
-  "venue": "Sutter Health Park",
-  "model_prob": 0.8052,
-  "fair_ML": -413,
-  "implied": 0.5885,
-  "edge_pct": 21.67,
-  "edge_score": 74.5,
-  "units": 1,
-  "gated": false,
-  "divergence": 0.2448,
-  "target_price": -326,
-  "condition": "OFF unless -326 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "82/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "off edge",
-    "value": "+56",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp bats cold",
-    "value": "31/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 10.5
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "rank": 10
- },
- {
-  "pick": "Chicago White Sox ML",
-  "game": "Chicago White Sox @ Toronto Blue Jays",
-  "gamePk": 822786,
-  "venue": "Rogers Centre",
-  "model_prob": 0.7272,
-  "fair_ML": -267,
-  "implied": 0.5327,
-  "edge_pct": 19.45,
-  "edge_score": 74.5,
-  "units": 1,
-  "gated": false,
-  "divergence": 0.216,
-  "target_price": -220,
-  "condition": "OFF unless -220 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "85/100",
-    "dir": "+",
-    "tone": "green"
-   },
    {
     "stat": "opp SP weak",
-    "value": "31/100",
-    "dir": "-",
-    "tone": "red"
-   },
-   {
-    "stat": "off edge",
-    "value": "+23",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp bats cold",
-    "value": "32/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 8.0
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "rank": 11
- },
- {
-  "pick": "Cincinnati Reds ML",
-  "game": "Cincinnati Reds @ Colorado Rockies",
-  "gamePk": 824330,
-  "venue": "Coors Field",
-  "model_prob": 0.7715,
-  "fair_ML": -338,
-  "implied": 0.5902,
-  "edge_pct": 18.13,
-  "edge_score": 74.5,
-  "units": 1,
-  "gated": false,
-  "divergence": 0.2048,
-  "target_price": -272,
-  "condition": "OFF unless -272 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "86/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp SP weak",
-    "value": "30/100",
+    "value": "19/100",
     "dir": "-",
     "tone": "red"
    },
@@ -508,75 +355,178 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 11.0
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 12.5
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "rank": 9
+ },
+ {
+  "pick": "Tampa Bay Rays ML",
+  "game": "Tampa Bay Rays @ Boston Red Sox",
+  "gamePk": 824738,
+  "venue": "Fenway Park",
+  "model_prob": 0.5295,
+  "fair_ML": -113,
+  "implied": 0.5146,
+  "edge_pct": 1.49,
+  "edge_score": 76.2,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0338,
+  "target_price": 104,
+  "condition": "OFF unless 104 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "81/100",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 9.5
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "rank": 10
+ },
+ {
+  "pick": "New York Yankees ML",
+  "game": "Los Angeles Dodgers @ New York Yankees",
+  "gamePk": 823523,
+  "venue": "Yankee Stadium",
+  "model_prob": 0.5351,
+  "fair_ML": -115,
+  "implied": 0.5305,
+  "edge_pct": 0.46,
+  "edge_score": 75.1,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0267,
+  "target_price": 102,
+  "condition": "OFF unless 102 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "77/100",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 9.0
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "rank": 11
+ },
+ {
+  "pick": "Detroit Tigers ML",
+  "game": "Detroit Tigers @ Los Angeles Angels",
+  "gamePk": 824008,
+  "venue": "Angel Stadium",
+  "model_prob": 0.8649,
+  "fair_ML": -640,
+  "implied": 0.6656,
+  "edge_pct": 19.93,
+  "edge_score": 74.5,
+  "units": 1,
+  "gated": false,
+  "divergence": 0.2264,
+  "target_price": -471,
+  "condition": "OFF unless -471 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "92/100",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp SP weak",
+    "value": "9/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "opp bats cold",
+    "value": "29/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 8.0
   },
   "flags": [],
   "data_quality": "FULL",
   "rank": 12
  },
  {
-  "pick": "San Diego Padres ML",
-  "game": "San Diego Padres @ Kansas City Royals",
-  "gamePk": 824086,
-  "venue": "Kauffman Stadium",
-  "model_prob": 0.5251,
-  "fair_ML": -111,
-  "implied": 0.4785,
-  "edge_pct": 4.66,
-  "edge_score": 64.5,
+  "pick": "Arizona Diamondbacks ML",
+  "game": "St. Louis Cardinals @ Arizona Diamondbacks",
+  "gamePk": 825059,
+  "venue": "Chase Field",
+  "model_prob": 0.5419,
+  "fair_ML": -118,
+  "implied": 0.5455,
+  "edge_pct": -0.36,
+  "edge_score": 74.2,
   "units": 0,
   "gated": false,
-  "divergence": 0.0686,
-  "target_price": 106,
-  "condition": "OFF unless 106 or better at DK",
+  "divergence": 0.022,
+  "target_price": -101,
+  "condition": "OFF unless -101 or better at DK",
   "chips": [
    {
-    "stat": "opp SP weak",
-    "value": "37/100",
-    "dir": "-",
-    "tone": "red"
-   },
-   {
     "stat": "pen edge",
-    "value": "+42",
+    "value": "+22",
     "dir": "+",
     "tone": "green"
    },
    {
-    "stat": "data",
-    "value": "DEGRADED",
-    "dir": "~",
-    "tone": "neutral"
+    "stat": "opp bats cold",
+    "value": "34/100",
+    "dir": "-",
+    "tone": "red"
    }
   ],
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 10.0
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 9.0
   },
-  "flags": [
-   "SP Germ\u00e1n M\u00e1rquez: no FG data (callup/low IP)"
-  ],
-  "data_quality": "DEGRADED",
+  "flags": [],
+  "data_quality": "FULL",
   "rank": 13
  },
  {
-  "pick": "Milwaukee Brewers ML",
-  "game": "Miami Marlins @ Milwaukee Brewers",
-  "gamePk": 823764,
-  "venue": "American Family Field",
-  "model_prob": 0.5665,
-  "fair_ML": -131,
-  "implied": 0.5671,
-  "edge_pct": -0.06,
-  "edge_score": 60.9,
-  "units": 0,
+  "pick": "New York Mets ML",
+  "game": "New York Mets @ Philadelphia Phillies",
+  "gamePk": 823441,
+  "venue": "Citizens Bank Park",
+  "model_prob": 0.5417,
+  "fair_ML": -118,
+  "implied": 0.4149,
+  "edge_pct": 12.68,
+  "edge_score": 66.1,
+  "units": 1,
   "gated": false,
-  "divergence": 0.022,
-  "target_price": -111,
-  "condition": "OFF unless -111 or better at DK",
+  "divergence": 0.1469,
+  "target_price": -101,
+  "condition": "OFF unless -101 or better at DK",
   "chips": [
    {
     "stat": "opp SP weak",
@@ -585,6 +535,18 @@
     "tone": "red"
    },
    {
+    "stat": "off edge",
+    "value": "+21",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp bats cold",
+    "value": "27/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
     "stat": "data",
     "value": "DEGRADED",
     "dir": "~",
@@ -594,37 +556,31 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 8.0
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 8.5
   },
   "flags": [
-   "SP Eury P\u00e9rez: no FG data (callup/low IP)"
+   "SP Jes\u00fas Luzardo: no FG data (callup/low IP)"
   ],
   "data_quality": "DEGRADED",
   "rank": 14
  },
  {
-  "pick": "Los Angeles Dodgers ML",
-  "game": "Los Angeles Dodgers @ New York Yankees",
-  "gamePk": 823523,
-  "venue": "Yankee Stadium",
-  "model_prob": 0.7299,
-  "fair_ML": -270,
-  "implied": 0.5434,
-  "edge_pct": 18.65,
-  "edge_score": 60.8,
+  "pick": "Pittsburgh Pirates ML",
+  "game": "Pittsburgh Pirates @ Cleveland Guardians",
+  "gamePk": 824412,
+  "venue": "Progressive Field",
+  "model_prob": 0.5694,
+  "fair_ML": -132,
+  "implied": 0.5215,
+  "edge_pct": 4.79,
+  "edge_score": 64.3,
   "units": 0,
   "gated": false,
-  "divergence": 0.214,
-  "target_price": -222,
-  "condition": "OFF unless -222 or better at DK",
+  "divergence": 0.073,
+  "target_price": -112,
+  "condition": "OFF unless -112 or better at DK",
   "chips": [
-   {
-    "stat": "SP score",
-    "value": "74/100",
-    "dir": "+",
-    "tone": "green"
-   },
    {
     "stat": "opp SP weak",
     "value": "40/100",
@@ -632,63 +588,16 @@
     "tone": "red"
    },
    {
-    "stat": "pen edge",
-    "value": "+18",
+    "stat": "off edge",
+    "value": "+54",
     "dir": "+",
     "tone": "green"
    },
    {
-    "stat": "off edge",
-    "value": "+12",
-    "dir": "+",
-    "tone": "green"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-19T07:17:41.809282+00:00",
-   "total": 7.5
-  },
-  "flags": [
-   "SP Cam Schlittler: no FG data (callup/low IP)"
-  ],
-  "data_quality": "DEGRADED",
-  "rank": 15
- },
- {
-  "pick": "Los Angeles Dodgers ML",
-  "game": "Los Angeles Dodgers @ New York Yankees",
-  "gamePk": 823521,
-  "venue": "Yankee Stadium",
-  "model_prob": 0.5613,
-  "fair_ML": -128,
-  "implied": null,
-  "edge_pct": null,
-  "edge_score": 51.2,
-  "units": 0,
-  "gated": false,
-  "divergence": null,
-  "target_price": -109,
-  "condition": "OFF unless -109 or better at DK",
-  "chips": [
-   {
-    "stat": "opp SP TBD",
-    "value": "38/100",
+    "stat": "opp bats cold",
+    "value": "28/100",
     "dir": "-",
     "tone": "red"
-   },
-   {
-    "stat": "pen edge",
-    "value": "+18",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "off edge",
-    "value": "+12",
-    "dir": "+",
-    "tone": "green"
    },
    {
     "stat": "data",
@@ -697,14 +606,62 @@
     "tone": "neutral"
    }
   ],
-  "odds_meta": null,
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 8.0
+  },
   "flags": [
    "SP TBD \u2014 replacement-level assumed",
-   "no odds posted \u2014 market neutral",
-   "SP TBD \u2014 replacement-level assumed",
-   "no odds posted \u2014 market neutral"
+   "SP Logan Allen: no FG data (callup/low IP)"
   ],
   "data_quality": "DEGRADED",
+  "rank": 15
+ },
+ {
+  "pick": "Pittsburgh Pirates ML",
+  "game": "Pittsburgh Pirates @ Cleveland Guardians",
+  "gamePk": 824414,
+  "venue": "Progressive Field",
+  "model_prob": 0.5954,
+  "fair_ML": -147,
+  "implied": 0.6951,
+  "edge_pct": -9.97,
+  "edge_score": 54.8,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.048,
+  "target_price": -125,
+  "condition": "OFF unless -125 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "81/100",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "off edge",
+    "value": "+54",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp bats cold",
+    "value": "28/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-18T18:08:48.727935+00:00",
+   "total": 6.5
+  },
+  "flags": [],
+  "data_quality": "FULL",
   "rank": 16
  }
 ]
