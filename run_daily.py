@@ -18,10 +18,41 @@ for d in sched.get('dates', []):
           'venue': g.get('venue', {}).get('name'), 'gameDate': g.get('gameDate')})
 both = sum(1 for g in slate if g['awaySP'] and g['homeSP'])
 partial = sum(1 for g in slate if bool(g['awaySP']) != bool(g['homeSP']))
+
+
+def _t(s):
+    try:
+        return datetime.datetime.fromisoformat(str(s).replace('Z', '+00:00'))
+    except Exception:
+        return None
+
+
+# v6.3 LIVE-GAME LOCKOUT
+# Once a game starts, The Odds API serves IN-PLAY prices. Freezing those as a
+# pick-time baseline produced -2500 moneylines on 2026-07-19 and would poison
+# both the card and every CLV number computed off it. A game is analyzed only
+# while it is pregame; after first pitch it is excluded until it is graded.
+NOW = datetime.datetime.now(datetime.timezone.utc)
+for g in slate:
+    gt = _t(g.get('gameDate'))
+    g['started'] = bool(gt and gt <= NOW)
+live = [g for g in slate if not g['started']]
+skipped = len(slate) - len(live)
+
 print(f'[slate] {date}: {len(slate)} games | probables: {both} full, {partial} partial')
+if skipped:
+    print(f'[slate] LOCKOUT: {skipped} game(s) already underway -> excluded from odds, '
+          f'model, picks and CLV baseline. {len(live)} pregame game(s) analyzed.')
+    for g in slate:
+        if g['started']:
+            print(f"          - {g['away']} @ {g['home']} (first pitch {g['gameDate']})")
 json.dump(slate, open('slate.json', 'w'), indent=1)
 
-omap = build_odds_map(slate, date_yyyymmdd=date.replace('-', ''))
+if not live:
+    print('[slate] entire slate is underway - no games can be analyzed. '
+          'Card will render in zero-pick state.')
+
+omap = build_odds_map(live, date_yyyymmdd=date.replace('-', '')) if live else {}
 json.dump(omap, open('odds_map.json', 'w'), indent=1)
 
 # CLV baseline (v6.1): per-game first REAL line of the day, merge-filled across builds.
@@ -31,9 +62,12 @@ import os
 bfn = f'picktime_odds_{date}.json'
 baseline = json.load(open(bfn)) if os.path.exists(bfn) else {}
 added = 0
+started_pks = {str(g['gamePk']) for g in slate if g['started']}
 for pk, rec in omap.items():
     if pk in baseline:
         continue  # first real line already frozen
+    if pk in started_pks:
+        continue  # v6.3: never freeze an in-play price as a pick-time baseline
     nv = rec.get('homeML_novig')
     real = (rec.get('homeML') is not None and rec.get('awayML') is not None
             and not (nv is not None and abs(nv - 0.5) < 1e-9))  # skip -110/-110 placeholders
@@ -45,7 +79,7 @@ print(f'[clv] baseline {bfn}: +{added} games this run, {len(baseline)} total fro
 
 print('[model] pulling stats snapshot...')
 snap = pull_snapshot()
-results = run_slate(slate, snap, omap)
+results = run_slate(live, snap, omap)
 json.dump(results, open('model_output.json', 'w'), indent=1)
 
 pk = build_picks(results)

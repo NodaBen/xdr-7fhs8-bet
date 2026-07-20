@@ -147,11 +147,18 @@ def render(date_str):
            'no price = no play.', '★')])
 
     no_edge_ct = len(picks) - len(best)
+    underway = sum(1 for g in slate if g.get('started'))
     pass_items = pi(f'{no_edge_ct} other games analyzed', 'no angle',
                     'Full slate reviewed. Games without a qualified edge are not shown — '
                     'no pick is a position.') if no_edge_ct else pi(
                     'Full board qualified', '—', 'Every analyzed game produced an angle today.')
+    if underway:
+        pass_items += '\n      ' + pi(
+            f'{underway} game(s) underway', 'locked out',
+            'First pitch has passed. In-play prices are not a valid basis for a pregame edge, '
+            'so these games are excluded from the board until they are graded.')
 
+    underway_tag = f' · {underway} underway' if underway else ''
     body = f'''<body>
 <div class="sheet">
   <div class="topbar rise d1">
@@ -160,7 +167,7 @@ def render(date_str):
       <h1>The Daily Diamond</h1>
       <span class="sub">MLB Value Card</span>
     </div>
-    <div class="datebox">{dt.strftime('%A, %B %-d')} <span>· Full Slate · {len(slate)} Games</span></div>
+    <div class="datebox">{dt.strftime('%A, %B %-d')} <span>· Full Slate · {len(slate)} Games{underway_tag}</span></div>
     <div class="top-chips">
       <span class="chip gold">Model v1 · FG + Savant + MLB API</span>
       <span class="chip green">Snapshot: {now}</span>
