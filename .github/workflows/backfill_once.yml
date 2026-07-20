@@ -1,0 +1,58 @@
+name: Backfill once (DELETE AFTER USE)
+
+# ONE-TIME USE ONLY.
+# Backfills 2026-07-17 and 2026-07-18 into grades_archive.jsonl as W/L rows with
+# clv_pts=null and paper_pl=null, then refreshes docs/stats.json.
+#
+# Run it once from the Actions tab, confirm the output, then DELETE this file.
+# It is dedupe-safe, so a second run appends nothing -- but there is no reason
+# to leave a backfill trigger sitting in the repo.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -euo pipefail {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+
+      - name: Backfill 07-17 and 07-18
+        run: |
+          if [ -f grades_archive.jsonl ]; then BEFORE=$(wc -l < grades_archive.jsonl); else BEFORE=0; fi
+          python backfill.py 2026-07-17 2026-07-18
+          python stats.py
+          AFTER=$(wc -l < grades_archive.jsonl)
+          echo "[archive] rows ${BEFORE} -> ${AFTER}"
+          test -s docs/stats.json || { echo "::error::docs/stats.json not written"; exit 1; }
+          echo "--- docs/stats.json ---"
+          cat docs/stats.json
+
+      - name: Publish
+        run: |
+          git config user.name "daily-diamond-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add -f grades_archive.jsonl docs/stats.json
+          echo "--- staged ---"
+          git diff --cached --name-only
+          if git diff --cached --quiet; then
+            echo "nothing to commit - rows already present, safe to delete this workflow"
+            exit 0
+          fi
+          git commit -m "backfill 7/17-7/18 W/L, clv null"
+          for i in 1 2 3 4 5; do
+            if git push; then echo "[push] ok on attempt $i"; exit 0; fi
+            echo "[push] rejected, rebasing (attempt $i)"
+            git pull --rebase
+          done
+          echo "::error::push failed after 5 attempts"; exit 1
