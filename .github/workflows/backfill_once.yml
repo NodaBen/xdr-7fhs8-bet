@@ -1,12 +1,12 @@
 name: Backfill once (DELETE AFTER USE)
 
-# ONE-TIME USE ONLY.
-# Backfills 2026-07-17 and 2026-07-18 into grades_archive.jsonl as W/L rows with
-# clv_pts=null and paper_pl=null, then refreshes docs/stats.json.
+# ONE-TIME USE ONLY. v6.6 repair pass.
+# Rewrites archive rows that were misclassified as 'NO-BET (target unmet)' when
+# they actually had no closing price, then refreshes docs/stats.json with the
+# corrected structural closer-coverage number.
 #
-# Run it once from the Actions tab, confirm the output, then DELETE this file.
-# It is dedupe-safe, so a second run appends nothing -- but there is no reason
-# to leave a backfill trigger sitting in the repo.
+# Run once from the Actions tab, confirm the output, then DELETE this file.
+# Idempotent: a second run repairs nothing and commits nothing.
 
 on:
   workflow_dispatch:
@@ -27,13 +27,11 @@ jobs:
           python-version: '3.12'
       - run: pip install -r requirements.txt
 
-      - name: Backfill 07-17 and 07-18
+      - name: Repair archive status and refresh stats
         run: |
-          if [ -f grades_archive.jsonl ]; then BEFORE=$(wc -l < grades_archive.jsonl); else BEFORE=0; fi
-          python backfill.py 2026-07-17 2026-07-18
+          test -f grades_archive.jsonl || { echo "::error::grades_archive.jsonl missing"; exit 1; }
+          python repair_once.py
           python stats.py
-          AFTER=$(wc -l < grades_archive.jsonl)
-          echo "[archive] rows ${BEFORE} -> ${AFTER}"
           test -s docs/stats.json || { echo "::error::docs/stats.json not written"; exit 1; }
           echo "--- docs/stats.json ---"
           cat docs/stats.json
@@ -42,14 +40,15 @@ jobs:
         run: |
           git config user.name "daily-diamond-bot"
           git config user.email "bot@users.noreply.github.com"
+          rm -f grades_archive.jsonl.bak
           git add -f grades_archive.jsonl docs/stats.json
           echo "--- staged ---"
           git diff --cached --name-only
           if git diff --cached --quiet; then
-            echo "nothing to commit - rows already present, safe to delete this workflow"
+            echo "nothing to commit - already repaired, safe to delete this workflow"
             exit 0
           fi
-          git commit -m "backfill 7/17-7/18 W/L, clv null"
+          git commit -m "v6.6 repair archive status + structural coverage"
           for i in 1 2 3 4 5; do
             if git push; then echo "[push] ok on attempt $i"; exit 0; fi
             echo "[push] rejected, rebasing (attempt $i)"
