@@ -15,8 +15,16 @@ on:
     # Self-correcting snap sweep: wake every 20 min across the baseball window.
     # Wake-ups are free; snap_smart.py decides whether a run is worth an odds-API
     # call. A run delayed six hours just evaluates the world as it finds it.
-    - cron: '*/20 15-23 * * *'  # 11 AM - 8 PM ET
-    - cron: '*/20 0-4 * * *'    #  8 PM ET - 12 AM ET
+    # v6.5: the */20 sweep is RETIRED. GitHub delivered ~15% of those wake-ups,
+    # 3-7 hours late, so every snap landed after first pitch and kept nothing.
+    # Snaps now arrive via repository_dispatch from an external scheduler, which
+    # fires on time. These two crons remain ONLY as a degraded-mode safety net.
+    - cron: '23 22 * * *'     #  6:23 PM ET  fallback snap
+    - cron: '23 1 * * *'      #  9:23 PM ET  fallback snap
+  # External trigger. POST to the dispatches endpoint with event_type:
+  #   snap  -> closer snapshot      build -> rebuild card      grade -> grade yesterday
+  repository_dispatch:
+    types: [snap, build, grade]
   workflow_dispatch:
     inputs:
       mode:
@@ -58,15 +66,25 @@ jobs:
         env:
           SCHED: ${{ github.event.schedule }}
           MANUAL: ${{ github.event.inputs.mode }}
+          DISPATCH: ${{ github.event.action }}
         run: |
-          case "$SCHED" in
-            "7 15 * * *"|"37 21 * * *") M=build ;;
-            "11 13 * * *")              M=grade ;;
-            "")                         M="${MANUAL:-build}" ;;
-            *)                          M=snap ;;
-          esac
+          # v6.5: repository_dispatch wins. github.event.action carries the
+          # event_type sent by the external scheduler (snap|build|grade).
+          if [ -n "${DISPATCH:-}" ]; then
+            case "$DISPATCH" in
+              snap|build|grade) M="$DISPATCH" ;;
+              *) echo "::error::unknown dispatch type '$DISPATCH'"; exit 1 ;;
+            esac
+          else
+            case "$SCHED" in
+              "7 15 * * *"|"37 21 * * *") M=build ;;
+              "11 13 * * *")              M=grade ;;
+              "")                         M="${MANUAL:-build}" ;;
+              *)                          M=snap ;;
+            esac
+          fi
           echo "mode=$M" >> "$GITHUB_OUTPUT"
-          echo "Resolved mode: $M (schedule='$SCHED')"
+          echo "Resolved mode: $M (schedule='$SCHED' dispatch='${DISPATCH:-}')"
 
       - name: Build card
         if: steps.mode.outputs.mode == 'build'
@@ -75,6 +93,7 @@ jobs:
         run: |
           DATE=$(TZ=America/New_York date +%F)
           python run_daily.py "$DATE"
+          python stats.py
           python render.py "$DATE"
           test -s "daily_diamond_${DATE}.html"
           cp "daily_diamond_${DATE}.html" docs/index.html
@@ -110,6 +129,13 @@ jobs:
           AFTER=$(wc -l < grades_archive.jsonl)
           echo "[archive] rows ${BEFORE} -> ${AFTER}"
           if [ "$AFTER" -le "$BEFORE" ]; then echo "::error::grades_archive.jsonl did not grow for ${DATE}"; exit 1; fi
+          python stats.py
+          TODAY=$(TZ=America/New_York date +%F)
+          if [ -f "docs/archive/${TODAY}_picks.json" ]; then
+            cp "docs/archive/${TODAY}_picks.json" picks.json
+            python render.py "$TODAY" && cp "daily_diamond_${TODAY}.html" docs/index.html \
+              && cp "daily_diamond_${TODAY}.html" "docs/archive/${TODAY}.html"
+          fi
 
       - name: Publish
         run: |
@@ -124,6 +150,7 @@ jobs:
           test -f docs/index.html || { echo "::error::docs/index.html missing"; exit 1; }
           git add -f docs/index.html
           git add -f docs/archive/
+          if [ -f docs/stats.json ]; then git add -f docs/stats.json; fi
           for f in picks.json model_output.json odds_map.json slate.json raw_odds_response.json grades_archive.jsonl; do
             if [ -f "$f" ]; then git add -f "$f"; fi
           done
