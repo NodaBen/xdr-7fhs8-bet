@@ -1,0 +1,44 @@
+{
+ "graded": 20,
+ "record": "9-11",
+ "clv_n": 0,
+ "clv_avg": null,
+ "clv_beat_rate": null,
+ "fired_n": 0,
+ "units_risked": 0,
+ "paper_pl": 0,
+ "roi": null,
+ "actual_win_pct": 45.0,
+ "model_win_pct": 65.5,
+ "calibration_gap": -20.5,
+ "buckets": [
+  {
+   "label": "<60%",
+   "n": 5,
+   "w": 2,
+   "l": 3,
+   "actual": 40.0,
+   "model": 53.8
+  },
+  {
+   "label": "60-70%",
+   "n": 8,
+   "w": 2,
+   "l": 6,
+   "actual": 25.0,
+   "model": 62.3
+  },
+  {
+   "label": "70%+",
+   "n": 7,
+   "w": 5,
+   "l": 2,
+   "actual": 71.4,
+   "model": 77.5
+  }
+ ],
+ "untested_n": 0,
+ "closer_coverage": 100.0,
+ "sample_ok": false,
+ "clv_threshold": 100
+}
