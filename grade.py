@@ -177,7 +177,7 @@ def grade(date):
         sys.exit('[grade] FAIL: closers_%s.json missing or empty. No CLV is recoverable '
                  'for this date. Check that the snap jobs ran BEFORE first pitch.' % date)
 
-    rows, gsum = [], {'n': 0, 'w': 0, 'l': 0, 'fired': 0, 'pl': 0.0,
+    rows, gsum = [], {'n': 0, 'w': 0, 'l': 0, 'fired': 0, 'no_closer': 0, 'pl': 0.0,
                       'clv_pts': [], 'model_p': [], 'close_nv': [], 'brier_m': [], 'brier_c': []}
     for p in picks:
         if p['units'] < 1 or p.get('edge_pct') is None:
@@ -196,8 +196,13 @@ def grade(date):
         clv = round((close_nv - pt_nv) * 100, 2) if close_nv is not None and pt_nv is not None else None
         close_ml = c.get(f'{side}ML') if c else None
 
+        # v6.5: a pick with no closing price was never TESTED against its target.
+        # Booking it as 'NO-BET (target unmet)' silently corrupts the fired-vs-passed
+        # ratio and makes the conditional-price rule look validated when it wasn't.
+        # These rows carry won (calibration is still valid) but null CLV and null P/L.
+        no_closer = close_ml is None
         # paper P/L: bet fires ONLY if DK close met the target-price condition
-        fired = close_ml is not None and ml_beats(close_ml, p['target_price'])
+        fired = (not no_closer) and ml_beats(close_ml, p['target_price'])
         pl = None
         if fired:
             u = p['units']
@@ -215,7 +220,10 @@ def grade(date):
             o = 1.0 if won else 0.0
             gsum['brier_m'].append((p['model_prob'] - o) ** 2)
             gsum['brier_c'].append((close_nv - o) ** 2)
-        rows.append((p, won, clv, pl, 'FIRED' if fired else 'NO-BET (target unmet)'))
+        status = ('NO CLOSER (untested)' if no_closer
+                  else 'FIRED' if fired else 'NO-BET (target unmet)')
+        gsum['no_closer'] += 1 if no_closer else 0
+        rows.append((p, won, clv, pl, status))
 
     print(f"{'PICK':28} {'U':>2} {'MODEL':>6} {'CLOSE':>6} {'CLV':>6} {'RES':>4} {'P/L':>6}  STATUS")
     for p, won, clv, pl, st in rows:
@@ -230,6 +238,10 @@ def grade(date):
     if gsum['n']:
         avg = lambda x: sum(x)/len(x) if x else 0
         print('\n--- BOARD GRADE ---')
+        if gsum['no_closer']:
+            print(f"\n!! CLOSER COVERAGE WARNING: {gsum['no_closer']}/{gsum['n']} picks had NO "
+                  f"closing price. Those picks were never tested against their target and "
+                  f"contribute ZERO CLV. Snap jobs are landing after first pitch.")
         print(f"record: {gsum['w']}-{gsum['l']} | bets fired: {gsum['fired']}/{gsum['n']} "
               f"| paper P/L: {gsum['pl']:+.2f}U")
         print(f"avg CLV: {avg(gsum['clv_pts']):+.2f} pts "

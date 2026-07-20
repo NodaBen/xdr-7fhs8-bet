@@ -105,6 +105,80 @@ def build_parlays(top):
         out.append(pi('No parlays', '—', 'Fewer than two qualified legs at current prices.'))
     return '\n      '.join(out)
 
+def build_scorecard():
+    """Running performance scorecard, read from docs/stats.json.
+
+    INLINE STYLES ONLY. The v5 <style> block is byte-locked and lifted verbatim;
+    nothing here may add a class that requires new CSS. Returns '' when there is
+    no archive yet, so a fresh repo renders exactly as before.
+    """
+    try:
+        s = json.load(open('docs/stats.json'))
+    except Exception:
+        return ''
+    if not s.get('graded'):
+        return ''
+
+    fmt = lambda v, suf='', sign=False: (
+        '--' if v is None else (f'{v:+g}{suf}' if sign else f'{v:g}{suf}'))
+
+    cell = ('display:inline-block;min-width:112px;margin:0 18px 6px 0;'
+            'vertical-align:top')
+    val = 'font-size:19px;font-weight:700;line-height:1.15'
+    lab = 'font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;opacity:.62'
+
+    def stat(v, l):
+        return (f'<span style="{cell}"><span style="{val}">{v}</span><br>'
+                f'<span style="{lab}">{l}</span></span>')
+
+    t1 = (stat(fmt(s.get('clv_avg'), ' pts', True), 'CLV avg')
+          + stat(fmt(s.get('clv_beat_rate'), '%'), 'CLV beat rate')
+          + stat(str(s.get('clv_n', 0)), 'CLV sample'))
+    t2 = (stat(fmt(s.get('paper_pl'), 'U', True), 'Paper P/L')
+          + stat(fmt(s.get('roi'), '%', True), 'ROI')
+          + stat(str(s.get('fired_n', 0)), 'Bets fired'))
+    t3 = (stat(s.get('record', '--'), 'Record')
+          + stat(fmt(s.get('actual_win_pct'), '%'), 'Actual win')
+          + stat(fmt(s.get('model_win_pct'), '%'), 'Model win')
+          + stat(fmt(s.get('calibration_gap'), ' pts', True), 'Gap'))
+
+    cov = ''
+    if s.get('untested_n'):
+        cov = (f'<div style="margin-top:7px;font-size:10.5px;line-height:1.45">'
+               f'<b>CLOSER COVERAGE — {s.get("closer_coverage", 0):g}%.</b> '
+               f'{s["untested_n"]} of {s["graded"]} graded picks had no closing price and were '
+               f'never tested against their target. Those picks contribute zero CLV.</div>')
+
+    warn = ''
+    if not s.get('sample_ok'):
+        warn = (f'<div style="margin-top:9px;font-size:10.5px;opacity:.72;'
+                f'line-height:1.45"><b>SAMPLE-SIZE GUARDRAIL —</b> '
+                f'{s.get("clv_n", 0)} of {s.get("clv_threshold", 100)} graded picks '
+                f'carry closing-line value. Until that threshold clears, CLV is the '
+                f'only trustworthy read on this panel. Win% and P/L are noise at this '
+                f'size and must not drive model changes.</div>')
+
+    buckets = ''
+    if s.get('buckets'):
+        parts = ' &nbsp;·&nbsp; '.join(
+            f'{b["label"]}: {b["w"]}-{b["l"]} actual {b["actual"]:g}% vs model {b["model"]:g}%'
+            for b in s['buckets'])
+        buckets = (f'<div style="margin-top:7px;font-size:10px;opacity:.6">'
+                   f'CALIBRATION BY BUCKET — {parts}</div>')
+
+    return f'''
+  <div class="rule-strip rise d5">
+    <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.55;margin-bottom:8px">Running Scorecard — Paper Only</div>
+    <div style="margin-bottom:4px">{t1}</div>
+    <div style="margin-bottom:4px">{t2}</div>
+    <div>{t3}</div>
+    {buckets}
+    {cov}
+    {warn}
+  </div>
+'''
+
+
 def render(date_str):
     picks = json.load(open('picks.json'))
     slate = json.load(open('slate.json'))
@@ -211,6 +285,7 @@ def render(date_str):
     </div>
   </div>
 
+{build_scorecard()}
   <div class="rule-strip rise d5">
     <b>HOUSE RULES —</b> Every pick is conditional on its target price. If the book opens worse than the number, the play is OFF. {dq_bad} of {len(picks)} games carry degraded data (unannounced starters); edges re-run at the 11 AM game-day snapshot.
   </div>
