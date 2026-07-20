@@ -43,7 +43,7 @@ LAST_CHANCE_MIN = 18
 # (25-min spacing from first pitch to the last nightcap); a cap of 8 cut off
 # around 21:00 ET and froze the late West Coast games at a stale price.
 # budget.py is the real ceiling -- this is just a local sanity bound.
-DAILY_CALL_CAP = 10
+DAILY_CALL_CAP = 12
 
 
 def _t(s):
