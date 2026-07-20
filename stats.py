@@ -44,9 +44,12 @@ def build():
     clv_beat = (sum(1 for c in clv if c > 0) / len(clv) * 100) if clv else None
 
     # --- Closer coverage: the gate on every CLV number below ---
-    untested = [r for r in graded if 'NO CLOSER' in (r.get('status') or '')]
-    coverage = ((n_graded_total := len(graded)) and
-                round((n_graded_total - len(untested)) / n_graded_total * 100, 1))
+    # v6.6: derived STRUCTURALLY from clv_pts, not from a status string. A row
+    # either produced a closing-line observation or it did not; status text has
+    # drifted across grade.py versions and backfills and cannot be trusted here.
+    untested = [r for r in graded if r.get('clv_pts') is None]
+    coverage = (round((len(graded) - len(untested)) / len(graded) * 100, 1)
+                if graded else None)
 
     # --- Tier 2: paper P/L (fired only) ---
     fired = [r for r in rows if r.get('paper_pl') is not None]
