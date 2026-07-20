@@ -81,7 +81,9 @@ jobs:
           cp "daily_diamond_${DATE}.html" docs/index.html
           mkdir -p docs/archive
           cp "daily_diamond_${DATE}.html" "docs/archive/${DATE}.html"
-          cp picks.json "docs/archive/${DATE}_picks.json"
+          # v6.3: merge-fill, never cp. The evening rebuild only contains pregame
+          # games; a cp would erase the afternoon picks the grade job needs.
+          python archive_picks.py "$DATE"
           test -s "picktime_odds_${DATE}.json" || { echo "::error::picktime_odds_${DATE}.json missing - CLV baseline not frozen"; exit 1; }
           python -c "import json,sys; print('[clv] baseline games frozen:', len(json.load(open(sys.argv[1]))))" "picktime_odds_${DATE}.json"
 
