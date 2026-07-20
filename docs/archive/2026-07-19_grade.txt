@@ -1,0 +1,12 @@
+PICK                          U  MODEL  CLOSE    CLV  RES    P/L  STATUS
+Seattle Mariners ML           1  77.1%   0.0%     --    W     --  NO-BET (target unmet)
+Cincinnati Reds ML            1  75.3%   0.0%     --    W     --  NO-BET (target unmet)
+Washington Nationals ML       1  76.8%   0.0%     --    W     --  NO-BET (target unmet)
+Detroit Tigers ML             1  76.2%   0.0%     --    L     --  NO-BET (target unmet)
+
+--- BOARD GRADE ---
+record: 3-1 | bets fired: 0/4 | paper P/L: +0.00U
+avg CLV: +0.00 pts (market moved against us)
+calibration: model avg 0.0% vs close consensus 0.0% (gap +0.0 pts)
+Brier: model 0.0000 vs close 0.0000 (close sharper — recalibrate K)
+[grade] appended 4 rows -> grades_archive.jsonl (0 duplicates skipped) (K-recalibration dataset)
