@@ -28,6 +28,8 @@ import datetime
 
 import slate_only
 import grade as G
+import budget
+import odds as O
 
 # A game is "imminent" once it starts within this many minutes.
 LEAD_MIN = 50
@@ -36,8 +38,12 @@ MIN_GAP_MIN = 25
 # Last-chance override: if a game starts this soon and has no closer at all,
 # snap even if MIN_GAP_MIN has not elapsed. This is the final shot at it.
 LAST_CHANCE_MIN = 18
-# Hard ceiling on odds-API calls per day.
-DAILY_CALL_CAP = 8
+# Hard ceiling on odds-API calls per day. v6.7: raised 8 -> 10 because the snap
+# path now costs 1 credit instead of 2. A full night slate wants ~10 calls
+# (25-min spacing from first pitch to the last nightcap); a cap of 8 cut off
+# around 21:00 ET and froze the late West Coast games at a stale price.
+# budget.py is the real ceiling -- this is just a local sanity bound.
+DAILY_CALL_CAP = 10
 
 
 def _t(s):
@@ -102,6 +108,16 @@ def main(date):
               f'quota. SKIP')
         return _finish(state, state_fn, False)
 
+    # v6.7: the authoritative spend guard. state['calls'] is a local counter that
+    # resets if a commit is ever lost; budget.py re-syncs from the API's own
+    # x-requests-remaining header and cannot drift.
+    print(budget.status())
+    allowed, why = budget.can_spend(budget.COST_SNAP, 'snap')
+    if not allowed:
+        print(f'[snap] BUDGET VETO: {why}. SKIP')
+        budget.log_block('snap', why)
+        return _finish(state, state_fn, False)
+
     if since_call < MIN_GAP_MIN and not last_chance:
         print(f'[snap] last call was {since_call:.0f} min ago (min gap {MIN_GAP_MIN}). SKIP')
         return _finish(state, state_fn, False)
@@ -114,7 +130,13 @@ def main(date):
     print(f'[snap] SPENDING CALL: {why}')
 
     before = len(closers)
-    G.snap(date)  # reuses the existing pre-start guard; never overwrites a started game
+    try:
+        G.snap(date)  # pre-start guard inside; never overwrites a started game
+    except O.BudgetBlocked as e:
+        # Belt and braces: the guard above already checked, but a concurrent run
+        # could have spent in between. Exit clean rather than half-write.
+        print(f'[snap] BUDGET VETO at call time: {e}. SKIP')
+        return _finish(state, state_fn, False)
     after = len(_load(f'closers_{date}.json', {}))
 
     state['calls'] += 1
@@ -122,6 +144,27 @@ def main(date):
     for pk, _, _ in imminent:
         state['by_pk'][pk] = now.isoformat()
     print(f'[snap] closers held {before} -> {after}')
+
+    # v6.7: report projected staleness now, while there is still time to react.
+    # Waiting until tomorrow's grade job to discover a 65-minute-old closer is
+    # too late -- the game has been played.
+    fresh = _load(f'closers_{date}.json', {})
+    at_risk = []
+    for pk, g, mins in pending:
+        rec = fresh.get(pk)
+        if not rec:
+            continue
+        snapped = _t(rec.get('snapped_at'))
+        start = _t(g.get('gameDate'))
+        if snapped and start:
+            projected = (start - snapped).total_seconds() / 60
+            if projected > G.MAX_CLOSER_AGE_MIN:
+                at_risk.append((g['away'], g['home'], projected))
+    if at_risk:
+        print(f'[snap] {len(at_risk)} game(s) currently hold a price that would be '
+              f'REJECTED as stale (>{G.MAX_CLOSER_AGE_MIN}m) if no later snap lands:')
+        for a, h, m in at_risk:
+            print(f'         - {a} @ {h}: {m:.0f}m old at first pitch')
     return _finish(state, state_fn, True)
 
 

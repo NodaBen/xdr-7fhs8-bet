@@ -4,6 +4,7 @@ import sys, json, requests, datetime
 from model import pull_snapshot, run_slate
 from picks import build_picks
 from odds import build_odds_map
+import odds as O
 
 date = sys.argv[1] if len(sys.argv) > 1 else datetime.date.today().isoformat()
 H = {'User-Agent': 'Mozilla/5.0'}
@@ -52,7 +53,19 @@ if not live:
     print('[slate] entire slate is underway - no games can be analyzed. '
           'Card will render in zero-pick state.')
 
-omap = build_odds_map(live, date_yyyymmdd=date.replace('-', '')) if live else {}
+# v6.7: builds keep h2h,totals (2cr) -- totals is display-only but the card shows it.
+# A budget veto on a BUILD is serious (we are at the reserve floor), so degrade to
+# the free ESPN consensus rather than shipping no card at all.
+if live:
+    try:
+        omap = build_odds_map(live, date_yyyymmdd=date.replace('-', ''),
+                              markets='h2h,totals', purpose='build')
+    except O.BudgetBlocked as e:
+        print(f'[odds] BUDGET VETO on build: {e}')
+        print('[odds] falling back to ESPN consensus ($0) so the card still ships')
+        omap = build_odds_map(live, source='espn', date_yyyymmdd=date.replace('-', ''))
+else:
+    omap = {}
 json.dump(omap, open('odds_map.json', 'w'), indent=1)
 
 # CLV baseline (v6.1): per-game first REAL line of the day, merge-filled across builds.

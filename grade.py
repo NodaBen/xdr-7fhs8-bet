@@ -16,6 +16,18 @@ import odds as O
 
 H = {'User-Agent': 'Mozilla/5.0'}
 
+# v6.7 STALE CLOSER GUARD
+# A "closing line" captured hours before first pitch is not a closing line. On
+# 07-20 every game carried an 08:00 ET price against a 18:40 ET first pitch --
+# grade.py would have computed CLV off a 10.5-hour-old number and written it to
+# the archive as a validated result. A missing metric is recoverable; a
+# fabricated one poisons the go-live decision it is supposed to inform.
+#
+# Any closer snapped more than this many minutes before its own first pitch is
+# rejected: W/L still counts (calibration is unaffected by price staleness) but
+# CLV and paper P/L are nulled and the row is flagged.
+MAX_CLOSER_AGE_MIN = 45
+
 
 def _now():
     return datetime.datetime.now(datetime.timezone.utc)
@@ -55,7 +67,10 @@ def snap(date, cached=False):
         fetched = raw.get('fetched_at')
         print(f'[snap] reprocessed cached pull from {fetched} (0 quota)')
     else:
-        omap = O.build_odds_map(slate, source='oddsapi', date_yyyymmdd=date.replace('-', ''))
+        # v6.7: h2h ONLY on the snap path. Picks are moneyline; a closer's total
+        # is data we never read. Halves the cost of every snap.
+        omap = O.build_odds_map(slate, source='oddsapi', date_yyyymmdd=date.replace('-', ''),
+                                markets='h2h', purpose='snap')
         fetched = _now().isoformat()
     fn = f'closers_{date}.json'
     closers = _load(fn, {})
@@ -185,7 +200,7 @@ def grade(date):
         pk = str(p.get('gamePk'))
         f, c, pt = fin.get(pk), closers.get(pk), picktime.get(pk)
         if not f or not f['final']:
-            rows.append((p, None, None, None, 'NO FINAL'))
+            rows.append((p, None, None, None, 'NO FINAL', None))
             continue
         team = p['pick'].replace(' ML', '')
         side = 'home' if O._norm(f['home']) == O._norm(team) else 'away'
@@ -201,6 +216,20 @@ def grade(date):
         # ratio and makes the conditional-price rule look validated when it wasn't.
         # These rows carry won (calibration is still valid) but null CLV and null P/L.
         no_closer = close_ml is None
+
+        # v6.7: how old was this price at first pitch?
+        age = None
+        if c:
+            snapped_at, commence = _t(c.get('snapped_at')), _t(c.get('commence'))
+            if snapped_at and commence:
+                age = round((commence - snapped_at).total_seconds() / 60, 1)
+        stale = (age is not None and age > MAX_CLOSER_AGE_MIN)
+        if stale:
+            # Refuse to price it. Treat exactly like a missing closer.
+            no_closer = True
+            close_nv = None
+            clv = None
+
         # paper P/L: bet fires ONLY if DK close met the target-price condition
         fired = (not no_closer) and ml_beats(close_ml, p['target_price'])
         pl = None
@@ -220,13 +249,17 @@ def grade(date):
             o = 1.0 if won else 0.0
             gsum['brier_m'].append((p['model_prob'] - o) ** 2)
             gsum['brier_c'].append((close_nv - o) ** 2)
-        status = ('NO CLOSER (untested)' if no_closer
+        status = (f'STALE CLOSER {age:.0f}m (untested)' if stale
+                  else 'NO CLOSER (untested)' if no_closer
                   else 'FIRED' if fired else 'NO-BET (target unmet)')
         gsum['no_closer'] += 1 if no_closer else 0
-        rows.append((p, won, clv, pl, status))
+        gsum['stale'] = gsum.get('stale', 0) + (1 if stale else 0)
+        if age is not None and not stale:
+            gsum.setdefault('ages', []).append(age)
+        rows.append((p, won, clv, pl, status, age))
 
     print(f"{'PICK':28} {'U':>2} {'MODEL':>6} {'CLOSE':>6} {'CLV':>6} {'RES':>4} {'P/L':>6}  STATUS")
-    for p, won, clv, pl, st in rows:
+    for p, won, clv, pl, st, age in rows:
         cn = closers.get(str(p.get('gamePk')), {})
         side = 'home' if O._norm((cn.get('home') or '')) == O._norm(p['pick'].replace(' ML', '')) else 'away'
         cnv = cn.get(f'{side}ML_novig')
@@ -238,10 +271,16 @@ def grade(date):
     if gsum['n']:
         avg = lambda x: sum(x)/len(x) if x else 0
         print('\n--- BOARD GRADE ---')
+        ages = gsum.get('ages', [])
+        good = len(ages)
+        print(f"\n--- CLOSER COVERAGE --- usable {good}/{gsum['n']} | "
+              f"stale(>{MAX_CLOSER_AGE_MIN}m) {gsum.get('stale', 0)} | "
+              f"missing {gsum['no_closer'] - gsum.get('stale', 0)}"
+              + (f" | median age {sorted(ages)[len(ages)//2]:.0f}m" if ages else ""))
         if gsum['no_closer']:
-            print(f"\n!! CLOSER COVERAGE WARNING: {gsum['no_closer']}/{gsum['n']} picks had NO "
-                  f"closing price. Those picks were never tested against their target and "
-                  f"contribute ZERO CLV. Snap jobs are landing after first pitch.")
+            print(f"!! {gsum['no_closer']}/{gsum['n']} picks contribute ZERO CLV. "
+                  f"A stale row means the snap sweep is too sparse around that first "
+                  f"pitch; a missing row means it never fired at all.")
         print(f"record: {gsum['w']}-{gsum['l']} | bets fired: {gsum['fired']}/{gsum['n']} "
               f"| paper P/L: {gsum['pl']:+.2f}U")
         print(f"avg CLV: {avg(gsum['clv_pts']):+.2f} pts "
@@ -262,11 +301,12 @@ def grade(date):
         new_rows = [r for r in rows if (date, r[0].get('gamePk')) not in seen]
         skipped = len(rows) - len(new_rows)
         with open('grades_archive.jsonl', 'a') as f:
-            for p, won, clv, pl, st in new_rows:
+            for p, won, clv, pl, st, age in new_rows:
                 f.write(json.dumps({'date': date, 'pick': p['pick'], 'gamePk': p.get('gamePk'),
                                     'units': p['units'], 'model_prob': p['model_prob'],
                                     'edge_pct': p['edge_pct'], 'edge_score': p['edge_score'],
                                     'target': p['target_price'], 'gated': p.get('gated', False), 'won': won, 'clv_pts': clv,
+                                    'closer_age_min': age,
                                     'paper_pl': pl, 'status': st}) + '\n')
         print(f"[grade] appended {len(new_rows)} rows -> grades_archive.jsonl "
               f"({skipped} duplicates skipped) (K-recalibration dataset)")

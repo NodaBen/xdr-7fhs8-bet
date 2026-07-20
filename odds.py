@@ -1,7 +1,13 @@
 """Odds ingestion — dual source, one output format.
 Primary: The Odds API (free tier, DK-specific lines). Key from ODDS_API_KEY env var
-         or odds_api_key.txt next to this file. h2h+totals = 2 quota credits/pull;
-         2 pulls/day ~= 120/mo vs 500 free. Logs remaining quota every pull.
+         or odds_api_key.txt next to this file.
+COST (v6.7): credits = markets x regions. h2h+totals = 2/pull, h2h alone = 1/pull.
+         Builds pull h2h,totals (totals is display-only on the card). Snaps pull
+         h2h ONLY -- picks are moneyline, so totals on a closer snapshot is data
+         we never read and double the price of every snap. That halving is what
+         makes a dense day-game sweep fit inside the 500/mo free tier.
+         Every pull is gated by budget.can_spend() and re-syncs the ledger from
+         the x-requests-remaining header.
 Fallback: ESPN hidden API consensus (no key, $0, less precise).
 
 Output: odds_map keyed by gamePk (doubleheader-safe) ->
@@ -10,6 +16,7 @@ Vig note: raw implied = the breakeven you actually face (used for edge & targets
           no-vig implied = market's true opinion (used for the 10% market category).
 """
 import json, os, datetime, requests
+import budget
 
 H = {'User-Agent': 'Mozilla/5.0'}
 
@@ -30,9 +37,20 @@ def novig(p_home, p_away):
     return (p_home/s, p_away/s) if s > 0 else (p_home, p_away)
 
 # ---------- SOURCE 1: The Odds API ----------
-def fetch_theoddsapi(key):
+class BudgetBlocked(RuntimeError):
+    """Raised when the credit guard vetoes a pull. Callers should exit clean,
+    not fall through to a paid retry."""
+
+
+def fetch_theoddsapi(key, markets='h2h,totals', purpose='build'):
+    cost = len([m for m in markets.split(',') if m.strip()])  # 1 region (us)
+    ok, why = budget.can_spend(cost, purpose)
+    print(budget.status())
+    if not ok:
+        budget.log_block(purpose, why)
+        raise BudgetBlocked(why)
     url = ('https://api.the-odds-api.com/v4/sports/baseball_mlb/odds'
-           f'?apiKey={key}&regions=us&markets=h2h,totals&oddsFormat=american')
+           f'?apiKey={key}&regions=us&markets={markets}&oddsFormat=american')
     r = requests.get(url, timeout=30, headers=H)
     if r.status_code == 401:
         raise RuntimeError('Odds API key rejected (401) — check odds_api_key.txt')
@@ -40,10 +58,11 @@ def fetch_theoddsapi(key):
         raise RuntimeError('Odds API quota exhausted (429)')
     r.raise_for_status()
     rem = r.headers.get('x-requests-remaining')
+    budget.record(cost=cost, remaining_header=rem, purpose=purpose)
     if rem is not None:
-        print(f'[odds] The Odds API quota remaining: {rem}')
-        if float(rem) < 50:
-            print('[odds] WARNING: <50 requests left this month')
+        print(f'[odds] spent {cost} ({markets}) for {purpose} | quota remaining: {rem}')
+        if float(rem) < budget.RESERVE + 20:
+            print(f'[odds] WARNING: approaching the {budget.RESERVE}-credit reserve')
     raw = r.json()
     try:  # cached-snapshot pattern: raw response reprocessable at zero quota
         json.dump({'fetched_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -113,14 +132,22 @@ def _norm(name):
              'ny yankees': 'new york yankees', 'ny mets': 'new york mets'}
     return ALIAS.get(n, n)
 
-def build_odds_map(slate, source='auto', date_yyyymmdd=None):
+def build_odds_map(slate, source='auto', date_yyyymmdd=None,
+                   markets='h2h,totals', purpose='build'):
     """slate: list of games from MLB API (needs gamePk, home, away, gameDate).
-       Returns {gamePk: odds_rec}. source: 'auto'|'oddsapi'|'espn'."""
+       Returns {gamePk: odds_rec}. source: 'auto'|'oddsapi'|'espn'.
+       markets: 'h2h,totals' for builds (2 credits), 'h2h' for snaps (1 credit)."""
     events, used = [], None
     key = _key()
     if source in ('auto', 'oddsapi') and key:
         try:
-            events = fetch_theoddsapi(key); used = 'theoddsapi'
+            events = fetch_theoddsapi(key, markets=markets, purpose=purpose)
+            used = 'theoddsapi'
+        except BudgetBlocked:
+            # Deliberate veto, not a failure. Do NOT fall through to ESPN for a
+            # snap: an ESPN consensus price is not a DK closing line and would
+            # silently corrupt CLV. Let the caller decide.
+            raise
         except Exception as e:
             print(f'[odds] Odds API failed: {e}')
     if not events and source != 'oddsapi':
