@@ -9,18 +9,20 @@ name: Daily Diamond build
 #    snapshot taken before that game's own start, so more snaps only ever help.
 on:
   schedule:
-    - cron: '7 15 * * *'      # 11:07 AM ET  build: morning card
-    - cron: '37 21 * * *'     #  5:37 PM ET  build: line-check rebuild
-    - cron: '11 13 * * *'     #  9:11 AM ET  grade yesterday, append K archive
-    # Self-correcting snap sweep: wake every 20 min across the baseball window.
-    # Wake-ups are free; snap_smart.py decides whether a run is worth an odds-API
-    # call. A run delayed six hours just evaluates the world as it finds it.
-    # v6.5: the */20 sweep is RETIRED. GitHub delivered ~15% of those wake-ups,
-    # 3-7 hours late, so every snap landed after first pitch and kept nothing.
-    # Snaps now arrive via repository_dispatch from an external scheduler, which
-    # fires on time. These two crons remain ONLY as a degraded-mode safety net.
-    - cron: '23 22 * * *'     #  6:23 PM ET  fallback snap
-    - cron: '23 1 * * *'      #  9:23 PM ET  fallback snap
+    # v6.7: ALL credit-spending GitHub crons are removed.
+    #
+    # cron-job.org is now the sole trigger for build/snap/grade, and it fires on
+    # time. The old entries here duplicated it within two minutes (11:05 vs
+    # 11:07, 17:35 vs 17:37, 18:35 vs 18:23, 21:35 vs 21:23) while ALSO firing
+    # hours late at random. Four of them spent odds credits: 8 wasted per day,
+    # ~248/month against a 500 free tier. Over half the budget, for duplicate
+    # data.
+    #
+    # What remains is a watchdog. It spends ZERO credits and only asks "has the
+    # card gone stale?", so GitHub delivering it three hours late is harmless --
+    # which is exactly the kind of job this scheduler is fit for.
+    - cron: '43 16 * * *'     # 12:43 PM ET  watchdog: is the card fresh?
+
   # External trigger. POST to the dispatches endpoint with event_type:
   #   snap  -> closer snapshot      build -> rebuild card      grade -> grade yesterday
   repository_dispatch:
@@ -77,10 +79,11 @@ jobs:
             esac
           else
             case "$SCHED" in
-              "7 15 * * *"|"37 21 * * *") M=build ;;
-              "11 13 * * *")              M=grade ;;
+              "43 16 * * *")              M=watchdog ;;
               "")                         M="${MANUAL:-build}" ;;
-              *)                          M=snap ;;
+              *)                          M=watchdog ;;   # v6.7: an unrecognised
+                                                          # cron must never spend
+                                                          # credits by default
             esac
           fi
           echo "mode=$M" >> "$GITHUB_OUTPUT"
@@ -137,10 +140,57 @@ jobs:
               && cp "daily_diamond_${TODAY}.html" "docs/archive/${TODAY}.html"
           fi
 
+      - name: Watchdog (zero credits)
+        if: steps.mode.outputs.mode == 'watchdog'
+        run: |
+          # Pure freshness check. Spends nothing. Its whole job is to make a
+          # silent scheduler failure loud -- the failure mode that hid a broken
+          # snap schedule for four days.
+          TODAY=$(TZ=America/New_York date +%F)
+          FAIL=0
+          # Check for the archive file the build writes. This is an exact filename
+          # match -- the card renders its date as "July 20, 2026", NOT as
+          # "2026-07-20", so grepping index.html for the ISO date false-alarms
+          # every single day and would open a bogus issue each morning.
+          if [ ! -s "docs/archive/${TODAY}.html" ]; then
+            echo "::warning::docs/archive/${TODAY}.html missing - the build has not run today"
+            FAIL=1
+          elif ! cmp -s "docs/archive/${TODAY}.html" docs/index.html; then
+            echo "::warning::docs/index.html does not match today's archived card"
+            FAIL=1
+          fi
+          python3 - <<'PY'
+          import json, datetime, sys
+          try:
+              l = json.load(open('credit_ledger.json'))
+              print('[watchdog]', l.get('quota_remaining'), 'credits remaining as of',
+                    l.get('quota_as_of'))
+              if l.get('blocks'):
+                  print('[watchdog] recent budget vetoes:')
+                  for b in l['blocks'][-5:]:
+                      print('   ', b['ts'][:16], b['purpose'], '-', b['reason'])
+          except Exception as e:
+              print('[watchdog] no credit ledger yet:', e)
+          PY
+          if [ "$FAIL" = "1" ]; then
+            echo "::error::watchdog: card is stale for $TODAY"
+            exit 1
+          fi
+          echo "[watchdog] card is fresh for $TODAY"
+          exit 0
+
+      - name: Budget report
+        if: always() && steps.mode.outputs.mode != 'watchdog'
+        run: python budget.py || true
+
       - name: Publish
         run: |
           MODE="${{ steps.mode.outputs.mode }}"
           DID="${{ steps.snap.outputs.did_snap }}"
+          if [ "$MODE" = "watchdog" ]; then
+            echo "[publish] watchdog mode - nothing to commit"
+            exit 0
+          fi
           if [ "$MODE" = "snap" ] && [ "$DID" != "true" ]; then
             echo "[publish] snap spent no call - nothing to commit, exiting clean"
             exit 0
@@ -151,7 +201,7 @@ jobs:
           git add -f docs/index.html
           git add -f docs/archive/
           if [ -f docs/stats.json ]; then git add -f docs/stats.json; fi
-          for f in picks.json model_output.json odds_map.json slate.json raw_odds_response.json grades_archive.jsonl; do
+          for f in picks.json model_output.json odds_map.json slate.json raw_odds_response.json grades_archive.jsonl credit_ledger.json; do
             if [ -f "$f" ]; then git add -f "$f"; fi
           done
           for f in closers_*.json picktime_odds_*.json snap_state_*.json; do
