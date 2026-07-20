@@ -9,15 +9,14 @@ name: Daily Diamond build
 #    snapshot taken before that game's own start, so more snaps only ever help.
 on:
   schedule:
-    - cron: '7 15 * * *'    # 11:07 AM ET  build: morning card
-    - cron: '13 16 * * *'   # 12:13 PM ET  snap: pre-afternoon slate
-    - cron: '43 19 * * *'   #  3:43 PM ET  snap: pre-early-evening
-    - cron: '37 21 * * *'   #  5:37 PM ET  build: line-check rebuild + baseline freeze
-    - cron: '53 21 * * *'   #  5:53 PM ET  snap: pre-first-pitch, main slate
-    - cron: '47 22 * * *'   #  6:47 PM ET  snap: catches 7:05/7:10 starts
-    - cron: '47 0 * * *'    #  8:47 PM ET  snap: pre-west-coast
-    - cron: '47 1 * * *'    #  9:47 PM ET  snap: pre-late slate
-    - cron: '11 13 * * *'   #  9:11 AM ET  grade yesterday, append K archive
+    - cron: '7 15 * * *'      # 11:07 AM ET  build: morning card
+    - cron: '37 21 * * *'     #  5:37 PM ET  build: line-check rebuild
+    - cron: '11 13 * * *'     #  9:11 AM ET  grade yesterday, append K archive
+    # Self-correcting snap sweep: wake every 20 min across the baseball window.
+    # Wake-ups are free; snap_smart.py decides whether a run is worth an odds-API
+    # call. A run delayed six hours just evaluates the world as it finds it.
+    - cron: '*/20 15-23 * * *'  # 11 AM - 8 PM ET
+    - cron: '*/20 0-4 * * *'    #  8 PM ET - 12 AM ET
   workflow_dispatch:
     inputs:
       mode:
@@ -87,20 +86,17 @@ jobs:
           test -s "picktime_odds_${DATE}.json" || { echo "::error::picktime_odds_${DATE}.json missing - CLV baseline not frozen"; exit 1; }
           python -c "import json,sys; print('[clv] baseline games frozen:', len(json.load(open(sys.argv[1]))))" "picktime_odds_${DATE}.json"
 
-      - name: Refresh slate for snap
-        if: steps.mode.outputs.mode == 'snap'
-        run: |
-          DATE=$(TZ=America/New_York date +%F)
-          python slate_only.py "$DATE"
-
-      - name: Snap closers
+      - name: Snap closers (self-correcting)
+        id: snap
         if: steps.mode.outputs.mode == 'snap'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           DATE=$(TZ=America/New_York date +%F)
-          python grade.py snap "$DATE"
-          test -s "closers_${DATE}.json" || { echo "::error::closers_${DATE}.json missing or empty after snap"; exit 1; }
+          # snap_smart decides whether this wake-up is worth an API call and
+          # writes did_snap to $GITHUB_OUTPUT. grade.snap() carries its own
+          # pre-start guard and coverage assertions when a call is spent.
+          python snap_smart.py "$DATE"
 
       - name: Grade yesterday
         if: steps.mode.outputs.mode == 'grade'
@@ -117,6 +113,12 @@ jobs:
 
       - name: Publish
         run: |
+          MODE="${{ steps.mode.outputs.mode }}"
+          DID="${{ steps.snap.outputs.did_snap }}"
+          if [ "$MODE" = "snap" ] && [ "$DID" != "true" ]; then
+            echo "[publish] snap spent no call - nothing to commit, exiting clean"
+            exit 0
+          fi
           git config user.name "daily-diamond-bot"
           git config user.email "bot@users.noreply.github.com"
           test -f docs/index.html || { echo "::error::docs/index.html missing"; exit 1; }
@@ -125,7 +127,7 @@ jobs:
           for f in picks.json model_output.json odds_map.json slate.json raw_odds_response.json grades_archive.jsonl; do
             if [ -f "$f" ]; then git add -f "$f"; fi
           done
-          for f in closers_*.json picktime_odds_*.json; do
+          for f in closers_*.json picktime_odds_*.json snap_state_*.json; do
             if [ -f "$f" ]; then git add -f "$f"; fi
           done
           echo "--- staged ---"
