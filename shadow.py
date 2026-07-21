@@ -65,6 +65,11 @@ def snapshot(date, model_output):
             snap[key] = {
                 'gamePk': pk, 'side': side, 'team': s['team'],
                 'model_prob': s['model_prob'],
+                # v7.1: composite and per-category scores are stored so
+                # calibrate.py can refit K with mkt_score removed. Without them
+                # the regression cannot separate genuine agreement with the
+                # market from the model simply reading the market back.
+                'composite': s.get('composite'), 'cats': s.get('cats'),
                 'implied': s.get('implied'), 'novig': s.get('novig'),
                 'edge_pct': s.get('edge_pct'),
                 'data_quality': g.get('data_quality'),
