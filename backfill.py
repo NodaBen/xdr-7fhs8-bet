@@ -12,7 +12,7 @@ Dedupe-safe: a (date, gamePk) pair already in the archive is skipped.
 
 Usage:  python backfill.py 2026-07-17 2026-07-18
 """
-import json, os, sys, urllib.request
+import json, os, sys, datetime, urllib.request
 
 ARCHIVE = 'grades_archive.jsonl'
 
@@ -46,20 +46,56 @@ def seen_pairs():
     return s
 
 
+def guard(date):
+    """v7.2 (BF-A): refuse to run where backfill would DESTROY evidence.
+
+    Nothing previously stopped this script running on a date that already has
+    closers, or on a date the grade job has not reached yet. In that case it
+    appends rows with clv_pts=None and paper_pl=None, and grade.py -- which
+    dedupes on (date, gamePk) -- then SKIPS every real row. A day with a full
+    set of fresh closing prices is permanently recorded as having none, and it
+    is not recoverable from inside the pipeline. CLV is the primary validation
+    metric; this is the only path in the system that can silently delete it.
+    """
+    if os.path.exists(f'closers_{date}.json'):
+        print(f"[backfill] {date}: REFUSING -- closers_{date}.json exists. This date "
+              f"has real closing prices and must be graded by grade.py, which will "
+              f"produce CLV. Backfilling it would permanently null that CLV.")
+        return False
+    yesterday = (datetime.date.today() - datetime.timedelta(days=1)).isoformat()
+    if date > yesterday:
+        print(f"[backfill] {date}: REFUSING -- date is not yet complete "
+              f"(latest backfillable date is {yesterday}). Let grade.py handle it.")
+        return False
+    return True
+
+
 def run(date, seen):
+    if not guard(date):
+        return 0
     path = f'docs/archive/{date}_picks.json'
     if not os.path.exists(path):
         print(f"[backfill] {date}: no archived picks, skipping")
         return 0
     picks = [p for p in json.load(open(path)) if p.get('units', 0) >= 1]
     games = finals(date)
-    rows, skipped, unmatched = [], 0, 0
+    # v7.2 (BF-B): 'unmatched' used to merge three structurally different
+    # outcomes into one number -- game not final, scores missing, and TEAM NAME
+    # MATCHING NEITHER SIDE. The third is the C2/C8 class of bug and is the most
+    # damaging known defect in this system; averaging it in with rainouts is the
+    # one counter that would have detected it. On 07-17 exactly one row was lost
+    # this way (gamePk 824414, genuinely Postponed) and the log could not say which.
+    rows, skipped = [], 0
+    ppd, no_score, name_unmatched = [], [], []
 
     for p in picks:
         gp = str(p.get('gamePk'))
         g = games.get(gp)
-        if not g or g['ar'] is None or g['hr'] is None:
-            unmatched += 1
+        if not g:
+            ppd.append((p['pick'], gp))
+            continue
+        if g['ar'] is None or g['hr'] is None:
+            no_score.append((p['pick'], gp))
             continue
         if (date, p.get('gamePk')) in seen:
             skipped += 1
@@ -70,7 +106,7 @@ def run(date, seen):
         elif side in g['home'].lower():
             won = g['hr'] > g['ar']
         else:
-            unmatched += 1
+            name_unmatched.append((p['pick'], gp, g['away'], g['home']))
             continue
         rows.append({
             'date': date, 'provenance': 'backfill',
@@ -89,7 +125,14 @@ def run(date, seen):
 
     w = sum(1 for r in rows if r['won'])
     print(f"[backfill] {date}: appended {len(rows)} rows "
-          f"({w}-{len(rows)-w}) | {skipped} dupes skipped | {unmatched} unmatched/PPD")
+          f"({w}-{len(rows)-w}) | {skipped} dupes skipped | "
+          f"{len(ppd)} not final/PPD | {len(no_score)} no score | "
+          f"{len(name_unmatched)} NAME UNMATCHED")
+    if name_unmatched:
+        print(f"::error::[backfill] {len(name_unmatched)} pick(s) matched NEITHER team. "
+              f"This is a name-matching bug, not a postponement:")
+        for pick, gpk, away, home in name_unmatched:
+            print(f"           - '{pick}' vs {away} @ {home} (gamePk {gpk})")
     return len(rows)
 
 

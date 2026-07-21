@@ -85,6 +85,30 @@ def pi(title, odds, desc, stars=None):
             f'<span class="pi-odds">{esc(odds)}</span></div>'
             f'<div class="pi-d">{st}{esc(desc)}</div></div>')
 
+# v7.2 (C7): PARLAYS ARE SUPPRESSED until calibration clears.
+# build_parlays multiplies model probabilities together. The model is currently
+# over-dispersed by ~2.8x against market consensus, so a joint probability
+# compounds that error geometrically: two legs shown at 77%/75% display a
+# "joint 57.8%", while the observed hit rate on published picks is 46.4%, which
+# puts the true joint nearer 21%. It also compounds vig across legs. Displaying
+# a compounded number built on a probability that is not yet trustworthy is the
+# least defensible thing on the card.
+# The function is left intact, not deleted. Flip this to True after the model
+# passes a Brier check against market on the shadow archive.
+PARLAYS_ENABLED = False
+
+
+def parlay_panel(top):
+    if not PARLAYS_ENABLED:
+        return pi('Suppressed pending calibration', 'off',
+                  'Parlay pricing multiplies model probabilities together, which '
+                  'compounds any calibration error geometrically. Model probabilities '
+                  'are still being validated against closing lines, so a joint number '
+                  'would present an unverified estimate as a price. Off until the '
+                  'calibration sample clears.', '◆')
+    return build_parlays(top)
+
+
 def build_parlays(top):
     out = []
     if len(top) >= 2:
@@ -222,9 +246,21 @@ def render(date_str):
             'No qualified edges today — 0 picks. Passing is a position.</span></div></div>')
 
     m = lock or (best[0] if best else None)
-    m_name = m['pick'].replace(' ML', ' Moneyline') if m else '—'
+    m_name = m['pick'].replace(' ML', ' Moneyline') if m else 'No qualified edges'
     m_stake = f"{m['units']} Units" if m and m['units'] > 0 else 'OFF · await price'
-    marquee_k = 'The Diamond Lock' if lock else 'Top Board · Pending Lines'
+    marquee_k = ('The Diamond Lock' if lock
+                 else 'Top Board · Pending Lines' if m else 'Passing Is A Position')
+    # v7.2 (C6): the marquee STAT cells were unguarded while m_name/m_stake were
+    # guarded, so a legitimate zero-pick day raised
+    #   TypeError: 'NoneType' object is not subscriptable
+    # at the edge_score cell. The build then failed the workflow's `test -s`,
+    # docs/index.html was never rewritten, and GitHub Pages kept serving the
+    # PREVIOUS day's picks until the 12:43 watchdog noticed. Proven by forcing
+    # every pick to 0U on the real 07-21 board. A zero-pick day is a locked,
+    # valid output; it must render, not crash.
+    m_es = f"{m['edge_score']:.0f}/100" if m else '—'
+    m_tgt = f"{ml_fmt(m['target_price'])}↑" if m else '—'
+    m_prob = f"{m['model_prob']*100:.0f}%" if m else '—'
 
     props_panel = '\n      '.join([
         pi('Props Watchlist', 'awaiting lines',
@@ -274,10 +310,10 @@ def render(date_str):
       <div class="p">{esc(m_name)}</div>
     </div>
     <div class="stats">
-      <div class="stat"><div class="v">{m['edge_score']:.0f}/100</div><div class="l">Edge Score</div></div>
+      <div class="stat"><div class="v">{m_es}</div><div class="l">Edge Score</div></div>
       <div class="stat"><div class="v">{esc(m_stake)}</div><div class="l">Stake</div></div>
-      <div class="stat"><div class="v">{ml_fmt(m['target_price'])}↑</div><div class="l">Target</div></div>
-      <div class="stat"><div class="v">{m['model_prob']*100:.0f}%</div><div class="l">Model Win</div></div>
+      <div class="stat"><div class="v">{m_tgt}</div><div class="l">Target</div></div>
+      <div class="stat"><div class="v">{m_prob}</div><div class="l">Model Win</div></div>
     </div>
   </div>
 
@@ -288,7 +324,7 @@ def render(date_str):
     </div>
     <div class="panel parlays">
       <h3><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 L21 12 L12 21 L3 12 Z"/><rect x="10.6" y="1.6" width="3" height="3" fill="currentColor" stroke="none" transform="rotate(45 12 3)"/><rect x="19.6" y="10.6" width="3" height="3" fill="currentColor" stroke="none" transform="rotate(45 21 12)"/><rect x="1.6" y="10.6" width="3" height="3" fill="currentColor" stroke="none" transform="rotate(45 3 12)"/></svg>Parlays</h3>
-      {build_parlays(best[:3])}
+      {parlay_panel(best[:3])}
     </div>
     <div class="panel pass">
       <h3><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="M9 7.5 V16.5 M15 7.5 L9.5 12 L15 16.5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Pass / Pivot</h3>

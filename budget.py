@@ -111,10 +111,30 @@ def can_spend(cost, purpose='snap'):
     rem = l.get('quota_remaining')
     today = spent_today(l)
 
-    # Guard 1 — hard floor. Applies to everything, no exceptions.
-    if rem is not None and (rem - cost) < RESERVE:
-        return False, (f'hard floor: {rem} credits left, spending {cost} would breach '
-                       f'the {RESERVE}-credit reserve')
+    # Guard 1 — hard floor.
+    #
+    # v7.2 (B-A/B-B): this guard used to apply to every purpose with no
+    # exception, which produced two failures that inverted its own stated
+    # policy ("builds outrank snaps; snaps starve first and the card still
+    # ships"):
+    #
+    #   1. PRIORITY INVERSION. A build costs 2 and a snap costs 1 against a
+    #      shared floor, so at rem=41 the build was BLOCKED while the snap was
+    #      still ALLOWED. The last credit went to validation data instead of
+    #      the product.
+    #   2. STRANDED RESERVE. Simulating a full month at any realistic snap rate
+    #      terminates at exactly rem=RESERVE. Those credits were never
+    #      spendable by anything, so the guarantee the reserve exists to provide
+    #      -- "always be able to build tomorrow's card" -- was the one thing it
+    #      prevented. The card would go dark for the rest of the month.
+    #
+    # The reserve is FOR builds. It must not block them. Snaps still stop at the
+    # floor, which is the intended starvation order.
+    floor = 0 if purpose in ('build', 'grade') else RESERVE
+    if rem is not None and (rem - cost) < floor:
+        return False, (f'hard floor: {rem} credits left, spending {cost} for '
+                       f'{purpose} would breach the {floor}-credit floor'
+                       + ('' if floor else ' (quota exhausted)'))
 
     # Guard 2 — daily cap.
     if (today + cost) > DAILY_CREDIT_CAP:

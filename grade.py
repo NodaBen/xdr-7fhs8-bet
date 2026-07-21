@@ -188,9 +188,33 @@ def grade(date):
     closers = _load(f'closers_{date}.json', {})
     picktime = _load(f'picktime_odds_{date}.json', {})
     fin = finals(date)
+
+    # v7.2 (G-A): shadow needs FINALS ONLY. It handles closers={} correctly and
+    # still records W/L plus full-range calibration across every game and both
+    # sides. Running it after the closers precondition meant a missing price
+    # destroyed the dataset that does not need prices. Moved ahead of the exit.
+    try:
+        import shadow
+        shadow.grade(date, fin, closers, MAX_CLOSER_AGE_MIN)
+    except Exception as e:
+        print(f'[shadow] non-fatal: {e}')
+
     if not closers:
         sys.exit('[grade] FAIL: closers_%s.json missing or empty. No CLV is recoverable '
                  'for this date. Check that the snap jobs ran BEFORE first pitch.' % date)
+
+    name_unmatched = []
+
+    # v7.2 (O-D): first pitch per gamePk from the MLB slate. Closer staleness was
+    # being measured against the BOOKMAKER's commence_time; MLB's gameDate is
+    # authoritative and already on disk.
+    slate_starts = {}
+    try:
+        for g in _load('slate.json', []):
+            if g.get('gameDate'):
+                slate_starts[str(g['gamePk'])] = g['gameDate']
+    except Exception as e:
+        print(f'[grade] slate.json unreadable, falling back to feed commence: {e}')
 
     rows, gsum = [], {'n': 0, 'w': 0, 'l': 0, 'fired': 0, 'no_closer': 0, 'pl': 0.0,
                       'clv_pts': [], 'model_p': [], 'close_nv': [], 'brier_m': [], 'brier_c': []}
@@ -203,7 +227,23 @@ def grade(date):
             rows.append((p, None, None, None, 'NO FINAL', None))
             continue
         team = p['pick'].replace(' ML', '')
-        side = 'home' if O._norm(f['home']) == O._norm(team) else 'away'
+        # v7.2 (C8): this was a two-branch expression with no else. If the pick
+        # name matched NEITHER side it fell through to 'away' and graded the
+        # OPPOSING TEAM'S RESULT, silently, and every downstream number -- W/L,
+        # CLV, paper P/L, calibration -- inherited the inversion. model.py maps
+        # both 'ATH' and 'OAK' to "Athletics", so this was live, not theoretical.
+        # backfill.py already had the correct three-branch form; this adopts it.
+        # A missing row is recoverable. A silently inverted row is not.
+        if O._norm(f['home']) == O._norm(team):
+            side = 'home'
+        elif O._norm(f['away']) == O._norm(team):
+            side = 'away'
+        else:
+            print(f"::error::[grade] NAME UNMATCHED — pick '{team}' matches neither "
+                  f"'{f['home']}' nor '{f['away']}' (gamePk {pk}). Refusing to grade "
+                  f"this row rather than guess a side.")
+            name_unmatched.append((p['pick'], pk, f['away'], f['home']))
+            continue
         won = (f['home_score'] > f['away_score']) if side == 'home' else (f['away_score'] > f['home_score'])
 
         close_nv = c.get(f'{side}ML_novig') if c else None
@@ -218,12 +258,22 @@ def grade(date):
         no_closer = close_ml is None
 
         # v6.7: how old was this price at first pitch?
+        # v7.2 (O-C/O-D): the age check used to FAIL OPEN. A missing or
+        # unparseable timestamp left age=None, which made stale=False, which
+        # ACCEPTED the price. MAX_CLOSER_AGE_MIN exists to keep fabricated CLV
+        # out of the go-live sample, so its failure mode must be refusal --
+        # a missing timestamp is not evidence of freshness. The ESPN fallback
+        # writes commence from comp.get('date') and is the live route to a
+        # missing value.
+        # First pitch is now taken from the MLB slate (authoritative) and falls
+        # back to the odds feed's commence only if the slate has no entry.
         age = None
         if c:
-            snapped_at, commence = _t(c.get('snapped_at')), _t(c.get('commence'))
-            if snapped_at and commence:
-                age = round((commence - snapped_at).total_seconds() / 60, 1)
-        stale = (age is not None and age > MAX_CLOSER_AGE_MIN)
+            snapped_at = _t(c.get('snapped_at'))
+            first_pitch = _t((slate_starts.get(pk) or c.get('commence')))
+            if snapped_at and first_pitch:
+                age = round((first_pitch - snapped_at).total_seconds() / 60, 1)
+        stale = bool(c) and (age is None or age > MAX_CLOSER_AGE_MIN)
         if stale:
             # Refuse to price it. Treat exactly like a missing closer.
             no_closer = True
@@ -249,21 +299,31 @@ def grade(date):
             o = 1.0 if won else 0.0
             gsum['brier_m'].append((p['model_prob'] - o) ** 2)
             gsum['brier_c'].append((close_nv - o) ** 2)
-        status = (f'STALE CLOSER {age:.0f}m (untested)' if stale
+        _agetxt = f'{age:.0f}m' if age is not None else 'age unknown'
+        status = (f'STALE CLOSER {_agetxt} (untested)' if stale
                   else 'NO CLOSER (untested)' if no_closer
                   else 'FIRED' if fired else 'NO-BET (target unmet)')
+        # v7.2 (M6): archive the RAW PRICES, not just the derived metrics.
+        # Without pt_ml/close_ml/pt_novig/close_novig, paper P/L can never be
+        # recomputed under a corrected booking rule (see H2/G-D: 'fired' and P/L
+        # are both currently judged at the CLOSE, which contradicts CLV claiming
+        # to have BEATEN the close). Every graded day written without these is
+        # unrecoverable.
+        p['_pt_ml'] = pt.get(f'{side}ML') if pt else None
+        p['_close_ml'] = close_ml
+        p['_pt_novig'] = pt_nv
+        p['_close_novig'] = close_nv
+        p['_side'] = side
+        p['_books_used'] = (c or {}).get('books_used')
+        p['_book_spread'] = (c or {}).get('book_spread')
         gsum['no_closer'] += 1 if no_closer else 0
         gsum['stale'] = gsum.get('stale', 0) + (1 if stale else 0)
         if age is not None and not stale:
             gsum.setdefault('ages', []).append(age)
         rows.append((p, won, clv, pl, status, age))
 
-    # v7.0 shadow set: every game, both sides, uncensored. Separate archive.
-    try:
-        import shadow
-        shadow.grade(date, fin, closers, MAX_CLOSER_AGE_MIN)
-    except Exception as e:
-        print(f'[shadow] non-fatal: {e}')
+    # v7.2 (G-A): shadow.grade() now runs near the top of this function,
+    # BEFORE the missing-closers exit. See the note there.
 
     print(f"{'PICK':28} {'U':>2} {'MODEL':>6} {'CLOSE':>6} {'CLV':>6} {'RES':>4} {'P/L':>6}  STATUS")
     for p, won, clv, pl, st, age in rows:
@@ -293,7 +353,7 @@ def grade(date):
         print(f"avg CLV: {avg(gsum['clv_pts']):+.2f} pts "
               f"({'market moved toward us' if avg(gsum['clv_pts']) > 0 else 'market moved against us'})")
         print(f"calibration: model avg {avg(gsum['model_p'])*100:.1f}% vs close consensus {avg(gsum['close_nv'])*100:.1f}% "
-              f"(gap {abs(avg(gsum['model_p'])-avg(gsum['close_nv']))*100:+.1f} pts)")
+              f"(gap {(avg(gsum['model_p'])-avg(gsum['close_nv']))*100:+.1f} pts)")  # v7.2 (G-C): abs() then :+.1f forced a plus sign onto a magnitude, so the DIRECTION of the model error could never appear in the permanent record.
         print(f"Brier: model {avg(gsum['brier_m']):.4f} vs close {avg(gsum['brier_c']):.4f} "
               f"({'model sharper' if avg(gsum['brier_m']) < avg(gsum['brier_c']) else 'close sharper — recalibrate K'})")
         # v6.1: dedupe — a (date, gamePk) pair enters the K-recalibration archive once.
@@ -321,7 +381,18 @@ def grade(date):
                                     'target': p['target_price'], 'target_anchor': p.get('target_anchor'),
                                     'gated': p.get('gated', False), 'won': won, 'clv_pts': clv,
                                     'closer_age_min': age,
+                                    'side': p.get('_side'),
+                                    'pt_ml': p.get('_pt_ml'), 'close_ml': p.get('_close_ml'),
+                                    'pt_novig': p.get('_pt_novig'), 'close_novig': p.get('_close_novig'),
+                                    'books_used': p.get('_books_used'),
+                                    'book_spread': p.get('_book_spread'),
                                     'paper_pl': pl, 'status': st}) + '\n')
+        if name_unmatched:
+            print(f"::error::[grade] {len(name_unmatched)} pick(s) were NOT graded "
+                  f"because the team name matched neither side. This is the C8 class "
+                  f"of bug and must not be confused with a postponement:")
+            for pick, gpk, away, home in name_unmatched:
+                print(f"           - '{pick}' vs {away} @ {home} (gamePk {gpk})")
         print(f"[grade] appended {len(new_rows)} rows -> grades_archive.jsonl "
               f"({skipped} duplicates skipped) (K-recalibration dataset)")
 

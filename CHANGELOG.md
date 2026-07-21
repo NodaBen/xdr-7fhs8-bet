@@ -12,6 +12,90 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v7.2 - 2026-07-21 - Tier 0 safety pass
+
+Nine correctness fixes from the full-repo audit. No model logic changed. Verified
+by regression: `grade.py` on the real 07-20 board produces byte-identical output
+(4-4, -0.13U, Brier 0.3385 vs 0.2770).
+
+### Fixed
+- **Zero-pick day crashed the renderer.** `render.py` guarded `m_name`/`m_stake`
+  but not the marquee STAT cells, so `m['edge_score']` raised
+  `TypeError: 'NoneType' object is not subscriptable`. The build then failed the
+  workflow's `test -s`, `docs/index.html` was never rewritten, and GitHub Pages
+  kept serving the PREVIOUS day's picks until the 12:43 watchdog. Proven by
+  forcing every pick to 0U on the real 07-21 board. "Passing is a position" is a
+  locked rule; the card must render it, not die on it.
+- **`grade.py` could grade the opposing team's result.** The side resolution was
+  a two-branch expression with no `else`; a pick matching neither team fell
+  through to `away` silently, inverting W/L, CLV, paper P/L and calibration for
+  that row. `model.py` maps both `ATH` and `OAK` to "Athletics", so this was
+  live. Now refuses the row and prints `::error::`. `backfill.py` already had
+  the correct three-branch form - this adopts it.
+- **The stale-closer guard failed OPEN.** A missing or unparseable timestamp
+  left `age=None`, which made `stale=False`, which ACCEPTED the price. The guard
+  exists to keep fabricated CLV out of the go-live sample, so its failure mode
+  must be refusal. Unknown age is now stale.
+- **Closer staleness was measured against the bookmaker's clock.** Age now uses
+  MLB's `slate.json` `gameDate` (authoritative), falling back to the feed's
+  `commence` only when the slate has no entry.
+- **The printed calibration gap could never be negative.** `abs()` followed by
+  `:+.1f` forced a plus sign onto a magnitude, destroying the direction of the
+  model's error in the permanent graded record.
+- **`shadow.snapshot()` could take down the card.** Called bare in
+  `run_daily.py` and running BEFORE `build_picks`, any malformed game dict
+  killed the build with no picks and no publish. Now wrapped, matching
+  `grade.py`.
+- **A missing closers file destroyed the shadow dataset.** `shadow.grade()` sat
+  after the `sys.exit` on empty closers, but it needs finals only and handles
+  `closers={}` correctly. Moved ahead of the exit.
+- **Credit guard blocked builds before snaps.** A build costs 2 and a snap 1
+  against a shared floor, so at `rem=41` the build was blocked while the snap
+  was allowed - the exact reverse of the documented "snaps starve first" policy.
+  A full-month simulation also terminates at exactly `rem=RESERVE`, meaning the
+  40 reserved credits were never spendable by anything and the card would go
+  dark for the rest of the month. The floor is now purpose-aware: snaps stop at
+  RESERVE, builds and grades spend into it. That is what makes it a reserve.
+- **Workflow concurrency serialized nothing.** `github.event.schedule` is empty
+  for `repository_dispatch`, now the sole trigger, so the group fell through to
+  a unique-per-run value for 100% of real traffic. Fixed to
+  `github.event.action || github.event.schedule || 'manual'`.
+
+### Added
+- **Raw prices on every archived row**: `side`, `pt_ml`, `close_ml`, `pt_novig`,
+  `close_novig`, `books_used`, `book_spread`. Without these, paper P/L cannot be
+  recomputed under a corrected booking rule, and every graded day written
+  without them is unrecoverable. First row written under the new schema already
+  shows the value: Milwaukee 07-20 moved -199 to -149 against the pick, a
+  material adverse move that was invisible because the closer was stale.
+- **`backfill.py` refuses to destroy evidence.** It now declines any date that
+  has a `closers_{date}.json`, and any date newer than yesterday. Previously,
+  running it on a graded-pending date appended `clv_pts: None` rows that
+  `grade.py`'s `(date, gamePk)` dedupe would then skip forever - permanently
+  recording a day of real closing prices as having none. This was the only path
+  in the system that could silently delete CLV.
+- **Name-match failures are now loud and separate.** `backfill.py`'s single
+  `unmatched` counter merged three different outcomes: not final, no score, and
+  team name matching neither side. The third is the C2/C8 class of bug, and
+  averaging it in with rainouts meant the one counter that would detect it
+  could not. Now reported as `ppd` / `no_score` / `NAME UNMATCHED`, with the
+  last raising `::error::`.
+
+### Suppressed
+- **Parlay panel.** `build_parlays` multiplies model probabilities together, and
+  the model is currently over-dispersed by ~2.8x against market consensus, so a
+  joint probability compounds that error geometrically - two legs shown at
+  77%/75% display "joint 57.8%" against an observed hit rate of 46.4%. The
+  function is intact behind `PARLAYS_ENABLED = False`; the panel now explains
+  why it is off. Re-enable after the model passes a Brier check against market
+  on the shadow archive.
+
+### Not changed
+K stays at 0.05. No weights, no Edge Score, no unit ladder. This release is
+safety and evidence integrity only.
+
+---
+
 ## v7.1 — 2026-07-21 — Calibration harness
 
 Fits the logistic slope K against market consensus instead of against outcomes.

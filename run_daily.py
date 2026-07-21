@@ -95,8 +95,16 @@ snap = pull_snapshot()
 results = run_slate(live, snap, omap)
 json.dump(results, open('model_output.json', 'w'), indent=1)
 
-import shadow
-shadow.snapshot(date, results)
+# v7.2 (S-A): shadow is a RESEARCH module and runs BEFORE build_picks. Called
+# bare, any malformed game dict inside snapshot() raised before picks.json was
+# ever written -- no picks, no card, no publish. grade.py already wraps its
+# shadow call; this one did not. A research dataset must never be able to take
+# down the product.
+try:
+    import shadow
+    shadow.snapshot(date, results)
+except Exception as e:
+    print(f'[shadow] snapshot non-fatal: {e}')
 
 pk = build_picks(results)
 json.dump(pk, open('picks.json', 'w'), indent=1)
