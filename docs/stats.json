@@ -1,44 +1,44 @@
 {
- "graded": 20,
- "record": "9-11",
- "clv_n": 0,
- "clv_avg": null,
- "clv_beat_rate": null,
- "fired_n": 0,
- "units_risked": 0,
- "paper_pl": 0,
- "roi": null,
- "actual_win_pct": 45.0,
- "model_win_pct": 65.5,
- "calibration_gap": -20.5,
+ "graded": 28,
+ "record": "13-15",
+ "clv_n": 4,
+ "clv_avg": 0.34,
+ "clv_beat_rate": 50.0,
+ "fired_n": 4,
+ "units_risked": 4,
+ "paper_pl": -0.13,
+ "roi": -3.2,
+ "actual_win_pct": 46.4,
+ "model_win_pct": 67.3,
+ "calibration_gap": -20.9,
  "buckets": [
   {
    "label": "<60%",
-   "n": 5,
-   "w": 2,
+   "n": 6,
+   "w": 3,
    "l": 3,
-   "actual": 40.0,
-   "model": 53.8
+   "actual": 50.0,
+   "model": 54.7
   },
   {
    "label": "60-70%",
-   "n": 8,
-   "w": 2,
-   "l": 6,
-   "actual": 25.0,
-   "model": 62.3
+   "n": 11,
+   "w": 4,
+   "l": 7,
+   "actual": 36.4,
+   "model": 63.4
   },
   {
    "label": "70%+",
-   "n": 7,
-   "w": 5,
-   "l": 2,
-   "actual": 71.4,
-   "model": 77.5
+   "n": 11,
+   "w": 6,
+   "l": 5,
+   "actual": 54.5,
+   "model": 78.2
   }
  ],
- "untested_n": 20,
- "closer_coverage": 0.0,
+ "untested_n": 24,
+ "closer_coverage": 14.3,
  "sample_ok": false,
  "clv_threshold": 100
 }
