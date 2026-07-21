@@ -46,8 +46,16 @@ permissions:
 # Split the concurrency group per schedule. The old single group meant a delayed
 # build run BLOCKED the snap run queued behind it. Push races are handled by the
 # rebase-retry loop in Publish instead.
+#
+# v7.2 (Y-A): github.event.schedule is EMPTY for repository_dispatch, which is
+# now the sole trigger for build/snap/grade. The old expression therefore fell
+# through to format('manual-{0}', run_id) -- a unique value per run -- so the
+# group serialized nothing for 100% of real traffic. Two snap runs could hold
+# credit_ledger.json open at once; budget.record() is load-modify-save with no
+# lock, so an overlap silently loses a spend increment and under-enforces the
+# daily and pace guards. github.event.action carries the dispatch event type.
 concurrency:
-  group: daily-diamond-${{ github.event.schedule || format('manual-{0}', github.run_id) }}
+  group: daily-diamond-${{ github.event.action || github.event.schedule || 'manual' }}
   cancel-in-progress: false
 
 jobs:
