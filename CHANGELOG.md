@@ -12,6 +12,70 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v7.1 — 2026-07-21 — Calibration harness
+
+Fits the logistic slope K against market consensus instead of against outcomes.
+
+### Added
+- `calibrate.py`. `model_prob = 1/(1+exp(-K*diff))` is linear in log-odds, so
+  `logit(p) = K * diff` and K is the slope of a line through the origin. Fitted
+  by OLS with a standard error, a 95% interval, and R². Reads only files already
+  on disk — `shadow_*.json`, `picktime_odds_*.json`, and
+  `docs/archive/*_picks.json`. **Zero API credits.**
+- Circularity check: refits with `mkt_score` removed and weights renormalised.
+  `mkt` is 10% of the composite, so the model partly reads back the thing it is
+  being fitted against.
+- Verdict block that refuses to recommend a change below a minimum n
+  (default 150), so the tool cannot be used to justify an early tweak.
+
+### Changed
+- `shadow.py` snapshots now store `composite` and the per-category `cats` dict.
+  Without them the circularity refit cannot be computed at all.
+
+### Why outcomes are the wrong target
+Fitting K against wins and losses needs hundreds of games, because a single
+Bernoulli result carries almost no information about a 60% claim. Market no-vig
+is continuous and low-variance, so the slope pins down on a couple of hundred
+games. Every input is frozen pre-game, so there is no lookahead.
+
+### First reading (n=36, 07-19 to 07-21)
+```
+current K            0.0500
+fitted K (origin)    0.0131   95% CI [0.0095, 0.0167]   R2=0.441
+fitted K (intercept) 0.0124   intercept +0.1122
+dispersion at current K   3.10x market
+dispersion at fitted K    0.89x market
+```
+Three findings, in ascending order of seriousness:
+1. **Over-dispersion.** The interval is nowhere near 0.05. Model probabilities
+   are ~3x as spread out as the market's.
+2. **Mis-centering.** A free intercept lands at +0.112, so the model is off
+   centre as well as too wide. Different defect from K; `sit_score` being a flat
+   56/44 constant is the leading suspect.
+3. **Possible non-contribution.** Stripping `mkt_score` drops R² from 0.441 to
+   **-0.481**. Negative R² means the remaining 90% of the composite predicts
+   market consensus worse than a flat line. On n=15 this may be noise. If it
+   survives to n=150 it says the pitching, offence and bullpen work is adding
+   nothing, which would matter far more than K.
+
+n=36 is below the bar. **K is unchanged at 0.05.** Nothing about the model moved
+in this version; only the ability to measure it.
+
+### Why the historical backtest was dropped, not deferred
+The original plan was to fit K on 2024-25 via `backfill.py`. Two blockers:
+- The Odds API historical endpoint is **paid-plan only**, at 10 credits per
+  region per market. A two-season MLB pull is roughly 3,700 credits against a
+  500/month free tier.
+- Worse, it would need FanGraphs and Savant stats **as they stood on each past
+  date**. The clients pull current season-to-date figures. Backtesting April
+  2024 on end-of-season stats is lookahead, and would produce an excellent
+  result that means nothing.
+
+Forward accumulation replaces it: 15 games/day, free, no lookahead, ~150 games
+by early August.
+
+---
+
 ## v7.0 — 2026-07-21 — Shadow grading
 
 Added an uncensored parallel dataset so calibration can be measured on the whole
@@ -244,6 +308,10 @@ changes above exist specifically to enforce them.
   check, never the headline.
 - No model parameter changes (K, ES rank order, unit ladder) until the archive
   carries a sufficient graded sample.
+  - **Open amendment (v7.1):** `calibrate.py` fits K against market no-vig
+    rather than outcomes. The lock exists to prevent fitting to outcome noise,
+    which this is not — but it names K explicitly. Whether a market-fitted K is
+    exempt has not been decided. Until it is, K stays at 0.05.
 - Responsible-betting footer on every card. Outputs are expected value, never
   predictions. No outcome is guaranteed.
 
@@ -251,13 +319,18 @@ changes above exist specifically to enforce them.
 
 ## Open items
 
-- **Market-calibration regression** — fit K against market no-vig directly,
-  without waiting for outcomes. Backtest 2024–25 via `backfill.py`.
+- **K refit** — harness shipped in v7.1, decision pending n≥150 (~early August).
+  Watch three things as n grows: the slope interval, the intercept (currently
+  +0.112, suggesting mis-centering independent of K), and the mkt-stripped R².
+  Expect a refit to REDUCE the number of published picks; compressing the
+  probability spread shrinks every edge, and picks below the 5% angle floor
+  disappear. That is the correct outcome if the edges were manufactured by
+  over-dispersion, but the card will look emptier.
 - **Model structural fixes** — replace percentile normalization with
   z-scores/run-values (likely the root cause of overconfidence, not K); blend
   market as a prior; evaluate both sides for EV, since `picks.py` only ever
   takes the model favorite; shrink small-sample SP stats; `sit_score` is a flat
-  56/44 constant doing nothing.
+  56/44 constant doing nothing and is the leading suspect for the intercept.
 - **F5 markets** — the model is 40% starting pitching, and F5 isolates that
   while removing bullpen noise.
 - **Workflow concurrency** — the group expression resolves to a unique value per
