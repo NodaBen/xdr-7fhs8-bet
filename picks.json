@@ -1,39 +1,5 @@
 [
  {
-  "pick": "Baltimore Orioles ML",
-  "game": "Baltimore Orioles @ Boston Red Sox",
-  "gamePk": 824735,
-  "venue": "Fenway Park",
-  "model_prob": 0.6038,
-  "fair_ML": -152,
-  "implied": 0.5169,
-  "edge_pct": 8.69,
-  "edge_score": 81.3,
-  "units": 1,
-  "gated": true,
-  "divergence": 0.109,
-  "target_price": -118,
-  "target_anchor": "slip",
-  "condition": "OFF unless -118 or better at DK",
-  "chips": [
-   {
-    "stat": "opp SP weak",
-    "value": "33/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
-   "total": 8.5
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "rank": 1
- },
- {
   "pick": "Cincinnati Reds ML",
   "game": "Cincinnati Reds @ Seattle Mariners",
   "gamePk": 823114,
@@ -42,10 +8,10 @@
   "fair_ML": -138,
   "implied": 0.4975,
   "edge_pct": 8.27,
-  "edge_score": 81.2,
+  "edge_score": 81.1,
   "units": 1,
   "gated": true,
-  "divergence": 0.1029,
+  "divergence": 0.1034,
   "target_price": -109,
   "target_anchor": "slip",
   "condition": "OFF unless -109 or better at DK",
@@ -78,8 +44,42 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
    "total": 7.5
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "rank": 1
+ },
+ {
+  "pick": "Baltimore Orioles ML",
+  "game": "Baltimore Orioles @ Boston Red Sox",
+  "gamePk": 824735,
+  "venue": "Fenway Park",
+  "model_prob": 0.6029,
+  "fair_ML": -152,
+  "implied": 0.5169,
+  "edge_pct": 8.6,
+  "edge_score": 80.9,
+  "units": 1,
+  "gated": true,
+  "divergence": 0.1118,
+  "target_price": -118,
+  "target_anchor": "slip",
+  "condition": "OFF unless -118 or better at DK",
+  "chips": [
+   {
+    "stat": "opp SP weak",
+    "value": "33/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
+   "total": 8.5
   },
   "flags": [],
   "data_quality": "FULL",
@@ -90,14 +90,14 @@
   "game": "Detroit Tigers @ Chicago Cubs",
   "gamePk": 824652,
   "venue": "Wrigley Field",
-  "model_prob": 0.5482,
+  "model_prob": 0.5481,
   "fair_ML": -121,
   "implied": 0.4975,
-  "edge_pct": 5.07,
-  "edge_score": 78.8,
+  "edge_pct": 5.06,
+  "edge_score": 78.7,
   "units": 2,
   "gated": false,
-  "divergence": 0.071,
+  "divergence": 0.0713,
   "target_price": -107,
   "target_anchor": "slip",
   "condition": "OFF unless -107 or better at DK",
@@ -112,7 +112,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
    "total": 8.0
   },
   "flags": [],
@@ -124,14 +124,14 @@
   "game": "Minnesota Twins @ Cleveland Guardians",
   "gamePk": 824409,
   "venue": "Progressive Field",
-  "model_prob": 0.7456,
+  "model_prob": 0.7457,
   "fair_ML": -293,
   "implied": 0.6094,
-  "edge_pct": 13.62,
+  "edge_pct": 13.63,
   "edge_score": 78.1,
   "units": 1,
   "gated": true,
-  "divergence": 0.1643,
+  "divergence": 0.164,
   "target_price": -174,
   "target_anchor": "slip",
   "condition": "OFF unless -174 or better at DK",
@@ -158,7 +158,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
    "total": 8.0
   },
   "flags": [],
@@ -170,14 +170,14 @@
   "game": "Los Angeles Dodgers @ Philadelphia Phillies",
   "gamePk": 823437,
   "venue": "Citizens Bank Park",
-  "model_prob": 0.5888,
+  "model_prob": 0.5884,
   "fair_ML": -143,
   "implied": 0.5455,
-  "edge_pct": 4.33,
-  "edge_score": 77.9,
+  "edge_pct": 4.29,
+  "edge_score": 77.8,
   "units": 0,
   "gated": false,
-  "divergence": 0.0665,
+  "divergence": 0.0673,
   "target_price": -133,
   "target_anchor": "slip",
   "condition": "OFF unless -133 or better at DK",
@@ -192,7 +192,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
    "total": 9.0
   },
   "flags": [],
@@ -204,14 +204,14 @@
   "game": "Tampa Bay Rays @ Toronto Blue Jays",
   "gamePk": 822787,
   "venue": "Rogers Centre",
-  "model_prob": 0.5537,
+  "model_prob": 0.5534,
   "fair_ML": -124,
   "implied": 0.5192,
-  "edge_pct": 3.45,
-  "edge_score": 77.6,
+  "edge_pct": 3.42,
+  "edge_score": 77.5,
   "units": 0,
   "gated": false,
-  "divergence": 0.0544,
+  "divergence": 0.0551,
   "target_price": -119,
   "target_anchor": "slip",
   "condition": "OFF unless -119 or better at DK",
@@ -238,7 +238,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
    "total": 7.5
   },
   "flags": [],
@@ -278,7 +278,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
    "total": 9.0
   },
   "flags": [],
@@ -318,7 +318,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
    "total": 8.5
   },
   "flags": [],
@@ -337,7 +337,7 @@
   "edge_score": 74.5,
   "units": 1,
   "gated": false,
-  "divergence": 0.3628,
+  "divergence": 0.3634,
   "target_price": -126,
   "target_anchor": "slip",
   "condition": "OFF unless -126 or better at DK",
@@ -370,8 +370,8 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
-   "total": 13.0
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
+   "total": 13.5
   },
   "flags": [],
   "data_quality": "FULL",
@@ -382,14 +382,14 @@
   "game": "Miami Marlins @ Houston Astros",
   "gamePk": 824165,
   "venue": "Daikin Park",
-  "model_prob": 0.5106,
+  "model_prob": 0.5104,
   "fair_ML": -104,
   "implied": 0.5575,
-  "edge_pct": -4.69,
+  "edge_pct": -4.71,
   "edge_score": 66.4,
   "units": 0,
   "gated": false,
-  "divergence": 0.0244,
+  "divergence": 0.0231,
   "target_price": -140,
   "target_anchor": "slip",
   "condition": "OFF unless -140 or better at DK",
@@ -404,60 +404,12 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
    "total": 9.0
   },
   "flags": [],
   "data_quality": "FULL",
   "rank": 10
- },
- {
-  "pick": "Milwaukee Brewers ML",
-  "game": "New York Mets @ Milwaukee Brewers",
-  "gamePk": 823760,
-  "venue": "American Family Field",
-  "model_prob": 0.6397,
-  "fair_ML": -178,
-  "implied": 0.5763,
-  "edge_pct": 6.34,
-  "edge_score": 65.6,
-  "units": 1,
-  "gated": false,
-  "divergence": 0.0879,
-  "target_price": -151,
-  "target_anchor": "slip",
-  "condition": "OFF unless -151 or better at DK",
-  "chips": [
-   {
-    "stat": "opp SP weak",
-    "value": "40/100",
-    "dir": "-",
-    "tone": "red"
-   },
-   {
-    "stat": "off edge",
-    "value": "+21",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "data",
-    "value": "DEGRADED",
-    "dir": "~",
-    "tone": "neutral"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
-   "total": 9.0
-  },
-  "flags": [
-   "SP Zac Thornton: no FG data (callup/low IP)"
-  ],
-  "data_quality": "DEGRADED",
-  "rank": 11
  },
  {
   "pick": "New York Yankees ML",
@@ -495,21 +447,21 @@
    "no odds posted \u2014 market neutral"
   ],
   "data_quality": "FULL",
-  "rank": 12
+  "rank": 11
  },
  {
   "pick": "Athletics ML",
   "game": "Athletics @ Arizona Diamondbacks",
   "gamePk": 825056,
   "venue": "Chase Field",
-  "model_prob": 0.5129,
+  "model_prob": 0.5127,
   "fair_ML": -105,
   "implied": 0.4673,
-  "edge_pct": 4.56,
+  "edge_pct": 4.54,
   "edge_score": 64.5,
   "units": 0,
   "gated": false,
-  "divergence": 0.0673,
+  "divergence": 0.0674,
   "target_price": 103,
   "target_anchor": "slip",
   "condition": "OFF unless 103 or better at DK",
@@ -542,12 +494,60 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
    "total": 9.5
   },
   "flags": [
    "SP Jack Perkins: no FG data (callup/low IP)",
    "SP Kohl Drake: no FG data (callup/low IP)"
+  ],
+  "data_quality": "DEGRADED",
+  "rank": 12
+ },
+ {
+  "pick": "Milwaukee Brewers ML",
+  "game": "New York Mets @ Milwaukee Brewers",
+  "gamePk": 823760,
+  "venue": "American Family Field",
+  "model_prob": 0.6404,
+  "fair_ML": -178,
+  "implied": 0.5851,
+  "edge_pct": 5.53,
+  "edge_score": 64.3,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0861,
+  "target_price": -156,
+  "target_anchor": "vig",
+  "condition": "OFF unless -156 or better at DK",
+  "chips": [
+   {
+    "stat": "opp SP weak",
+    "value": "40/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "off edge",
+    "value": "+21",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "data",
+    "value": "DEGRADED",
+    "dir": "~",
+    "tone": "neutral"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
+   "total": 9.0
+  },
+  "flags": [
+   "SP Zac Thornton: no FG data (callup/low IP)"
   ],
   "data_quality": "DEGRADED",
   "rank": 13
@@ -597,7 +597,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
    "total": 9.0
   },
   "flags": [
@@ -645,7 +645,7 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-21T21:15:33.850682+00:00",
+   "fetched_at": "2026-07-21T21:35:15.411547+00:00",
    "total": 9.0
   },
   "flags": [
