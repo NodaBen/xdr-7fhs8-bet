@@ -41,6 +41,50 @@ def edge_score(side, game, has_odds):
 MIN_EDGE = 5.0      # angle floor: below this, game is analyzed but not shown (Benjamin, 7/17)
 DIVERGENCE_CAP = .10  # model vs consensus gap > 10 pts -> max 1U until validated (Benjamin, 7/17)
 
+# --- Target price anchoring (v6.9) -------------------------------------------
+# BEFORE: target = prob_to_ml(model_prob - req). The target inherited the model's
+# calibration error. With model_prob running ~15 pts above market consensus, the
+# target landed BELOW the offered price on essentially every pick: on 7/21 all
+# 7 picks fired with an average of 6.2 points of slack, and one (Washington)
+# needed an 11-point adverse move before the condition would bite. The card
+# advertised a discipline that never engaged.
+#
+# AFTER: the target is anchored on the MARKET, so it is immune to model
+# calibration error. Two independent constraints; the tighter one wins.
+#
+#   1. SLIPPAGE GUARD (primary) — "I evaluated this at price X; the edge I found
+#      does not survive an unlimited move against me." Allow a bounded worsening
+#      from the evaluated price. Bigger stake -> tighter tolerance, because a
+#      larger bet has less room to absorb a worse number.
+#   2. VIG CAP (backstop) — never pay more than this over the book's own no-vig
+#      fair price. Median observed vig is ~2.3 pts, so 5.5 leaves roughly 3 pts
+#      of headroom and this guard binds only on a genuinely gouging price.
+#
+# Both are stated in implied-probability points, then converted to American odds.
+SLIP = {0: .025, 1: .025, 2: .020, 3: .015, 4: .010, 5: .010}
+VIG_CAP = .055
+
+
+def target_price(side, u):
+    """Worst price still worth taking. Market-anchored; ignores model_prob.
+
+    Returns (target_ml, anchor) where anchor is 'slip', 'vig', or 'model'.
+    'model' is the no-odds fallback only — it carries the old calibration
+    weakness and exists so that the locked rule "no pick without a target"
+    still holds when the board is unpriced.
+    """
+    imp = side.get('implied')
+    nv = side.get('novig')
+    if imp is None:
+        req = {0: .04, 1: .04, 2: .045, 3: .05, 4: .06, 5: .06}[u if u <= 5 else 5]
+        return prob_to_ml(max(.02, side['model_prob'] - req)), 'model'
+    slip_t = imp + SLIP[u if u <= 5 else 5]
+    if nv is None:
+        return prob_to_ml(min(.98, slip_t)), 'slip'
+    vig_t = nv + VIG_CAP
+    t = min(slip_t, vig_t)
+    return prob_to_ml(min(.98, t)), ('slip' if slip_t <= vig_t else 'vig')
+
 def units(es, edge_pct, sharp_confirmed, dq, divergence=None):
     # Angle floor: no priced 5%+ edge = no pick
     if edge_pct is None or edge_pct < MIN_EDGE:
@@ -58,11 +102,6 @@ def units(es, edge_pct, sharp_confirmed, dq, divergence=None):
     if es >= 65:
         return 1
     return 0  # pass/pivot
-
-def target_price(model_prob, u):
-    """Price that guarantees minimum edge at bet time. Higher units -> bigger required cushion."""
-    req = {0: .04, 1: .04, 2: .045, 3: .05, 4: .06, 5: .06}[u if u <= 5 else 5]
-    return prob_to_ml(max(.02, model_prob - req))
 
 def chips(side, opp, game):
     """Max 4 structured chips: strongest drivers. tone: green=strength, red=fading weakness, neutral=context."""
@@ -98,14 +137,14 @@ def build_picks(model_output, sharp_signals=None):
         gated = False
         if u > 1 and div is not None and div > DIVERGENCE_CAP and not sharp:
             u, gated = 1, True  # divergence gate: extraordinary claim, ordinary stake
-        tp = target_price(fav['model_prob'], max(u, 1))
+        tp, tp_anchor = target_price(fav, max(u, 1))
         picks.append({
             'pick': f"{fav['team']} ML",
             'game': g['game'], 'gamePk': g.get('gamePk'), 'venue': g['venue'],
             'model_prob': fav['model_prob'], 'fair_ML': fav['fair_ML'],
             'implied': fav.get('implied'), 'edge_pct': fav.get('edge_pct'),
             'edge_score': es, 'units': u, 'gated': gated, 'divergence': round(div, 4) if div is not None else None,
-            'target_price': tp,
+            'target_price': tp, 'target_anchor': tp_anchor,
             'condition': f"OFF unless {tp} or better at DK",
             'chips': chips(fav, dog, g),
             'odds_meta': g.get('odds_meta'),

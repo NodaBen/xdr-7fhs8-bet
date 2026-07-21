@@ -311,7 +311,8 @@ def grade(date):
                                     'pick': p['pick'], 'gamePk': p.get('gamePk'),
                                     'units': p['units'], 'model_prob': p['model_prob'],
                                     'edge_pct': p['edge_pct'], 'edge_score': p['edge_score'],
-                                    'target': p['target_price'], 'gated': p.get('gated', False), 'won': won, 'clv_pts': clv,
+                                    'target': p['target_price'], 'target_anchor': p.get('target_anchor'),
+                                    'gated': p.get('gated', False), 'won': won, 'clv_pts': clv,
                                     'closer_age_min': age,
                                     'paper_pl': pl, 'status': st}) + '\n')
         print(f"[grade] appended {len(new_rows)} rows -> grades_archive.jsonl "
