@@ -95,6 +95,9 @@ snap = pull_snapshot()
 results = run_slate(live, snap, omap)
 json.dump(results, open('model_output.json', 'w'), indent=1)
 
+import shadow
+shadow.snapshot(date, results)
+
 pk = build_picks(results)
 json.dump(pk, open('picks.json', 'w'), indent=1)
 print(f"\n{'#':>2} {'PICK':30} {'MODEL%':>7} {'MKT':>6} {'EDGE':>6} {'FAIR':>6} {'TGT':>6} {'ES':>5} {'U':>2}")

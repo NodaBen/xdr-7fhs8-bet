@@ -258,6 +258,13 @@ def grade(date):
             gsum.setdefault('ages', []).append(age)
         rows.append((p, won, clv, pl, status, age))
 
+    # v7.0 shadow set: every game, both sides, uncensored. Separate archive.
+    try:
+        import shadow
+        shadow.grade(date, fin, closers, MAX_CLOSER_AGE_MIN)
+    except Exception as e:
+        print(f'[shadow] non-fatal: {e}')
+
     print(f"{'PICK':28} {'U':>2} {'MODEL':>6} {'CLOSE':>6} {'CLV':>6} {'RES':>4} {'P/L':>6}  STATUS")
     for p, won, clv, pl, st, age in rows:
         cn = closers.get(str(p.get('gamePk')), {})
