@@ -73,7 +73,8 @@ def run(date, seen):
             unmatched += 1
             continue
         rows.append({
-            'date': date, 'pick': p['pick'], 'gamePk': p.get('gamePk'),
+            'date': date, 'provenance': 'backfill',
+            'pick': p['pick'], 'gamePk': p.get('gamePk'),
             'units': p['units'], 'model_prob': p['model_prob'],
             'edge_pct': p['edge_pct'], 'edge_score': p['edge_score'],
             'target': p['target_price'], 'gated': p.get('gated', False),

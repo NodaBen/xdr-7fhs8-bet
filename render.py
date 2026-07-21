@@ -149,6 +149,16 @@ def build_scorecard():
                f'{s["untested_n"]} of {s["graded"]} graded picks had no closing price and were '
                f'never tested against their target. Those picks contribute zero CLV.</div>')
 
+    prov = ''
+    if s.get('backfill_n'):
+        prov = (f'<div style="margin-top:7px;font-size:10.5px;line-height:1.45">'
+                f'<b>SAMPLE PROVENANCE —</b> {s["backfill_n"]} of {s["graded"]} graded '
+                f'picks were reconstructed after the fact from pre-game archived picks; '
+                f'{s.get("live_n", 0)} were graded live. Live-only record is '
+                f'{s.get("live_record", "--")} '
+                f'({fmt(s.get("live_calibration_gap"), " pts", True)} calibration gap). '
+                f'Only live picks count toward the go-live sample.</div>')
+
     warn = ''
     if not s.get('sample_ok'):
         warn = (f'<div style="margin-top:9px;font-size:10.5px;opacity:.72;'
@@ -174,6 +184,7 @@ def build_scorecard():
     <div>{t3}</div>
     {buckets}
     {cov}
+    {prov}
     {warn}
   </div>
 '''

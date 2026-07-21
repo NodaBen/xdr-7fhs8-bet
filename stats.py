@@ -38,6 +38,17 @@ def build():
     rows = load()
     graded = [r for r in rows if r.get('won') is not None]
 
+    # --- Provenance split (v6.8) ---
+    # 'live'     = graded by the pipeline the morning after the games.
+    # 'backfill' = reconstructed by backfill.py from picks that WERE archived
+    #              pre-game, so model_prob carries no lookahead and the rows are
+    #              valid calibration data. They are still not production history,
+    #              and the go-live sample must count live rows only.
+    # Rows written before v6.8 are tagged retroactively; default 'live' is only
+    # a fallback for any untagged row.
+    live = [r for r in graded if r.get('provenance', 'live') == 'live']
+    back = [r for r in graded if r.get('provenance') == 'backfill']
+
     # --- Tier 1: CLV ---
     clv = [r['clv_pts'] for r in rows if r.get('clv_pts') is not None]
     clv_avg = avg(clv)
@@ -75,9 +86,23 @@ def build():
                             'actual': round(bw / len(b) * 100, 1),
                             'model': round(avg([r['model_prob'] for r in b]) * 100, 1)})
 
+    # Live-only calibration, so the go-live decision never rests on backfill.
+    lw = sum(1 for r in live if r['won'])
+    ln = len(live)
+    l_actual = (lw / ln * 100) if ln else None
+    l_model = avg([r['model_prob'] for r in live if r.get('model_prob') is not None])
+    l_model = l_model * 100 if l_model is not None else None
+    l_gap = (l_actual - l_model) if (l_actual is not None and l_model is not None) else None
+
     out = {
         'graded': n,
         'record': f"{w}-{n - w}" if n else "0-0",
+        'live_n': ln,
+        'backfill_n': len(back),
+        'live_record': f"{lw}-{ln - lw}" if ln else "0-0",
+        'live_actual_win_pct': round(l_actual, 1) if l_actual is not None else None,
+        'live_model_win_pct': round(l_model, 1) if l_model is not None else None,
+        'live_calibration_gap': round(l_gap, 1) if l_gap is not None else None,
         'clv_n': len(clv),
         'clv_avg': round(clv_avg, 2) if clv_avg is not None else None,
         'clv_beat_rate': round(clv_beat, 1) if clv_beat is not None else None,

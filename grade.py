@@ -302,7 +302,13 @@ def grade(date):
         skipped = len(rows) - len(new_rows)
         with open('grades_archive.jsonl', 'a') as f:
             for p, won, clv, pl, st, age in new_rows:
-                f.write(json.dumps({'date': date, 'pick': p['pick'], 'gamePk': p.get('gamePk'),
+                # v6.8: provenance is STRUCTURAL. 'live' means this row was graded
+                # by the running pipeline on the day after the games. 'backfill'
+                # means it was reconstructed after the fact by backfill.py. The
+                # go-live sample counts live rows only; status strings have drifted
+                # across versions and must never be parsed to make this distinction.
+                f.write(json.dumps({'date': date, 'provenance': 'live',
+                                    'pick': p['pick'], 'gamePk': p.get('gamePk'),
                                     'units': p['units'], 'model_prob': p['model_prob'],
                                     'edge_pct': p['edge_pct'], 'edge_score': p['edge_score'],
                                     'target': p['target_price'], 'gated': p.get('gated', False), 'won': won, 'clv_pts': clv,
