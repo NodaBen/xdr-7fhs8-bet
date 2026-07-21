@@ -1,6 +1,12 @@
 {
  "graded": 28,
  "record": "13-15",
+ "live_n": 12,
+ "backfill_n": 16,
+ "live_record": "7-5",
+ "live_actual_win_pct": 58.3,
+ "live_model_win_pct": 73.5,
+ "live_calibration_gap": -15.1,
  "clv_n": 4,
  "clv_avg": 0.34,
  "clv_beat_rate": 50.0,
