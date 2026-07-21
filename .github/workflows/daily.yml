@@ -201,10 +201,10 @@ jobs:
           git add -f docs/index.html
           git add -f docs/archive/
           if [ -f docs/stats.json ]; then git add -f docs/stats.json; fi
-          for f in picks.json model_output.json odds_map.json slate.json raw_odds_response.json grades_archive.jsonl credit_ledger.json; do
+          for f in picks.json model_output.json odds_map.json slate.json raw_odds_response.json grades_archive.jsonl shadow_archive.jsonl credit_ledger.json; do
             if [ -f "$f" ]; then git add -f "$f"; fi
           done
-          for f in closers_*.json picktime_odds_*.json snap_state_*.json; do
+          for f in closers_*.json picktime_odds_*.json snap_state_*.json shadow_*.json; do
             if [ -f "$f" ]; then git add -f "$f"; fi
           done
           echo "--- staged ---"
