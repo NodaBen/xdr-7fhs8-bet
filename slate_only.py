@@ -23,12 +23,20 @@ def build(date):
     for d in sched.get('dates', []):
         for g in d['games']:
             t = g['teams']
+            ap = t['away'].get('probablePitcher') or {}
+            hp = t['home'].get('probablePitcher') or {}
             slate.append({
                 'gamePk': g['gamePk'],
                 'away': t['away']['team']['name'],
                 'home': t['home']['team']['name'],
-                'awaySP': (t['away'].get('probablePitcher') or {}).get('fullName'),
-                'homeSP': (t['home'].get('probablePitcher') or {}).get('fullName'),
+                'awaySP': ap.get('fullName'),
+                'homeSP': hp.get('fullName'),
+                # v7.5: THE join key. StatsAPI has published this all along and
+                # both slate builders were throwing it away, forcing model.py to
+                # join FanGraphs and Savant on a display name from a different
+                # registry. See the IDENTITY block in model.py.
+                'awaySP_id': ap.get('id'),
+                'homeSP_id': hp.get('id'),
                 'venue': g.get('venue', {}).get('name'),
                 'gameDate': g.get('gameDate')})
     return slate

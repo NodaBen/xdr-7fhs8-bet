@@ -1,22 +1,18 @@
 """One-command daily run: slate -> snapshot -> odds -> model -> picks.
 Usage: python3 run_daily.py 2026-07-17"""
-import sys, json, requests, datetime
+import sys, json, datetime
 from model import pull_snapshot, run_slate
 from picks import build_picks, PICKEM_MIN_BOOKS
 from odds import build_odds_map
+from slate_only import build as build_slate   # v7.5 (C-C): ONE slate builder.
 import odds as O
 
 date = sys.argv[1] if len(sys.argv) > 1 else datetime.date.today().isoformat()
-H = {'User-Agent': 'Mozilla/5.0'}
-sched = requests.get(f'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={date}&hydrate=probablePitcher,team', headers=H, timeout=30).json()
-slate = []
-for d in sched.get('dates', []):
-    for g in d['games']:
-        slate.append({'gamePk': g['gamePk'],
-          'away': g['teams']['away']['team']['name'], 'home': g['teams']['home']['team']['name'],
-          'awaySP': (g['teams']['away'].get('probablePitcher') or {}).get('fullName'),
-          'homeSP': (g['teams']['home'].get('probablePitcher') or {}).get('fullName'),
-          'venue': g.get('venue', {}).get('name'), 'gameDate': g.get('gameDate')})
+# v7.5: run_daily.py and slate_only.py carried two near-identical slate builders
+# that had to stay in sync by hand, and both dropped probablePitcher['id'].
+# Collapsed to the one in slate_only.py so the join key cannot go missing from
+# only one of them again.
+slate = build_slate(date)
 both = sum(1 for g in slate if g['awaySP'] and g['homeSP'])
 partial = sum(1 for g in slate if bool(g['awaySP']) != bool(g['homeSP']))
 

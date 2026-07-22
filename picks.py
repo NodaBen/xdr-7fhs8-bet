@@ -117,6 +117,12 @@ def target_price(side, u):
     return prob_to_ml(min(.98, t)), ('slip' if slip_t <= vig_t else 'vig')
 
 def units(es, edge_pct, sharp_confirmed, dq, divergence=None):
+    # v7.5: a starter the model could not resolve is an ABSENCE of information.
+    # Until v7.5 it scored 40.0/100 and published at 1U with an "opp SP weak"
+    # chip -- the card presenting an encoding failure to the reader as scouting.
+    # "Passing is a position": no read, no stake.
+    if dq == 'BLOCKED':
+        return 0
     # Angle floor: no priced 5%+ edge = no pick
     if edge_pct is None or edge_pct < MIN_EDGE:
         return 0
@@ -140,16 +146,30 @@ def chips(side, opp, game):
     cats = side['cats']; ocats = opp['cats']
     if side.get('sp') and cats['sp'] >= 60:
         c.append({'stat': 'SP score', 'value': f"{cats['sp']:.0f}/100", 'dir': '+', 'tone': 'green'})
-    if ocats['sp'] <= 42:
-        label = 'opp SP TBD' if not opp.get('sp') else 'opp SP weak'
-        c.append({'stat': label, 'value': f"{ocats['sp']:.0f}/100", 'dir': '-', 'tone': 'red'})
+    # v7.5: sp_score returns fixed constants when it has no data -- 38.0 for an
+    # unannounced starter, 50.0 for one it could not resolve -- and this chip
+    # fires at <=42, so EVERY data failure was structurally guaranteed to
+    # publish a weakness claim. A weakness chip now requires an actual read.
+    # `.get(..., True)` not `.get(...)`: a PRE-v7.5 model_output.json has no
+    # sp_resolved key at all, and the pipeline is designed to re-run picks from a
+    # cached model_output. Defaulting to False there silently deleted EVERY
+    # weakness chip on the board. Absent = legacy, explicit False = unresolved.
+    if ocats['sp'] <= 42 and opp.get('sp') and opp.get('sp_resolved', True):
+        c.append({'stat': 'opp SP weak', 'value': f"{ocats['sp']:.0f}/100", 'dir': '-', 'tone': 'red'})
+    elif not opp.get('sp'):
+        # Honest context, not a scouting read: we are stating a prior, not a measurement.
+        c.append({'stat': 'opp SP TBD', 'value': 'unannounced', 'dir': '~', 'tone': 'neutral'})
     if cats['pen'] - ocats['pen'] >= 12:
         c.append({'stat': 'pen edge', 'value': f"+{cats['pen']-ocats['pen']:.0f}", 'dir': '+', 'tone': 'green'})
     if cats['off'] - ocats['off'] >= 10:
         c.append({'stat': 'off edge', 'value': f"+{cats['off']-ocats['off']:.0f}", 'dir': '+', 'tone': 'green'})
     if ocats['off'] <= 38:
         c.append({'stat': 'opp bats cold', 'value': f"{ocats['off']:.0f}/100", 'dir': '-', 'tone': 'red'})
-    if game['data_quality'] != 'FULL':
+    if game['data_quality'] == 'BLOCKED':
+        # v7.5: distinct from DEGRADED. DEGRADED means we scored it with a gap;
+        # BLOCKED means we could not identify a starter and are not staking it.
+        c.append({'stat': 'data', 'value': 'NO SP READ', 'dir': '~', 'tone': 'neutral'})
+    elif game['data_quality'] != 'FULL':
         c.append({'stat': 'data', 'value': 'DEGRADED', 'dir': '~', 'tone': 'neutral'})
     return c[:4]  # LOCKED: max 4
 
@@ -179,7 +199,9 @@ def build_picks(model_output, sharp_signals=None):
             'condition': f"OFF unless {tp} or better at DK",
             'chips': chips(fav, dog, g),
             'odds_meta': g.get('odds_meta'),
-            'flags': g['flags'], 'data_quality': g['data_quality']})
+            'flags': g['flags'], 'data_quality': g['data_quality'],
+            'blocked': g['data_quality'] == 'BLOCKED',
+            'side_quality': {s: g['sides'][s].get('data_quality') for s in ('home', 'away')}})
     picks.sort(key=lambda p: (-p['edge_score'], -(p['edge_pct'] or 0), -p['model_prob']))
     for i, p in enumerate(picks, 1): p['rank'] = i
     return picks
