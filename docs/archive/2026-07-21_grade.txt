@@ -1,0 +1,25 @@
+[shadow] +26 rows (13 games, 24 with CLV) -> shadow_archive.jsonl
+              <40%  n=  5  actual  60.0%  model  32.0%
+            40-50%  n=  8  actual  62.5%  model  45.7%
+            50-60%  n=  8  actual  37.5%  model  54.3%
+            60-70%  n=  3  actual   0.0%  model  64.7%
+              70%+  n=  2  actual 100.0%  model  73.1%
+PICK                          U  MODEL  CLOSE    CLV  RES    P/L  STATUS
+Cincinnati Reds ML            1  58.0%  48.3%   +0.5    W  +0.98  FIRED
+Detroit Tigers ML             2  54.8%  47.6%   -0.2    L  -2.00  FIRED
+Cleveland Guardians ML        1  74.6%  58.7%   +1.4    W  +0.62  FIRED
+Texas Rangers ML              1  71.2%  51.2%   -2.9    W  +0.88  FIRED
+Washington Nationals ML       1  87.3%  51.2%   +0.7    L  -1.00  FIRED
+
+--- DEFERRED 1 pick(s): no result on 2026-07-21 ---
+  Baltimore Orioles ML          1U  Postponed
+  Intentionally NOT written to grades_archive.jsonl. Re-run `python3 grade.py grade 2026-07-21` once the makeup is final; the (date, gamePk) dedupe protects the rows already written.
+
+--- BOARD GRADE ---
+
+--- CLOSER COVERAGE --- usable 5/5 | stale(>45m) 0 | missing 0 | median age 32m
+record: 3-2 | bets fired: 5/5 | paper P/L: -0.52U
+avg CLV: -0.11 pts (market moved against us)
+calibration: model avg 69.2% vs close consensus 51.4% (gap +17.8 pts)
+Brier: model 0.2775 vs close 0.2329 (close sharper — recalibrate K)
+[grade] appended 5 rows -> grades_archive.jsonl (0 duplicates skipped) (K-recalibration dataset)
