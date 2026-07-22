@@ -1,137 +1,172 @@
 [
  {
-  "gamePk": 824409,
-  "away": "Minnesota Twins",
-  "home": "Cleveland Guardians",
-  "awaySP": "Kendry Rojas",
-  "homeSP": "Parker Messick",
-  "venue": "Progressive Field",
-  "gameDate": "2026-07-21T22:40:00Z"
- },
- {
-  "gamePk": 823437,
-  "away": "Los Angeles Dodgers",
-  "home": "Philadelphia Phillies",
-  "awaySP": "Justin Wrobleski",
-  "homeSP": "Zack Wheeler",
-  "venue": "Citizens Bank Park",
-  "gameDate": "2026-07-21T22:40:00Z"
- },
- {
-  "gamePk": 822787,
-  "away": "Tampa Bay Rays",
-  "home": "Toronto Blue Jays",
-  "awaySP": "Drew Rasmussen",
-  "homeSP": "Kevin Gausman",
-  "venue": "Rogers Centre",
-  "gameDate": "2026-07-21T23:07:00Z"
- },
- {
-  "gamePk": 824895,
-  "away": "San Diego Padres",
-  "home": "Atlanta Braves",
-  "awaySP": "Walker Buehler",
-  "homeSP": "Reynaldo L\u00f3pez",
-  "venue": "Truist Park",
-  "gameDate": "2026-07-21T23:15:00Z"
- },
- {
-  "gamePk": 824085,
-  "away": "San Francisco Giants",
-  "home": "Kansas City Royals",
-  "awaySP": "Tyler Mahle",
-  "homeSP": "Luinder Avila",
-  "venue": "Kauffman Stadium",
-  "gameDate": "2026-07-21T23:40:00Z"
- },
- {
-  "gamePk": 823760,
-  "away": "New York Mets",
-  "home": "Milwaukee Brewers",
-  "awaySP": "Zac Thornton",
-  "homeSP": "Brandon Sproat",
-  "venue": "American Family Field",
-  "gameDate": "2026-07-21T23:40:00Z"
- },
- {
-  "gamePk": 824652,
-  "away": "Detroit Tigers",
-  "home": "Chicago Cubs",
-  "awaySP": "Framber Valdez",
-  "homeSP": "David Peterson",
-  "venue": "Wrigley Field",
-  "gameDate": "2026-07-22T00:05:00Z"
- },
- {
-  "gamePk": 822871,
-  "away": "Chicago White Sox",
-  "home": "Texas Rangers",
-  "awaySP": "Noah Schultz",
-  "homeSP": "Kumar Rocker",
-  "venue": "Globe Life Field",
-  "gameDate": "2026-07-22T00:05:00Z"
- },
- {
-  "gamePk": 824165,
-  "away": "Miami Marlins",
-  "home": "Houston Astros",
-  "awaySP": "Tyler Phillips",
-  "homeSP": "Tatsuya Imai",
-  "venue": "Daikin Park",
-  "gameDate": "2026-07-22T00:10:00Z"
- },
- {
-  "gamePk": 824329,
-  "away": "Washington Nationals",
-  "home": "Colorado Rockies",
-  "awaySP": "Carson Palmquist",
-  "homeSP": "Michael Lorenzen",
-  "venue": "Coors Field",
-  "gameDate": "2026-07-22T00:40:00Z"
- },
- {
-  "gamePk": 824005,
-  "away": "St. Louis Cardinals",
-  "home": "Los Angeles Angels",
-  "awaySP": "Matthew Liberatore",
-  "homeSP": "Walbert Ure\u00f1a",
-  "venue": "Angel Stadium",
-  "gameDate": "2026-07-22T01:38:00Z"
- },
- {
-  "gamePk": 825056,
-  "away": "Athletics",
-  "home": "Arizona Diamondbacks",
-  "awaySP": "Jack Perkins",
-  "homeSP": "Kohl Drake",
-  "venue": "Chase Field",
-  "gameDate": "2026-07-22T01:40:00Z"
- },
- {
-  "gamePk": 823114,
-  "away": "Cincinnati Reds",
-  "home": "Seattle Mariners",
-  "awaySP": "Chase Burns",
-  "homeSP": "Luis Castillo",
-  "venue": "T-Mobile Park",
-  "gameDate": "2026-07-22T01:40:00Z"
+  "gamePk": 823518,
+  "away": "Pittsburgh Pirates",
+  "home": "New York Yankees",
+  "awaySP": "Mitch Keller",
+  "homeSP": "Gerrit Cole",
+  "venue": "Yankee Stadium",
+  "gameDate": "2026-07-22T17:05:00Z",
+  "started": false
  },
  {
   "gamePk": 823519,
   "away": "Pittsburgh Pirates",
   "home": "New York Yankees",
   "awaySP": "Bubba Chandler",
-  "homeSP": "Will Warren",
+  "homeSP": "Max Fried",
   "venue": "Yankee Stadium",
-  "gameDate": "2026-07-21T23:05:00Z"
+  "gameDate": "2026-07-22T23:05:00Z",
+  "started": false
  },
  {
   "gamePk": 824735,
   "away": "Baltimore Orioles",
   "home": "Boston Red Sox",
-  "awaySP": "Kyle Bradish",
-  "homeSP": "Eduardo Rivera",
+  "awaySP": "Dean Kremer",
+  "homeSP": "Jake Bennett",
   "venue": "Fenway Park",
-  "gameDate": "2026-07-21T23:10:00Z"
+  "gameDate": "2026-07-22T17:35:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 824732,
+  "away": "Baltimore Orioles",
+  "home": "Boston Red Sox",
+  "awaySP": "Kyle Bradish",
+  "homeSP": null,
+  "venue": "Fenway Park",
+  "gameDate": "2026-07-22T23:10:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 824083,
+  "away": "San Francisco Giants",
+  "home": "Kansas City Royals",
+  "awaySP": "Landen Roupp",
+  "homeSP": "Seth Lugo",
+  "venue": "Kauffman Stadium",
+  "gameDate": "2026-07-22T18:10:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 823761,
+  "away": "New York Mets",
+  "home": "Milwaukee Brewers",
+  "awaySP": "Christian Scott",
+  "homeSP": "Logan Henderson",
+  "venue": "American Family Field",
+  "gameDate": "2026-07-22T18:10:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 824327,
+  "away": "Washington Nationals",
+  "home": "Colorado Rockies",
+  "awaySP": "Cade Cavalli",
+  "homeSP": "Gabriel Hughes",
+  "venue": "Coors Field",
+  "gameDate": "2026-07-22T19:10:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 825055,
+  "away": "Athletics",
+  "home": "Arizona Diamondbacks",
+  "awaySP": "Gage Jump",
+  "homeSP": "Merrill Kelly",
+  "venue": "Chase Field",
+  "gameDate": "2026-07-22T19:40:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 823110,
+  "away": "Cincinnati Reds",
+  "home": "Seattle Mariners",
+  "awaySP": "Brady Singer",
+  "homeSP": "Emerson Hancock",
+  "venue": "T-Mobile Park",
+  "gameDate": "2026-07-22T19:40:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 824004,
+  "away": "St. Louis Cardinals",
+  "home": "Los Angeles Angels",
+  "awaySP": "Hunter Dobbins",
+  "homeSP": "Reid Detmers",
+  "venue": "Angel Stadium",
+  "gameDate": "2026-07-22T20:07:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 824408,
+  "away": "Minnesota Twins",
+  "home": "Cleveland Guardians",
+  "awaySP": "Bailey Ober",
+  "homeSP": "Slade Cecconi",
+  "venue": "Progressive Field",
+  "gameDate": "2026-07-22T22:40:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 823438,
+  "away": "Los Angeles Dodgers",
+  "home": "Philadelphia Phillies",
+  "awaySP": "Eric Lauer",
+  "homeSP": "Aaron Nola",
+  "venue": "Citizens Bank Park",
+  "gameDate": "2026-07-22T22:40:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 822784,
+  "away": "Tampa Bay Rays",
+  "home": "Toronto Blue Jays",
+  "awaySP": "Griffin Jax",
+  "homeSP": "Braydon Fisher",
+  "venue": "Rogers Centre",
+  "gameDate": "2026-07-22T23:07:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 824896,
+  "away": "San Diego Padres",
+  "home": "Atlanta Braves",
+  "awaySP": "Michael King",
+  "homeSP": "Mart\u00edn P\u00e9rez",
+  "venue": "Truist Park",
+  "gameDate": "2026-07-22T23:15:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 822873,
+  "away": "Chicago White Sox",
+  "home": "Texas Rangers",
+  "awaySP": "Anthony Kay",
+  "homeSP": "Tyler Alexander",
+  "venue": "Globe Life Field",
+  "gameDate": "2026-07-23T00:05:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 824650,
+  "away": "Detroit Tigers",
+  "home": "Chicago Cubs",
+  "awaySP": "Keider Montero",
+  "homeSP": "Colin Rea",
+  "venue": "Wrigley Field",
+  "gameDate": "2026-07-23T00:10:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 824166,
+  "away": "Miami Marlins",
+  "home": "Houston Astros",
+  "awaySP": "Sandy Alcantara",
+  "homeSP": "Peter Lambert",
+  "venue": "Daikin Park",
+  "gameDate": "2026-07-23T00:10:00Z",
+  "started": false
  }
 ]

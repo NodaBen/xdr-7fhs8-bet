@@ -867,68 +867,6 @@
   "fetched_at": "2026-07-22T15:05:19.354050+00:00",
   "source": "theoddsapi"
  },
- "822873": {
-  "home": "Texas Rangers",
-  "away": "Chicago White Sox",
-  "commence": "2026-07-23T00:06:00Z",
-  "book": "draftkings",
-  "homeML": -110,
-  "awayML": -110,
-  "total": 8.5,
-  "all_books": [
-   {
-    "book": "fanduel",
-    "homeML": -108,
-    "awayML": -108
-   },
-   {
-    "book": "lowvig",
-    "homeML": -105,
-    "awayML": -105
-   },
-   {
-    "book": "betonlineag",
-    "homeML": -105,
-    "awayML": -105
-   },
-   {
-    "book": "mybookieag",
-    "homeML": -110,
-    "awayML": -107
-   },
-   {
-    "book": "draftkings",
-    "homeML": -110,
-    "awayML": -110
-   },
-   {
-    "book": "bovada",
-    "homeML": -109,
-    "awayML": -111
-   },
-   {
-    "book": "betmgm",
-    "homeML": -110,
-    "awayML": -110
-   },
-   {
-    "book": "betus",
-    "homeML": -105,
-    "awayML": -105
-   },
-   {
-    "book": "betrivers",
-    "homeML": -108,
-    "awayML": -109
-   }
-  ],
-  "homeML_novig": 0.5,
-  "awayML_novig": 0.5,
-  "books_used": 9,
-  "book_spread": 0.0055,
-  "fetched_at": "2026-07-22T15:05:19.354050+00:00",
-  "source": "theoddsapi"
- },
  "824650": {
   "home": "Chicago Cubs",
   "away": "Detroit Tigers",
