@@ -6,7 +6,8 @@
   "awaySP": "Mitch Keller",
   "homeSP": "Gerrit Cole",
   "venue": "Yankee Stadium",
-  "gameDate": "2026-07-22T17:05:00Z"
+  "gameDate": "2026-07-22T17:05:00Z",
+  "started": true
  },
  {
   "gamePk": 823519,
@@ -15,7 +16,8 @@
   "awaySP": "Bubba Chandler",
   "homeSP": "Max Fried",
   "venue": "Yankee Stadium",
-  "gameDate": "2026-07-22T23:05:00Z"
+  "gameDate": "2026-07-22T23:05:00Z",
+  "started": false
  },
  {
   "gamePk": 824735,
@@ -24,7 +26,8 @@
   "awaySP": "Dean Kremer",
   "homeSP": "Jake Bennett",
   "venue": "Fenway Park",
-  "gameDate": "2026-07-22T17:35:00Z"
+  "gameDate": "2026-07-22T17:35:00Z",
+  "started": true
  },
  {
   "gamePk": 824732,
@@ -33,7 +36,8 @@
   "awaySP": "Kyle Bradish",
   "homeSP": null,
   "venue": "Fenway Park",
-  "gameDate": "2026-07-22T23:10:00Z"
+  "gameDate": "2026-07-22T23:10:00Z",
+  "started": false
  },
  {
   "gamePk": 824083,
@@ -42,7 +46,8 @@
   "awaySP": "Landen Roupp",
   "homeSP": "Seth Lugo",
   "venue": "Kauffman Stadium",
-  "gameDate": "2026-07-22T18:10:00Z"
+  "gameDate": "2026-07-22T18:10:00Z",
+  "started": true
  },
  {
   "gamePk": 823761,
@@ -51,7 +56,8 @@
   "awaySP": "Christian Scott",
   "homeSP": "Logan Henderson",
   "venue": "American Family Field",
-  "gameDate": "2026-07-22T18:10:00Z"
+  "gameDate": "2026-07-22T18:10:00Z",
+  "started": true
  },
  {
   "gamePk": 824327,
@@ -60,7 +66,8 @@
   "awaySP": "Cade Cavalli",
   "homeSP": "Gabriel Hughes",
   "venue": "Coors Field",
-  "gameDate": "2026-07-22T19:10:00Z"
+  "gameDate": "2026-07-22T19:10:00Z",
+  "started": false
  },
  {
   "gamePk": 825055,
@@ -69,7 +76,8 @@
   "awaySP": "Gage Jump",
   "homeSP": "Merrill Kelly",
   "venue": "Chase Field",
-  "gameDate": "2026-07-22T19:40:00Z"
+  "gameDate": "2026-07-22T19:40:00Z",
+  "started": false
  },
  {
   "gamePk": 823110,
@@ -78,7 +86,8 @@
   "awaySP": "Brady Singer",
   "homeSP": "Emerson Hancock",
   "venue": "T-Mobile Park",
-  "gameDate": "2026-07-22T19:40:00Z"
+  "gameDate": "2026-07-22T19:40:00Z",
+  "started": false
  },
  {
   "gamePk": 824004,
@@ -87,7 +96,8 @@
   "awaySP": "Hunter Dobbins",
   "homeSP": "Reid Detmers",
   "venue": "Angel Stadium",
-  "gameDate": "2026-07-22T20:07:00Z"
+  "gameDate": "2026-07-22T20:07:00Z",
+  "started": false
  },
  {
   "gamePk": 824408,
@@ -96,7 +106,8 @@
   "awaySP": "Bailey Ober",
   "homeSP": "Slade Cecconi",
   "venue": "Progressive Field",
-  "gameDate": "2026-07-22T22:40:00Z"
+  "gameDate": "2026-07-22T22:40:00Z",
+  "started": false
  },
  {
   "gamePk": 823438,
@@ -105,7 +116,8 @@
   "awaySP": "Eric Lauer",
   "homeSP": "Aaron Nola",
   "venue": "Citizens Bank Park",
-  "gameDate": "2026-07-22T22:40:00Z"
+  "gameDate": "2026-07-22T22:40:00Z",
+  "started": false
  },
  {
   "gamePk": 822784,
@@ -114,7 +126,8 @@
   "awaySP": "Griffin Jax",
   "homeSP": "Braydon Fisher",
   "venue": "Rogers Centre",
-  "gameDate": "2026-07-22T23:07:00Z"
+  "gameDate": "2026-07-22T23:07:00Z",
+  "started": false
  },
  {
   "gamePk": 824896,
@@ -123,7 +136,8 @@
   "awaySP": "Michael King",
   "homeSP": "Mart\u00edn P\u00e9rez",
   "venue": "Truist Park",
-  "gameDate": "2026-07-22T23:15:00Z"
+  "gameDate": "2026-07-22T23:15:00Z",
+  "started": false
  },
  {
   "gamePk": 822873,
@@ -132,7 +146,8 @@
   "awaySP": "Anthony Kay",
   "homeSP": "Tyler Alexander",
   "venue": "Globe Life Field",
-  "gameDate": "2026-07-23T00:05:00Z"
+  "gameDate": "2026-07-23T00:05:00Z",
+  "started": false
  },
  {
   "gamePk": 824650,
@@ -141,7 +156,8 @@
   "awaySP": "Keider Montero",
   "homeSP": "Colin Rea",
   "venue": "Wrigley Field",
-  "gameDate": "2026-07-23T00:10:00Z"
+  "gameDate": "2026-07-23T00:10:00Z",
+  "started": false
  },
  {
   "gamePk": 824166,
@@ -150,6 +166,7 @@
   "awaySP": "Sandy Alcantara",
   "homeSP": "Peter Lambert",
   "venue": "Daikin Park",
-  "gameDate": "2026-07-23T00:10:00Z"
+  "gameDate": "2026-07-23T00:10:00Z",
+  "started": false
  }
 ]

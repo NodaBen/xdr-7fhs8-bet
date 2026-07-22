@@ -990,5 +990,67 @@
   "book_spread": 0.0248,
   "fetched_at": "2026-07-22T15:05:19.354050+00:00",
   "source": "theoddsapi"
+ },
+ "822873": {
+  "home": "Texas Rangers",
+  "away": "Chicago White Sox",
+  "commence": "2026-07-23T00:06:00Z",
+  "book": "draftkings",
+  "homeML": -110,
+  "awayML": -110,
+  "total": 9.0,
+  "all_books": [
+   {
+    "book": "fanduel",
+    "homeML": -108,
+    "awayML": -108
+   },
+   {
+    "book": "lowvig",
+    "homeML": -105,
+    "awayML": -105
+   },
+   {
+    "book": "betonlineag",
+    "homeML": -105,
+    "awayML": -105
+   },
+   {
+    "book": "mybookieag",
+    "homeML": -107,
+    "awayML": -110
+   },
+   {
+    "book": "draftkings",
+    "homeML": -110,
+    "awayML": -110
+   },
+   {
+    "book": "bovada",
+    "homeML": -111,
+    "awayML": -109
+   },
+   {
+    "book": "betmgm",
+    "homeML": -110,
+    "awayML": -110
+   },
+   {
+    "book": "betus",
+    "homeML": -105,
+    "awayML": -105
+   },
+   {
+    "book": "betrivers",
+    "homeML": -110,
+    "awayML": -106
+   }
+  ],
+  "homeML_novig": 0.5004,
+  "awayML_novig": 0.4996,
+  "books_used": 9,
+  "book_spread": 0.0078,
+  "fetched_at": "2026-07-22T18:43:45.203840+00:00",
+  "source": "theoddsapi"
  }
 }
