@@ -96,6 +96,82 @@ safety and evidence integrity only.
 
 ---
 
+## v7.4 — 2026-07-22 — Void postponements, corroborated pick'ems
+
+Two defects found while verifying the v7.3 deploy against the live 07-22 board.
+
+### Fixed
+- **A postponed pick was treated as deferrable. It is void.** v7.3 deferred it
+  and told the operator to re-run once the makeup was final. That instruction
+  was wrong twice over:
+  - Mechanically. The makeup keeps the same `gamePk` but lives under the **new**
+    date, so `finals(original_date)` returns `Postponed` with null scores
+    forever. No re-run recovers it.
+  - Substantively, which matters more. The makeup is a different bet. BAL@BOS on
+    07-21 listed Kyle Bradish against Eduardo Rivera; the 07-22 makeup started
+    Dean Kremer against Jake Bennett. **Both starters changed.** Starting
+    pitching is 40% of the model by weight and 47.1% by measured influence, so
+    the frozen `model_prob` describes a matchup that was never played. Grading it
+    against the makeup would put a row in the calibration sample whose estimate
+    was conditioned on the wrong game.
+
+  Postponed / Cancelled / Suspended now report under VOID — no action, archived
+  nowhere, explicitly not recoverable. A merely late final still reports under
+  DEFERRED and is still re-runnable. Conflating the two was the actual bug.
+- **A unanimous pick'em was scored as an absent market.** `edge_score()` exempted
+  any line whose no-vig landed on exactly 0.500 from the market-divergence
+  penalty, on the theory that −110/−110 means the book has not formed a price.
+  True of one book alone. The opposite of true when the market agrees.
+
+  Live on 07-22: Texas priced −110/−110 at **nine books**, `book_spread` 0.0055.
+  That is the strongest consensus available — the market saying coin flip,
+  unanimously. The model claimed **80.2%**, the largest divergence on the board.
+  The exemption paid it `s_mkt` 45.0 instead of 0.0, worth **+9.0 Edge Score**,
+  and it took **rank 1**. The most divergent claim was promoted to the top of the
+  card *because* it was most divergent.
+
+  New `PICKEM_MIN_BOOKS = 3`. Below it a 0.500 line is still a placeholder; at or
+  above it the gap formula applies like any other price. Set to 1 to restore the
+  old behaviour.
+- **The same test was silently blacklisting real pick'ems from CLV** (C-E).
+  `run_daily.py` skipped a 0.500 no-vig when freezing the baseline, so a genuine
+  pick'em never got one and therefore never produced CLV — silently, permanently.
+  Texas was the only game of seventeen with no baseline **and** the rank-1 pick:
+  the model's most divergent claim was promoted and made unmeasurable by the same
+  line of code. Now uses `PICKEM_MIN_BOOKS`.
+
+### Changed
+- `model.py` threads `books_used` and `book_spread` into `odds_meta` so
+  `edge_score()` can see corroboration. When absent — only possible re-running
+  picks from a pre-v7.4 `model_output.json` — the gap formula applies, which is
+  the honest default.
+
+### Measured effect on the live 07-22 board
+| | before | after |
+|---|---|---|
+| Texas Rangers ES | 83.5 | **74.5** |
+| Texas Rangers rank | **1** | 10 |
+| Texas Rangers stake | 1U | 1U |
+| games with a CLV baseline | 16 / 17 | **17 / 17** |
+| picks published | 9 | 9 |
+| unit ladder | 0/1/2 | 0/1/2 |
+
+Every other pick moves up exactly one rank. **No stake changed on any pick, and
+no Edge Score other than Texas moved.**
+
+### Verified
+- 07-20 grade regression byte-identical: 4-4, 4/8 fired, −0.13U, CLV +0.34,
+  Brier 0.3385 vs 0.2770. No VOID or DEFERRED block.
+- 07-21 grade: Baltimore reports VOID (Postponed), 5 rows appended, 3-2,
+  5/5 fired, −0.52U, Brier 0.2775 vs 0.2329.
+
+### Note
+No model logic changed. K stays 0.05. Weights and the unit ladder are untouched.
+Edge Score rank order **does** move for a corroborated pick'em — see the locked
+decisions below.
+
+---
+
 ## v7.3 — 2026-07-22 — Postponement handling and post-start closers
 
 The 07-22 09:05 ET grade run **crashed and committed nothing**. Two postponements
@@ -471,6 +547,15 @@ changes above exist specifically to enforce them.
     rather than outcomes. The lock exists to prevent fitting to outcome noise,
     which this is not — but it names K explicitly. Whether a market-fitted K is
     exempt has not been decided. Until it is, K stays at 0.05.
+  - **Open amendment (v7.4):** the lock names "ES rank order". v7.4 corrects the
+    `s_mkt` branch that exempted a corroborated pick'em from the divergence
+    penalty, which moves Texas from rank 1 to rank 10 on the 07-22 board. The
+    argument that this is a bug fix rather than a tuning change: no weight,
+    threshold or ladder value moved, and the branch's stated premise ("no real
+    market opinion yet") is factually false at nine agreeing books. The argument
+    against: it is still a rank-order change, made without an outcome sample.
+    Shipped ON, revertable by setting `PICKEM_MIN_BOOKS = 1`. **Benjamin's call
+    to confirm or revert.**
 - Responsible-betting footer on every card. Outputs are expected value, never
   predictions. No outcome is guaranteed.
 

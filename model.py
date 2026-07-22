@@ -216,7 +216,11 @@ def run_slate(slate, snap, odds_map):
             sides[s]['novig'] = odds.get(f'{s}ML_novig') if odds else None
             sides[s]['edge_pct'] = round((p - sides[s]['implied']) * 100, 2) if ml is not None else None
         out.append({'game': okey, 'gamePk': g.get('gamePk'), 'venue': g['venue'],
-                    'odds_meta': {k: odds.get(k) for k in ('book','source','fetched_at','total')} if odds else None,
+                    'odds_meta': {k: odds.get(k) for k in ('book','source','fetched_at','total',
+                                                           # v7.4: picks.edge_score needs to know how many
+                                                           # books corroborate a -110/-110 line before it
+                                                           # treats that line as 'no market opinion'.
+                                                           'books_used','book_spread')} if odds else None,
                     'sides': sides, 'flags': flags,
                     'data_quality': 'FULL' if not any('TBD' in f or 'no FG' in f for f in flags) else 'DEGRADED'})
     return out

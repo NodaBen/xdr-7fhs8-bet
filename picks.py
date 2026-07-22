@@ -10,8 +10,39 @@ import json, math
 # Edge Score composite weights (tunable; the composite itself is locked)
 ES_W = {'edge': .35, 'reliability': .10, 'dq': .25, 'mkt_conf': .20, 'stability': .10}
 
+# v7.4 PICK'EM CORROBORATION THRESHOLD
+# The s_mkt branch below used to exempt ANY line whose no-vig landed on exactly
+# 0.500 from the market-divergence penalty, on the theory that -110/-110 is a
+# placeholder rather than a real price. That is true of ONE book with no
+# company. It is the opposite of true when the whole market agrees.
+#
+# Live on 07-22: Texas priced -110/-110 at NINE books, book_spread 0.0055. That
+# is not an absent opinion, it is the strongest possible consensus -- the market
+# is saying coin flip, unanimously. The model claimed 80.2%. The exemption
+# handed that pick s_mkt=45.0 instead of 0.0, worth +9.0 Edge Score points, and
+# it took rank 1 on the board: the single most divergent claim was promoted to
+# the top BECAUSE it was most divergent.
+#
+# Below this many corroborating books, a -110/-110 is still treated as a
+# placeholder. At or above it, the gap formula applies like any other price.
+# Set to 1 to restore pre-v7.4 behaviour.
+PICKEM_MIN_BOOKS = 3
+
 def prob_to_ml(p):
     return int(round(-100*p/(1-p))) if p >= .5 else int(round(100*(1-p)/p))
+
+def _uncorroborated(game):
+    """True when a 0.500 no-vig rests on too few books to be a real consensus.
+
+    v7.4. books_used is threaded through model.odds_meta. If it is absent --
+    only possible when re-running picks from a model_output.json written before
+    v7.4 -- fall through to the gap formula, which is the honest default: a
+    genuine placeholder is rare, and the exemption is the branch shown to be
+    wrong.
+    """
+    bu = (game.get('odds_meta') or {}).get('books_used')
+    return bu is not None and bu < PICKEM_MIN_BOOKS
+
 
 def edge_score(side, game, has_odds):
     # (1) model-vs-implied edge % -> 0-100 (0% edge=50, +10%=100, -10%=0)
@@ -28,8 +59,8 @@ def edge_score(side, game, has_odds):
         s_mkt = 40.0
     elif nv is None:
         s_mkt = 50.0
-    elif abs(nv - 0.5) < 1e-9:
-        s_mkt = 45.0   # -110/-110 placeholder line: no real market opinion yet
+    elif abs(nv - 0.5) < 1e-9 and _uncorroborated(game):
+        s_mkt = 45.0   # lone -110/-110: placeholder, no real market opinion yet
     else:
         gap = abs(side['model_prob'] - nv)
         s_mkt = max(0.0, 100.0 - gap * 500.0)

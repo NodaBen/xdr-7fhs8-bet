@@ -2,7 +2,7 @@
 Usage: python3 run_daily.py 2026-07-17"""
 import sys, json, requests, datetime
 from model import pull_snapshot, run_slate
-from picks import build_picks
+from picks import build_picks, PICKEM_MIN_BOOKS
 from odds import build_odds_map
 import odds as O
 
@@ -82,8 +82,16 @@ for pk, rec in omap.items():
     if pk in started_pks:
         continue  # v6.3: never freeze an in-play price as a pick-time baseline
     nv = rec.get('homeML_novig')
+    # v7.4 (C-E): this filter meant a GENUINE pick'em never got a baseline and
+    # therefore never produced CLV -- silently, permanently. On 07-22 Texas was
+    # the only game of 17 with no baseline, and it was simultaneously the board's
+    # rank-1 pick. The model's most divergent claim was both promoted and made
+    # unmeasurable by the same test. Same threshold as picks.PICKEM_MIN_BOOKS:
+    # a lone -110/-110 is a placeholder, a corroborated one is a price.
+    placeholder = (nv is not None and abs(nv - 0.5) < 1e-9
+                   and (rec.get('books_used') or 1) < PICKEM_MIN_BOOKS)
     real = (rec.get('homeML') is not None and rec.get('awayML') is not None
-            and not (nv is not None and abs(nv - 0.5) < 1e-9))  # skip -110/-110 placeholders
+            and not placeholder)
     if real:
         baseline[pk] = rec
         added += 1

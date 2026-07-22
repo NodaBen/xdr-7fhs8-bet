@@ -28,6 +28,24 @@ H = {'User-Agent': 'Mozilla/5.0'}
 # CLV and paper P/L are nulled and the row is flagged.
 MAX_CLOSER_AGE_MIN = 45
 
+# v7.4 TERMINAL NON-RESULTS
+# A pick on a game that was postponed is VOID, not pending. The makeup is a
+# different bet: BAL@BOS on 07-21 listed Kyle Bradish against Eduardo Rivera;
+# the 07-22 makeup started Dean Kremer against Jake Bennett. BOTH starters
+# changed. Starting pitching is 40% of the model by weight and 47.1% by
+# measured influence, so the 07-21 model_prob describes a matchup that was
+# never played. Grading it against the makeup result would inject a graded row
+# whose probability estimate was conditioned on the wrong game -- the same
+# class of error as lookahead, pointing the other way.
+#
+# This is also how a sportsbook treats it: a listed-pitcher moneyline is no
+# action when a listed starter is scratched.
+#
+# Mechanically the makeup keeps the same gamePk but lives under the NEW date,
+# so finals(original_date) returns Postponed with null scores forever. There is
+# no re-run that recovers these. Say so rather than promising one.
+VOID_STATES = ('Postponed', 'Cancelled', 'Suspended')
+
 
 def _now():
     return datetime.datetime.now(datetime.timezone.utc)
@@ -251,7 +269,7 @@ def grade(date):
 
     name_unmatched = []
 
-    rows, deferred, gsum = [], [], {'n': 0, 'w': 0, 'l': 0, 'fired': 0, 'no_closer': 0, 'pl': 0.0,
+    rows, deferred, voided, gsum = [], [], [], {'n': 0, 'w': 0, 'l': 0, 'fired': 0, 'no_closer': 0, 'pl': 0.0,
                       'clv_pts': [], 'model_p': [], 'close_nv': [], 'brier_m': [], 'brier_c': []}
     for p in picks:
         if p['units'] < 1 or p.get('edge_pct') is None:
@@ -265,7 +283,11 @@ def grade(date):
             # when its makeup was played, and the pick vanished from the sample
             # while still counting as processed. Defer instead: report it,
             # archive nothing, re-run once the result exists.
-            deferred.append((p, (f or {}).get('status_detail') or 'no result yet'))
+            det = (f or {}).get('status_detail') or 'no result yet'
+            # v7.4: a postponement is terminal, a late final is not. Conflating
+            # them produced a message telling the operator to re-run a date that
+            # can never resolve.
+            (voided if det in VOID_STATES else deferred).append((p, det))
             continue
         team = p['pick'].replace(' ML', '')
         # v7.2 (C8): this was a two-branch expression with no else. If the pick
@@ -394,12 +416,21 @@ def grade(date):
               f"{('W' if won else 'L') if won is not None else '--':>4} "
               f"{('%+.2f' % pl) if pl is not None else '    --':>6}  {st}")
 
+    if voided:
+        print(f"\n--- VOID {len(voided)} pick(s): no action on {date} ---")
+        for p, why in voided:
+            print(f"  {p['pick'][:27]:28} {p['units']:>2}U  {why}")
+        print(f"  NOT archived and NOT recoverable. The makeup is a different "
+              f"bet -- new starters, so the frozen model_prob describes a game "
+              f"that was never played. Do NOT re-run {date} expecting these. "
+              f"Treat as no action, exactly as a listed-pitcher wager would be.")
+
     if deferred:
-        print(f"\n--- DEFERRED {len(deferred)} pick(s): no result on {date} ---")
+        print(f"\n--- DEFERRED {len(deferred)} pick(s): no result yet on {date} ---")
         for p, why in deferred:
             print(f"  {p['pick'][:27]:28} {p['units']:>2}U  {why}")
-        print(f"  Intentionally NOT written to grades_archive.jsonl. Re-run "
-              f"`python3 grade.py grade {date}` once the makeup is final; the "
+        print(f"  Not archived. This is a timing gap, not a void -- re-run "
+              f"`python3 grade.py grade {date}` once the game finals; the "
               f"(date, gamePk) dedupe protects the rows already written.")
 
     if gsum['n']:
