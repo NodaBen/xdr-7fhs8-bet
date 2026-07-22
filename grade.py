@@ -166,18 +166,42 @@ def _rebuild_from_raw(raw, slate):
 
 # ---------------- GRADE ----------------
 def finals(date):
-    url = f'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={date}&hydrate=linescore'
+    # v7.3: +gameInfo. `gameDate` is the SCHEDULED start; `gameInfo.firstPitch`
+    # is when the game actually began. Free -- same endpoint, same call. On
+    # 07-21 LAD@PHI was scheduled 22:40Z and first-pitched 00:00Z after an
+    # 80-minute delay, so a closer snapped at 23:30Z is 30 min PREGAME, not
+    # 50 min post-start. Without this the negative-age guard below rejects a
+    # perfectly good closing line every time it rains.
+    url = f'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={date}&hydrate=linescore,gameInfo'
     r = requests.get(url, timeout=30, headers=H)
     r.raise_for_status()
     out = {}
     for d in r.json().get('dates', []):
         for g in d.get('games', []):
             st = g.get('status', {}).get('abstractGameState')
+            det = g.get('status', {}).get('detailedState')
             t = g.get('teams', {})
+            hs = t.get('home', {}).get('score')
+            asc = t.get('away', {}).get('score')
+            # v7.3: MLB StatsAPI reports abstractGameState 'Final' for a
+            # POSTPONED game -- detailedState 'Postponed', BOTH SCORES NULL.
+            # The old test was `st == 'Final'` alone, so a rainout passed the
+            # `not f['final']` guard and reached
+            #     won = f['home_score'] > f['away_score']
+            # -> TypeError: '>' not supported between NoneType and NoneType.
+            # That crash killed the 07-22 09:05 grade run: two PPDs on the
+            # 07-21 board (823519 PIT@NYY, 824735 BAL@BOS). Nothing was
+            # committed, and the 12:43 watchdog only checks for a missing
+            # BUILD, so it went undetected until the archive was inspected
+            # by hand. A final without a score is not a final.
+            # detailedState is carried through so a postponement can be told
+            # apart from a name-match failure (BF-B) in the report.
             out[str(g['gamePk'])] = {
-                'final': st == 'Final',
-                'home_score': t.get('home', {}).get('score'),
-                'away_score': t.get('away', {}).get('score'),
+                'final': st == 'Final' and hs is not None and asc is not None,
+                'status_detail': det,
+                'first_pitch': (g.get('gameInfo') or {}).get('firstPitch'),
+                'home_score': hs,
+                'away_score': asc,
                 'home': t.get('home', {}).get('team', {}).get('name'),
                 'away': t.get('away', {}).get('team', {}).get('name')}
     return out
@@ -189,13 +213,35 @@ def grade(date):
     picktime = _load(f'picktime_odds_{date}.json', {})
     fin = finals(date)
 
+    # v7.2 (O-D): first pitch per gamePk from the MLB slate. Closer staleness
+    # was being measured against the BOOKMAKER's commence_time; MLB's gameDate
+    # is authoritative and already on disk.
+    # v7.3: hoisted above the shadow call (was below the pick loop) so
+    # shadow.grade() measures staleness on the same authoritative clock.
+    slate_starts = {}
+    try:
+        for g in _load('slate.json', []):
+            if g.get('gameDate'):
+                slate_starts[str(g['gamePk'])] = g['gameDate']
+    except Exception as e:
+        print(f'[grade] slate.json unreadable, falling back to feed commence: {e}')
+
+    # v7.3: actual first pitch overrides the scheduled time wherever MLB
+    # published one. Precedence: gameInfo.firstPitch > slate gameDate >
+    # the odds feed's commence_time (least trustworthy -- it can point at a
+    # different event entirely, see the BAL@BOS makeup on 07-21).
+    starts = dict(slate_starts)
+    for _pk, _f in fin.items():
+        if _f.get('first_pitch'):
+            starts[_pk] = _f['first_pitch']
+
     # v7.2 (G-A): shadow needs FINALS ONLY. It handles closers={} correctly and
     # still records W/L plus full-range calibration across every game and both
     # sides. Running it after the closers precondition meant a missing price
     # destroyed the dataset that does not need prices. Moved ahead of the exit.
     try:
         import shadow
-        shadow.grade(date, fin, closers, MAX_CLOSER_AGE_MIN)
+        shadow.grade(date, fin, closers, MAX_CLOSER_AGE_MIN, starts=starts)
     except Exception as e:
         print(f'[shadow] non-fatal: {e}')
 
@@ -205,18 +251,7 @@ def grade(date):
 
     name_unmatched = []
 
-    # v7.2 (O-D): first pitch per gamePk from the MLB slate. Closer staleness was
-    # being measured against the BOOKMAKER's commence_time; MLB's gameDate is
-    # authoritative and already on disk.
-    slate_starts = {}
-    try:
-        for g in _load('slate.json', []):
-            if g.get('gameDate'):
-                slate_starts[str(g['gamePk'])] = g['gameDate']
-    except Exception as e:
-        print(f'[grade] slate.json unreadable, falling back to feed commence: {e}')
-
-    rows, gsum = [], {'n': 0, 'w': 0, 'l': 0, 'fired': 0, 'no_closer': 0, 'pl': 0.0,
+    rows, deferred, gsum = [], [], {'n': 0, 'w': 0, 'l': 0, 'fired': 0, 'no_closer': 0, 'pl': 0.0,
                       'clv_pts': [], 'model_p': [], 'close_nv': [], 'brier_m': [], 'brier_c': []}
     for p in picks:
         if p['units'] < 1 or p.get('edge_pct') is None:
@@ -224,7 +259,13 @@ def grade(date):
         pk = str(p.get('gamePk'))
         f, c, pt = fin.get(pk), closers.get(pk), picktime.get(pk)
         if not f or not f['final']:
-            rows.append((p, None, None, None, 'NO FINAL', None))
+            # v7.3 (H9/G-F): do NOT write a result-less row. It used to be
+            # appended with won=None, and the (date, gamePk) dedupe then locked
+            # it out PERMANENTLY -- so a postponed game could never be graded
+            # when its makeup was played, and the pick vanished from the sample
+            # while still counting as processed. Defer instead: report it,
+            # archive nothing, re-run once the result exists.
+            deferred.append((p, (f or {}).get('status_detail') or 'no result yet'))
             continue
         team = p['pick'].replace(' ML', '')
         # v7.2 (C8): this was a two-branch expression with no else. If the pick
@@ -270,10 +311,22 @@ def grade(date):
         age = None
         if c:
             snapped_at = _t(c.get('snapped_at'))
-            first_pitch = _t((slate_starts.get(pk) or c.get('commence')))
+            first_pitch = _t(starts.get(pk) or c.get('commence'))
             if snapped_at and first_pitch:
                 age = round((first_pitch - snapped_at).total_seconds() / 60, 1)
-        stale = bool(c) and (age is None or age > MAX_CLOSER_AGE_MIN)
+        # v7.3: a NEGATIVE age means the snapshot was taken AFTER first pitch.
+        # Two live routes, both seen on 07-21:
+        #   (a) an in-play price -- the v6.3 live-game failure re-entering
+        #       through the closer path rather than the build path;
+        #   (b) a postponement. The odds feed matched BAL@BOS to the 07-22
+        #       MAKEUP event (feed commence 1106 min after MLB's gameDate,
+        #       books_used 2 instead of 9) and odds.py wrote it into
+        #       closers_2026-07-21.json as that date's closing line, snapped
+        #       140 min after the original first pitch.
+        # `age > MAX` alone has no lower bound, so both were ACCEPTED. A price
+        # from a game already under way -- or from a different game entirely --
+        # is not a closing line.
+        stale = bool(c) and (age is None or age < 0 or age > MAX_CLOSER_AGE_MIN)
         if stale:
             # Refuse to price it. Treat exactly like a missing closer.
             no_closer = True
@@ -300,7 +353,13 @@ def grade(date):
             gsum['brier_m'].append((p['model_prob'] - o) ** 2)
             gsum['brier_c'].append((close_nv - o) ** 2)
         _agetxt = f'{age:.0f}m' if age is not None else 'age unknown'
-        status = (f'STALE CLOSER {_agetxt} (untested)' if stale
+        # v7.3: 'STALE CLOSER -140m' reads as a stale price. It is not the same
+        # defect and must not be diagnosed as one -- a stale price means the
+        # snap sweep was too sparse, a post-start price means the feed handed
+        # us the wrong event.
+        _stale_kind = ('POST-START CLOSER' if age is not None and age < 0
+                       else 'STALE CLOSER')
+        status = (f'{_stale_kind} {_agetxt} (untested)' if stale
                   else 'NO CLOSER (untested)' if no_closer
                   else 'FIRED' if fired else 'NO-BET (target unmet)')
         # v7.2 (M6): archive the RAW PRICES, not just the derived metrics.
@@ -334,6 +393,14 @@ def grade(date):
               f"{(cnv*100 if cnv else 0):5.1f}% {('%+.1f' % clv) if clv is not None else '   --':>6} "
               f"{('W' if won else 'L') if won is not None else '--':>4} "
               f"{('%+.2f' % pl) if pl is not None else '    --':>6}  {st}")
+
+    if deferred:
+        print(f"\n--- DEFERRED {len(deferred)} pick(s): no result on {date} ---")
+        for p, why in deferred:
+            print(f"  {p['pick'][:27]:28} {p['units']:>2}U  {why}")
+        print(f"  Intentionally NOT written to grades_archive.jsonl. Re-run "
+              f"`python3 grade.py grade {date}` once the makeup is final; the "
+              f"(date, gamePk) dedupe protects the rows already written.")
 
     if gsum['n']:
         avg = lambda x: sum(x)/len(x) if x else 0

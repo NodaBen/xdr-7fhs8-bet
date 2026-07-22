@@ -96,6 +96,81 @@ safety and evidence integrity only.
 
 ---
 
+## v7.3 — 2026-07-22 — Postponement handling and post-start closers
+
+The 07-22 09:05 ET grade run **crashed and committed nothing**. Two postponements
+on the 07-21 board were enough. This fixes the crash and two silent data defects
+found while recovering the run by hand.
+
+### Fixed
+- **`finals()` treated a postponement as a played game.** MLB StatsAPI reports
+  `abstractGameState: "Final"` for a PPD, with `detailedState: "Postponed"` and
+  **both scores null**. The test was `st == 'Final'` alone, so a rainout passed
+  the `not f['final']` guard and reached
+  `won = f['home_score'] > f['away_score']` → `TypeError: '>' not supported
+  between NoneType and NoneType`. 07-21 carried two: `823519` PIT@NYY and
+  `824735` BAL@BOS. First live-graded date with a PPD — 07-17's went through
+  `backfill.py`, which already handled it. A final without a score is not a
+  final.
+- **The stale-closer guard had no lower bound.** `stale = age is None or age >
+  MAX_CLOSER_AGE_MIN` accepted a **negative** age — a price snapped *after* first
+  pitch. Now `age < 0 or age > MAX`. Two live routes, both on 07-21:
+  - An in-play price. The v6.3 live-game failure re-entering through the closer
+    path rather than the build path.
+  - A postponement. The odds feed matched BAL@BOS to the **07-22 makeup event**
+    (feed `commence` 1106 min after MLB's start, `books_used` 2 instead of 9) and
+    `odds.py` wrote it into `closers_2026-07-21.json` as that date's closing
+    line, snapped 140 min after the original first pitch.
+- **`shadow.py` had the same defect** plus it measured age against the
+  bookmaker's `commence_time`. It now takes a `starts` map and applies the same
+  lower bound. Four rows of fabricated CLV would have entered
+  `shadow_archive.jsonl` on its first production write.
+- **Result-less rows are no longer archived.** A `NO FINAL` row used to be
+  appended with `won=None`; dedupe on `(date, gamePk)` then locked it out
+  **permanently**, so a postponed game could never be graded when its makeup was
+  played. Such picks are now reported under DEFERRED and written nowhere. Closes
+  H9/G-F.
+
+### Added
+- `finals()` hydrates `gameInfo` and returns `gameInfo.firstPitch`. Free — same
+  endpoint, same call. `gameDate` is the *scheduled* start; on 07-21 LAD@PHI was
+  scheduled 22:40Z and first-pitched 00:00Z after an 80-minute delay. Without
+  this the new negative-age guard rejects a good closing line every time it
+  rains. Clock precedence is now `gameInfo.firstPitch` → slate `gameDate` →
+  feed `commence`.
+- `status_detail` on each finals record, so a postponement is distinguishable
+  from a name-match failure in the report (BF-B).
+- DEFERRED block in the grade report, naming the reason and the re-run command.
+
+### Verified
+- **Regression, 07-20:** byte-identical to the committed
+  `docs/archive/2026-07-20_grade.txt` — 4-4, 4/8 fired, −0.13U, avg CLV +0.34,
+  Brier 0.3385 vs 0.2770. Only the median closer age moves, 31m → 33m, which is
+  the actual-first-pitch correction.
+- **07-21 recovered:** 3-2, 5/5 fired, −0.52U, avg CLV −0.11, Brier model 0.2775
+  vs close 0.2329. Baltimore deferred, not archived. 5 rows written, not 6.
+- **Closer coverage 5/5 fresh, 0 stale, median age 32 min**, against a baseline
+  of 4 of 8 on 07-20. The v6.7/v7.1 snap sweep consolidation works: 7 API calls
+  covered 15 games, and the only board-wide miss was a postponed game.
+- **`shadow_archive.jsonl` written for the first time in production** — 26 rows,
+  13 games, 24 with CLV, spanning `<40%` through `70%+`.
+
+### Not fixed here
+- `odds.py` still matches closer events by team name and will keep binding a
+  rescheduled game to the original `gamePk`. The guard above catches the
+  consequence; the cause is the same key-on-teams defect as BF-D. Verify against
+  MLB `gamePk` or reject on a large `commence` divergence.
+- A day where every pick is postponed now writes zero rows, which the workflow's
+  `if [ "$AFTER" -le "$BEFORE" ]` still treats as a failure (Y-D).
+- The 12:43 watchdog checks for a missing **build** only. This crash killed a
+  **grade** and was invisible (Y-C).
+
+### Note
+No model logic changed. K stays 0.05. No weights, Edge Score, or unit ladder
+touched.
+
+---
+
 ## v7.1 — 2026-07-21 — Calibration harness
 
 Fits the logistic slope K against market consensus instead of against outcomes.

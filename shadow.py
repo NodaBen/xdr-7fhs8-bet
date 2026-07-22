@@ -81,11 +81,14 @@ def snapshot(date, model_output):
     return snap
 
 
-def grade(date, finals, closers, max_age_min=45):
+def grade(date, finals, closers, max_age_min=45, starts=None):
     """Join the frozen snapshot to results. Appends to shadow_archive.jsonl.
 
     `finals`  : {gamePk: {home, away, home_score, away_score, final}} from grade.finals
     `closers` : closers_<date>.json
+    `starts`  : {gamePk: MLB gameDate} from slate.json. v7.3 -- staleness is
+                measured against MLB's clock, matching grade.py, and falls back
+                to the feed's commence only when the slate has no entry.
     Dedupe-safe on (date, gamePk, side).
     """
     snap = _load(SNAP.format(date), {})
@@ -123,10 +126,18 @@ def grade(date, finals, closers, max_age_min=45):
         c = closers.get(pk) or {}
         close_nv = c.get(f'{side}ML_novig')
         age = None
-        snapped_at, commence = _t(c.get('snapped_at')), _t(c.get('commence'))
-        if snapped_at and commence:
-            age = round((commence - snapped_at).total_seconds() / 60, 1)
-        stale = age is not None and age > max_age_min
+        snapped_at = _t(c.get('snapped_at'))
+        # v7.3: MLB's gameDate is authoritative. The feed's commence_time can
+        # point at a DIFFERENT event -- on 07-21 it pointed at the 07-22 makeup
+        # for the postponed BAL@BOS, 1106 minutes adrift.
+        first_pitch = _t((starts or {}).get(pk) or c.get('commence'))
+        if snapped_at and first_pitch:
+            age = round((first_pitch - snapped_at).total_seconds() / 60, 1)
+        # v7.3: negative age = snapshot taken AFTER first pitch, so it is either
+        # an in-play price or a price belonging to another game. Neither is a
+        # closing line. `age > max_age_min` alone had no lower bound and
+        # accepted both into the dataset the go-live decision rests on.
+        stale = age is not None and (age < 0 or age > max_age_min)
         if stale:
             close_nv = None
         pt_nv = s.get('novig')
