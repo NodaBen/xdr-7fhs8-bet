@@ -12,87 +12,119 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
-## v7.2 - 2026-07-21 - Tier 0 safety pass
+## v7.5 — 2026-07-22 — MLBAM ID join
 
-Nine correctness fixes from the full-repo audit. No model logic changed. Verified
-by regression: `grade.py` on the real 07-20 board produces byte-identical output
-(4-4, -0.13U, Brier 0.3385 vs 0.2770).
+The join key was published by all three data sources and used by none of them.
+6.9% of starter-games were scored replacement-level over a string mismatch, and
+the card presented that as scouting.
 
 ### Fixed
-- **Zero-pick day crashed the renderer.** `render.py` guarded `m_name`/`m_stake`
-  but not the marquee STAT cells, so `m['edge_score']` raised
-  `TypeError: 'NoneType' object is not subscriptable`. The build then failed the
-  workflow's `test -s`, `docs/index.html` was never rewritten, and GitHub Pages
-  kept serving the PREVIOUS day's picks until the 12:43 watchdog. Proven by
-  forcing every pick to 0U on the real 07-21 board. "Passing is a position" is a
-  locked rule; the card must render it, not die on it.
-- **`grade.py` could grade the opposing team's result.** The side resolution was
-  a two-branch expression with no `else`; a pick matching neither team fell
-  through to `away` silently, inverting W/L, CLV, paper P/L and calibration for
-  that row. `model.py` maps both `ATH` and `OAK` to "Athletics", so this was
-  live. Now refuses the row and prints `::error::`. `backfill.py` already had
-  the correct three-branch form - this adopts it.
-- **The stale-closer guard failed OPEN.** A missing or unparseable timestamp
-  left `age=None`, which made `stale=False`, which ACCEPTED the price. The guard
-  exists to keep fabricated CLV out of the go-live sample, so its failure mode
-  must be refusal. Unknown age is now stale.
-- **Closer staleness was measured against the bookmaker's clock.** Age now uses
-  MLB's `slate.json` `gameDate` (authoritative), falling back to the feed's
-  `commence` only when the slate has no entry.
-- **The printed calibration gap could never be negative.** `abs()` followed by
-  `:+.1f` forced a plus sign onto a magnitude, destroying the direction of the
-  model's error in the permanent graded record.
-- **`shadow.snapshot()` could take down the card.** Called bare in
-  `run_daily.py` and running BEFORE `build_picks`, any malformed game dict
-  killed the build with no picks and no publish. Now wrapped, matching
-  `grade.py`.
-- **A missing closers file destroyed the shadow dataset.** `shadow.grade()` sat
-  after the `sys.exit` on empty closers, but it needs finals only and handles
-  `closers={}` correctly. Moved ahead of the exit.
-- **Credit guard blocked builds before snaps.** A build costs 2 and a snap 1
-  against a shared floor, so at `rem=41` the build was blocked while the snap
-  was allowed - the exact reverse of the documented "snaps starve first" policy.
-  A full-month simulation also terminates at exactly `rem=RESERVE`, meaning the
-  40 reserved credits were never spendable by anything and the card would go
-  dark for the rest of the month. The floor is now purpose-aware: snaps stop at
-  RESERVE, builds and grades spend into it. That is what makes it a reserve.
-- **Workflow concurrency serialized nothing.** `github.event.schedule` is empty
-  for `repository_dispatch`, now the sole trigger, so the group fell through to
-  a unique-per-run value for 100% of real traffic. Fixed to
-  `github.event.action || github.event.schedule || 'manual'`.
+- **`sp_score()` joins on the MLBAM ID, not the display name.** MLB StatsAPI
+  publishes `probablePitcher.id`, FanGraphs publishes `xMLBAMID`, Savant
+  publishes the `pitcher` column. All three are the same identifier. Both slate
+  builders were dropping StatsAPI's, forcing `model.py` to join a FanGraphs row
+  to a StatsAPI name across two different name registries.
 
-### Added
-- **Raw prices on every archived row**: `side`, `pt_ml`, `close_ml`, `pt_novig`,
-  `close_novig`, `books_used`, `book_spread`. Without these, paper P/L cannot be
-  recomputed under a corrected booking rule, and every graded day written
-  without them is unrecoverable. First row written under the new schema already
-  shows the value: Milwaukee 07-20 moved -199 to -149 against the pick, a
-  material adverse move that was invisible because the closer was stale.
-- **`backfill.py` refuses to destroy evidence.** It now declines any date that
-  has a `closers_{date}.json`, and any date newer than yesterday. Previously,
-  running it on a graded-pending date appended `clv_pts: None` rows that
-  `grade.py`'s `(date, gamePk)` dedupe would then skip forever - permanently
-  recording a day of real closing prices as having none. This was the only path
-  in the system that could silently delete CLV.
-- **Name-match failures are now loud and separate.** `backfill.py`'s single
-  `unmatched` counter merged three different outcomes: not final, no score, and
-  team name matching neither side. The third is the C2/C8 class of bug, and
-  averaging it in with rainouts meant the one counter that would detect it
-  could not. Now reported as `ppd` / `no_score` / `NAME UNMATCHED`, with the
-  last raising `::error::`.
+  *Measured over 306 starter-games, 07-08 to 07-21:* the exact-name join failed
+  **21 times (6.9%)**. Every one scored 40.0/100, and `chips()` fires
+  "opp SP weak" at `<= 42`. **The ID join recovers 21 of 21; residual misses
+  are zero.**
 
-### Suppressed
-- **Parlay panel.** `build_parlays` multiplies model probabilities together, and
-  the model is currently over-dispersed by ~2.8x against market consensus, so a
-  joint probability compounds that error geometrically - two legs shown at
-  77%/75% display "joint 57.8%" against an observed hit rate of 46.4%. The
-  function is intact behind `PARLAYS_ENABLED = False`; the panel now explains
-  why it is off. Re-enable after the model passes a Brier check against market
-  on the shadow archive.
+  **There were two independent registry mismatches, not one.** The 07-21 audit
+  saw only the first and proposed accent-folding as a stopgap:
+  1. *Diacritics.* FG strips them — `Reynaldo Lopez` vs `Reynaldo López`.
+  2. *Given names.* FG uses the roster/legal first name, StatsAPI the preferred
+     one — `Cameron`/`Cam Schlittler`, `Jackson`/`Jack Perkins`,
+     `Zachary`/`Zac Thornton`. The audit recorded all three of these as
+     "genuine callup — none". They are not. Cameron Schlittler had **21 GS and
+     123 IP** and was being scored replacement-level.
 
-### Not changed
-K stays at 0.05. No weights, no Edge Score, no unit ladder. This release is
-safety and evidence integrity only.
+  Accent folding fixes 8 of the 11 distinct names and misses all of case 2.
+  Fuzzy/last-name matching is worse than useless: FG's pool holds both
+  `Zachary Thornton` and `Trent Thornton`.
+- **`matchup_score()` joins on the Savant `pitcher` id.** The old `"Last, First"`
+  key inherited the same registry drift and failed outright on any name whose
+  last token is a suffix. **Correction to the handoff:** the arsenal-*usage*
+  leaderboard's ID column is `pitcher`, not `player_id` — `player_id` is on the
+  batter arsenal-*stats* table. Verified live.
+- **An unresolvable starter no longer publishes as scouting.** `sp_score`
+  returned `40.0`, which sits inside the chip's `<= 42` window, so every data
+  failure was *structurally guaranteed* to emit a weakness chip. It now returns
+  a neutral `50.0` with a `BLOCK` flag, the side is marked `BLOCKED`, and
+  `units()` returns 0. A missing starter is an absence of information, not
+  evidence of weakness. "Passing is a position."
+- **The weakness chip requires an actual read.** `opp SP weak` now fires only
+  when the opposing starter resolved. An unannounced starter gets a neutral
+  `opp SP TBD — unannounced` chip instead of a red `38/100`, which was a stated
+  prior dressed as a measurement. `BLOCKED` games chip `NO SP READ`, distinct
+  from `DEGRADED`.
+- **`data_quality` is declared, not parsed.** It was
+  `'TBD' in f or 'no FG' in f` over free text, so five neutral-default paths
+  passed as FULL while feeding a fabricated 50.0 into up to 25% of the
+  composite: no offense data, unmapped bullpen, no odds posted, matchup failure,
+  and no L30 sample. Severity (`BLOCK`/`DEGRADED`/`INFO`) is now declared at the
+  point the default is taken.
+- **Flags are per-side (M-D).** One shared list meant a failure on the away
+  starter marked the whole game DEGRADED with no way to tell which side degraded
+  — the renderer had no per-side signal even if it wanted one. Each side now
+  carries `flags` and `data_quality`; the game-level values are the merge and
+  the worse-of-two, so existing consumers are unchanged.
+
+### Changed
+- **One slate builder (C-C).** `run_daily.py` now imports `build()` from
+  `slate_only.py`. Two near-identical implementations had to stay in sync by
+  hand and both dropped the ID; there is now one place for that to go wrong.
+- Slate rows carry `awaySP_id` / `homeSP_id`. Sides carry `sp_id` and
+  `sp_resolved`. Picks carry `blocked` and `side_quality`.
+
+### Measured effect on the live 07-22 board (13 pregame games)
+| | before | after |
+|---|---|---|
+| Martín Pérez SP score | 40.0 (fabricated) | **21.4 (real)** |
+| ATL home win prob | 51.5% | **42.3%** |
+| San Diego Padres | 0U, rank 13, ES 58.9 | **2U, rank 2, ES 79.9** |
+| picks at ≥1U | 7 | **8** |
+| unit ladder | 0/1 | **0/1/2** |
+| games DEGRADED | 2 | 1 |
+| all other 12 picks | — | **unchanged: ES, units and side identical** |
+
+One side moved. It moved 18.6 points of SP score and flipped which team the
+model favors. **Note the direction: the fabricated 40.0 was too HIGH here.** The
+error is not a bias, it is noise injected into 47% of the model by measured
+influence, and it lands in whichever direction the missing pitcher happens to
+differ from replacement level.
+
+### Verified
+- Legacy regression: new `picks.py` against the committed pre-v7.5
+  `model_output.json` reproduces **identical units, Edge Scores, ranks and
+  sides** on all 13 games. The only delta is the intended TBD chip change.
+- `opp.get('sp_resolved', True)` — absent means legacy, explicit `False` means
+  unresolved. Defaulting to `False` silently deleted **every** weakness chip on
+  the board when picks were re-run from a cached pre-v7.5 `model_output.json`,
+  which the pipeline is designed to do. Caught in regression, not in review.
+- Forced-block test: an injected unresolvable starter yields side
+  `BLOCKED`, `sp` 50.0, `units` 0, no weakness chip, and the board still renders.
+- Forced all-BLOCKED board renders in the zero-pick state without crashing
+  (v7.2's marquee guard holds).
+- `shadow.snapshot()` survives the new side fields.
+
+### Note
+No model logic changed. K stays 0.05. No weights, no Edge Score formula, no unit
+ladder. This is a data-identity fix — but unlike v7.2/v7.3/v7.4 it **does** move
+a live stake, because it changes what the model is reading.
+
+### Not fixed here
+- `SP TBD` still scores 38.0 rather than blocking. That is a defensible prior on
+  a genuinely unannounced starter, unlike an unresolved one, but it is still a
+  constant sitting in 47% of the model and it still publishes at 1U. Open
+  decision for Benjamin.
+- `no odds posted` is now `DEGRADED` where it was previously `FULL`. Correct on
+  the merits — no price means no measurable edge — but it caps an unpriced board
+  at 1U, which is a behaviour change that will not show up until a board has no
+  odds.
+- Small-sample shrinkage (M-F) is untouched. `snap['pit']` is still `qual=10`, so
+  a starter under 10 IP whose L30 hits still puts 40% of the model on one month
+  of unshrunk data. That is Task 4.
 
 ---
 
@@ -244,6 +276,90 @@ found while recovering the run by hand.
 ### Note
 No model logic changed. K stays 0.05. No weights, Edge Score, or unit ladder
 touched.
+
+---
+
+## v7.2 — 2026-07-21 — Tier 0 safety pass
+
+Nine correctness fixes from the full-repo audit. No model logic changed. Verified
+by regression: `grade.py` on the real 07-20 board produces byte-identical output
+(4-4, -0.13U, Brier 0.3385 vs 0.2770).
+
+### Fixed
+- **Zero-pick day crashed the renderer.** `render.py` guarded `m_name`/`m_stake`
+  but not the marquee STAT cells, so `m['edge_score']` raised
+  `TypeError: 'NoneType' object is not subscriptable`. The build then failed the
+  workflow's `test -s`, `docs/index.html` was never rewritten, and GitHub Pages
+  kept serving the PREVIOUS day's picks until the 12:43 watchdog. Proven by
+  forcing every pick to 0U on the real 07-21 board. "Passing is a position" is a
+  locked rule; the card must render it, not die on it.
+- **`grade.py` could grade the opposing team's result.** The side resolution was
+  a two-branch expression with no `else`; a pick matching neither team fell
+  through to `away` silently, inverting W/L, CLV, paper P/L and calibration for
+  that row. `model.py` maps both `ATH` and `OAK` to "Athletics", so this was
+  live. Now refuses the row and prints `::error::`. `backfill.py` already had
+  the correct three-branch form - this adopts it.
+- **The stale-closer guard failed OPEN.** A missing or unparseable timestamp
+  left `age=None`, which made `stale=False`, which ACCEPTED the price. The guard
+  exists to keep fabricated CLV out of the go-live sample, so its failure mode
+  must be refusal. Unknown age is now stale.
+- **Closer staleness was measured against the bookmaker's clock.** Age now uses
+  MLB's `slate.json` `gameDate` (authoritative), falling back to the feed's
+  `commence` only when the slate has no entry.
+- **The printed calibration gap could never be negative.** `abs()` followed by
+  `:+.1f` forced a plus sign onto a magnitude, destroying the direction of the
+  model's error in the permanent graded record.
+- **`shadow.snapshot()` could take down the card.** Called bare in
+  `run_daily.py` and running BEFORE `build_picks`, any malformed game dict
+  killed the build with no picks and no publish. Now wrapped, matching
+  `grade.py`.
+- **A missing closers file destroyed the shadow dataset.** `shadow.grade()` sat
+  after the `sys.exit` on empty closers, but it needs finals only and handles
+  `closers={}` correctly. Moved ahead of the exit.
+- **Credit guard blocked builds before snaps.** A build costs 2 and a snap 1
+  against a shared floor, so at `rem=41` the build was blocked while the snap
+  was allowed - the exact reverse of the documented "snaps starve first" policy.
+  A full-month simulation also terminates at exactly `rem=RESERVE`, meaning the
+  40 reserved credits were never spendable by anything and the card would go
+  dark for the rest of the month. The floor is now purpose-aware: snaps stop at
+  RESERVE, builds and grades spend into it. That is what makes it a reserve.
+- **Workflow concurrency serialized nothing.** `github.event.schedule` is empty
+  for `repository_dispatch`, now the sole trigger, so the group fell through to
+  a unique-per-run value for 100% of real traffic. Fixed to
+  `github.event.action || github.event.schedule || 'manual'`.
+
+### Added
+- **Raw prices on every archived row**: `side`, `pt_ml`, `close_ml`, `pt_novig`,
+  `close_novig`, `books_used`, `book_spread`. Without these, paper P/L cannot be
+  recomputed under a corrected booking rule, and every graded day written
+  without them is unrecoverable. First row written under the new schema already
+  shows the value: Milwaukee 07-20 moved -199 to -149 against the pick, a
+  material adverse move that was invisible because the closer was stale.
+- **`backfill.py` refuses to destroy evidence.** It now declines any date that
+  has a `closers_{date}.json`, and any date newer than yesterday. Previously,
+  running it on a graded-pending date appended `clv_pts: None` rows that
+  `grade.py`'s `(date, gamePk)` dedupe would then skip forever - permanently
+  recording a day of real closing prices as having none. This was the only path
+  in the system that could silently delete CLV.
+- **Name-match failures are now loud and separate.** `backfill.py`'s single
+  `unmatched` counter merged three different outcomes: not final, no score, and
+  team name matching neither side. The third is the C2/C8 class of bug, and
+  averaging it in with rainouts meant the one counter that would detect it
+  could not. Now reported as `ppd` / `no_score` / `NAME UNMATCHED`, with the
+  last raising `::error::`.
+
+### Suppressed
+- **Parlay panel.** `build_parlays` multiplies model probabilities together, and
+  the model is currently over-dispersed by ~2.8x against market consensus, so a
+  joint probability compounds that error geometrically - two legs shown at
+  77%/75% display "joint 57.8%" against an observed hit rate of 46.4%. The
+  function is intact behind `PARLAYS_ENABLED = False`; the panel now explains
+  why it is off. Re-enable after the model passes a Brier check against market
+  on the shadow archive.
+
+### Not changed
+K stays at 0.05. No weights, no Edge Score, no unit ladder. This release is
+safety and evidence integrity only.
 
 ---
 
@@ -554,14 +670,81 @@ changes above exist specifically to enforce them.
     threshold or ladder value moved, and the branch's stated premise ("no real
     market opinion yet") is factually false at nine agreeing books. The argument
     against: it is still a rank-order change, made without an outcome sample.
-    Shipped ON, revertable by setting `PICKEM_MIN_BOOKS = 1`. **Benjamin's call
-    to confirm or revert.**
+    **RESOLVED 2026-07-22: confirmed, and superseded.** The threshold stays at 3
+    until the next `picks.py` change, at which point the exemption is deleted
+    rather than tuned — see "Pick'em exemption: delete, don't tune" under Open
+    items for the evidence. (v7.5 touched `picks.py` and deliberately passed on
+    it, to keep its regression attributable to one cause.) Deleting is the cleaner answer to this amendment:
+    removing a special case that never once fired correctly is not a rank-order
+    tune, and on all observed data it produces output identical to what is
+    already deployed.
 - Responsible-betting footer on every card. Outputs are expected value, never
   predictions. No outcome is guaranteed.
 
 ---
 
 ## Open items
+
+- **Pick'em exemption: delete, don't tune.** Queued for the next `picks.py`
+  change (Tier 2). Do **not** deploy on its own — on every day observed it
+  produces output identical to `PICKEM_MIN_BOOKS = 3`, so a separate upload buys
+  nothing.
+
+  **STILL OPEN after v7.5, deliberately.** v7.5 *was* a `picks.py` change and
+  *was* Tier 2, so by the trigger written here it should have carried the
+  deletion. It did not, and the reason is blast radius: v7.5's entire claim is
+  that it changes identity resolution and nothing else, and that claim is what
+  makes its regression evidence readable — 12 of 13 picks byte-identical, one
+  side moved for a traceable reason. Folding in an Edge Score branch change
+  would have produced a board diff with two causes and no clean attribution.
+  The trigger moves to the next `picks.py` change after v7.5.
+
+  *Frequency.* The branch guards a lone-book −110/−110 placeholder. Across 116
+  stored odds records spanning six days and nine files, that has occurred
+  **zero times**. The branch has fired exactly once, on 07-22.
+
+  *And that once was not a placeholder.* Nine books priced Texas, six of them
+  exactly symmetric:
+  ```
+  fanduel     -108/-108  0.50000    mybookieag  -110/-107  0.50332
+  lowvig      -105/-105  0.50000    bovada      -109/-111  0.49784
+  betonlineag -105/-105  0.50000    betrivers   -108/-109  0.49889
+  draftkings  -110/-110  0.50000
+  betmgm      -110/-110  0.50000
+  betus       -105/-105  0.50000
+                          MEAN      0.5000051  -> stored 0.5
+  ```
+  True consensus was **0.5000051**. It became exactly `0.5` because `odds.py:178`
+  does `round(novig, 4)`. So `abs(nv - 0.5) < 1e-9` never tested what it appears
+  to test — the `1e-9` is decorative and the operative tolerance is the storage
+  rounding, 5e-5. Five millionths the other way and the pick scores correctly
+  with no patch at all. A 9-point Edge Score swing and a 9-position rank swing
+  hung off a float rounding artifact, and the market opinion the branch dismissed
+  as absent was in fact near-unanimous.
+
+  *Why a threshold does not fix it.* It relocates the discontinuity rather than
+  removing it: a 2-book game at 0.50000 still receives `s_mkt` 45.0 while the
+  same game at 0.50001 receives the gap formula. And book counts are not
+  independent opinions — several of these books run off shared odds feeds, so
+  three books agreeing on −110/−110 is not three people concluding coin flip.
+
+  *The change.*
+  - `picks.py` — delete the exemption. When odds exist, the gap formula always
+    applies. Removes the cliff and roughly ten lines.
+  - `run_daily.py` — keep a CLV-baseline guard, since a fabricated −110/−110
+    baseline manufactures fake CLV on the primary validation metric. But test the
+    raw prices on an uncorroborated record — `books_used <= 1 and homeML ==
+    awayML` — which describes an actual placeholder and cannot be tripped by
+    averaging or rounding.
+  - If a genuine placeholder ever appears, it should not be scored with a neutral
+    at all: it should not publish. No real price means no measurable edge, no
+    trustworthy target price, and no CLV. "Passing is a position" already covers
+    it, and `has_odds is False` already routes to `s_mkt = 40` — a placeholder
+    belongs on that path.
+
+  *General lesson.* Do not test a rounded float for equality. `novig` is stored
+  at 4dp; any predicate keyed on it inherits a tolerance nobody chose. These two
+  call sites were the only such tests in the repo — keep it that way.
 
 - **K refit** — harness shipped in v7.1, decision pending n≥150 (~early August).
   Watch three things as n grows: the slope interval, the intercept (currently
@@ -581,6 +764,22 @@ changes above exist specifically to enforce them.
   `repository_dispatch` run, so dispatched runs are not serialized. Fix:
   `github.event.action || github.event.schedule || 'manual'`. Low risk at
   20-minute snap spacing. Not deployed.
+- **`SP TBD` still scores 38.0 and still publishes at 1U** (new, v7.5). v7.5
+  blocked the *unresolved* starter but left the *unannounced* one. An
+  unannounced starter is a defensible prior rather than fabricated scouting, so
+  the constant was kept and only the chip was made honest — neutral
+  `opp SP TBD — unannounced` instead of a red `38/100`. It is still a fixed
+  constant sitting in 47% of the model by measured influence, on a game that
+  stakes real units. Decide whether TBD should block the way BLOCKED does.
+- **`no odds posted` is now `DEGRADED` where it was `FULL`** (new, v7.5).
+  Correct on the merits — no price means no measurable edge and no trustworthy
+  target — but it caps an unpriced board at 1U, and that change will not surface
+  until a board actually has no odds. Untested in production.
+- **Small-sample pitcher shrinkage untouched** (M-F). `snap['pit']` is `qual=10`,
+  so a starter under 10 IP whose L30 hits still puts 40% of the model on one
+  month of unshrunk data. v7.5 makes this *more* exposed, not less: the ID join
+  now resolves callups that previously fell through to a constant, so they get
+  scored on thin samples rather than not scored at all. Task 4.
 - **No Kelly or exposure cap.**
 - **Go-live criteria undefined.** The longest-standing open item. Everything
   above is instrumentation for a decision whose threshold has not been written
