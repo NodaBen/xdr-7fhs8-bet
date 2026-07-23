@@ -150,6 +150,10 @@ def grade(date, finals, closers, max_age_min=45, starts=None):
             'close_novig': close_nv, 'won': won, 'clv_pts': clv,
             'closer_age_min': age, 'stale': bool(stale),
             'edge_pct': s.get('edge_pct'), 'data_quality': s.get('data_quality'),
+            # v7.7: carry the composite and per-category scores into the archive
+            # so calibration and per-category analysis run off one file instead
+            # of a manual join against shadow_<date>.json.
+            'composite': s.get('composite'), 'cats': s.get('cats'),
         })
 
     with open(ARCHIVE, 'a') as fh:
@@ -172,6 +176,14 @@ def grade(date, finals, closers, max_age_min=45, starts=None):
                       f'model {sum(r["model_prob"] for r in b)/len(b)*100:5.1f}%')
     else:
         print('[shadow] no new rows to append')
+    # v7.7: the model-vs-market Brier is the number the go/no-go rests on and it
+    # was only reachable via `python3 shadow.py` by hand. summary() re-reads the
+    # archive from disk, so it includes the rows just appended. Print-only and
+    # wrapped: a reporting failure must never take down grading.
+    try:
+        summary()
+    except Exception as e:
+        print(f'[shadow] summary failed (non-fatal): {e}')
     return rows
 
 

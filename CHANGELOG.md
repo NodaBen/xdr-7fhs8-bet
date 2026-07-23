@@ -128,6 +128,49 @@ a live stake, because it changes what the model is reading.
 
 ---
 
+## v7.7 — 2026-07-23 — Shadow archive carries cats; Brier lands in the grade artifact
+
+Two gaps, one file (`shadow.py`), zero model logic.
+
+### Fixed
+- **The go/no-go number was never committed to any artifact.** `shadow.grade()`
+  printed the per-date bucket table but not the Brier; `summary()` printed the
+  model-vs-market Brier but was reachable only by running `python3 shadow.py` in
+  a terminal. The number the August decision rests on existed nowhere in the
+  repository. `grade()` now calls `summary()` after appending rows — `summary()`
+  re-reads the archive from disk, so the just-appended date is included — and the
+  cumulative calibration table plus the Brier comparison land in the committed
+  `docs/archive/{date}_grade.txt` from the next grade run onward. Print-only and
+  wrapped in try/except: a reporting failure must never take down grading.
+- **Archive rows dropped `composite` and `cats`.** The frozen snapshots carry
+  both (since v7.1); the archive rows did not, so every per-category analysis
+  required a manual join across `shadow_<date>.json` files. New rows now persist
+  both fields. Additive: existing rows are untouched and consumers use `.get()`.
+  Past dates are recoverable from the committed snapshots, so nothing was lost —
+  the analysis is now durable and one-file.
+
+### Verified
+- `python3 shadow.py` unchanged: 60 rows / 30 games / 2 dates,
+  Brier model 0.2919 | market 0.2502.
+- **07-22 regression** (archived picks copied over `picks.json`,
+  `grade.py grade 2026-07-22`): pick table and board grade byte-identical to the
+  committed `2026-07-22_grade.txt` — 3-6, 7/9 fired, −4.39U, avg CLV −0.32,
+  gap +19.1, Brier 0.3895 vs 0.2327. Only diffs: the dedupe counters (expected on
+  a rerun) and the new summary block. `shadow_archive.jsonl` md5-identical before
+  and after; `grades_archive.jsonl` unchanged at 42 rows, 9 duplicates skipped.
+- **Change (a) exercised in a sandbox copy**: stripped the 34 07-22 rows from a
+  scratch archive and regraded — all 34 re-appended rows carry `composite` and a
+  full 6-category `cats` dict, and bucket counts reproduce the original run.
+
+### Note
+No model logic changed. K stays 0.05. No weights, Edge Score, or unit ladder
+touched. Known limitation carried forward (S-B): `summary()` computes the model
+Brier over all rows but the market Brier over the subset with `pt_novig` —
+currently the same 60 rows, but the samples can diverge; fix belongs with the
+Item 4/5 reporting work, not here.
+
+---
+
 ## v7.6 — 2026-07-23 — Commence-drift guard on the odds matcher
 
 One additive guard in `odds.py`. No model logic, no weights, no unit ladder, no
