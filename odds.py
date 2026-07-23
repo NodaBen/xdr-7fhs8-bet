@@ -20,6 +20,18 @@ import budget
 
 H = {'User-Agent': 'Mozilla/5.0'}
 
+# v7.6: MLB's scheduled gameDate and the feed's commence describe the same
+# scheduled start, so they should agree closely. A large divergence means the
+# matcher found the WRONG event -- a doubleheader's other half after game 1
+# drops out of the feed, a postponement's makeup, or the NEXT DAY's game in
+# the same series (all three observed in cached files). Threshold chosen from
+# the 100 bindings in picktime/closers 07-19..22: every wrong-event binding
+# drifted >= 340 min; the largest LEGITIMATE drift was 81 min (LAD@PHI 07-21,
+# an 80-min rain delay -- the feed updates commence to the delayed start, so
+# the threshold must clear real rain delays). 180 = 2.2x the observed legit
+# max and half the smallest observed wrong binding.
+MAX_COMMENCE_DRIFT_MIN = 180
+
 def _key():
     k = os.environ.get('ODDS_API_KEY')
     if k: return k.strip()
@@ -169,6 +181,20 @@ def build_odds_map(slate, source='auto', date_yyyymmdd=None,
         if len(cands) > 1 and gt:  # doubleheader: closest commence time wins
             cands.sort(key=lambda ie: abs(((_parse_t(ie[1]['commence']) or gt) - gt).total_seconds()))
         i, e = cands[0]
+        # v7.6: reject a candidate whose commence is far from MLB's scheduled
+        # start. The sort above only runs with 2+ candidates, so a finished DH
+        # game 1 that has dropped out of the feed would otherwise bind to game
+        # 2's price. Refuse rather than misattribute. `continue` BEFORE
+        # claimed.add so the event stays available for its correct gamePk.
+        if gt:
+            ect = _parse_t(e.get('commence'))
+            if ect is not None:
+                drift = abs((ect - gt).total_seconds()) / 60.0
+                if drift > MAX_COMMENCE_DRIFT_MIN:
+                    print(f"[odds] REJECT gamePk {g.get('gamePk')} "
+                          f"{g.get('away')} @ {g.get('home')}: feed commence is "
+                          f"{drift:.0f} min from MLB start — wrong event, not binding")
+                    continue
         claimed.add(i)
         rec = dict(e)
         per_book = [novig(implied(b['homeML']), implied(b['awayML']))

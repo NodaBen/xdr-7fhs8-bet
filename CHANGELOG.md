@@ -128,6 +128,59 @@ a live stake, because it changes what the model is reading.
 
 ---
 
+## v7.6 — 2026-07-23 — Commence-drift guard on the odds matcher
+
+One additive guard in `odds.py`. No model logic, no weights, no unit ladder, no
+render change. Fixes the doubleheader closer-binding bug found in the 07-23 grade.
+
+### Fixed
+- **A lone candidate event bound unconditionally, however wrong its start time.**
+  `build_odds_map()`'s time-proximity sort only ran with 2+ candidates. By the
+  evening snap, a doubleheader's game 1 has finished and dropped out of the odds
+  feed, leaving game 2 as the only team-name match — which then bound to game 1's
+  `gamePk`. Confirmed on 07-22: **both** doubleheaders broke, not just the
+  Yankees (`823518` drift 360 min, `824735` drift 340 min). The 07-23 grade
+  reported the consequence as `POST-START CLOSER -322m (untested)` — lost CLV,
+  because v7.3's negative-age guard fails closed.
+
+  New guard: after candidate selection, reject any event whose `commence`
+  diverges from MLB's scheduled `gameDate` by more than
+  `MAX_COMMENCE_DRIFT_MIN = 180`, with a loud `REJECT` line. The `continue` runs
+  **before** `claimed.add`, so a rejected event stays available for its correct
+  `gamePk`.
+
+### Threshold chosen from data, not guessed
+The queue spec proposed 90 min. Measured across all **100 bindings** in the eight
+cached `picktime_odds_*` / `closers_*` files (07-19..22):
+- Every wrong-event binding drifted **≥ 340 min**. Eight instances, three
+  distinct flavors: DH game-1→game-2 (07-19 `823523` 406m — previously
+  undetected; 07-22 both DHs), postponement→makeup (07-21 picktime, the v7.3
+  case), and **next-day same-series binding** (three 07-20 closers at +24h,
+  the "~1300-minute closers" the audit saw — same bug, wrong-day flavor).
+- The largest **legitimate** drift was **81 min**: LAD@PHI 07-21, the known
+  80-min rain delay. The feed updates `commence` to the delayed start, so the
+  threshold must clear real rain delays. 90 would have survived that one by
+  9 minutes and falsely rejected any longer delay.
+- **180** = 2.2x the observed legitimate max, half the smallest observed wrong
+  binding. The 81–340 min band is empty in all cached data.
+
+### Verified — zero Odds API credits
+- Replayed the real matcher code path on the 07-22 evening scenario (feed
+  containing only game-2 events): game 1s **reject**, game 2s **bind** with
+  correct commence, rejected events are not consumed.
+- Full sweep at 180 across all 100 cached bindings: 8 rejections, all
+  wrong-event; zero legitimate bindings between 81 and 180 min; the rain-delay
+  closer survives.
+- Note on the "zero rejections on single-header games" acceptance test: three
+  DH=`N` games do reject (07-20 closers), but they are true positives — the
+  bound event was the *next day's* game (drift 1441 min) and their CLV had
+  already been nulled as stale by `grade.py`. The guard now stops them upstream.
+
+### Rollback
+Revert `odds.py` to `6ac41d0`. Purely additive; no data migration.
+
+---
+
 ## v7.4 — 2026-07-22 — Void postponements, corroborated pick'ems
 
 Two defects found while verifying the v7.3 deploy against the live 07-22 board.
