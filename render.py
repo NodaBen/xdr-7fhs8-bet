@@ -185,12 +185,30 @@ def build_scorecard():
 
     warn = ''
     if not s.get('sample_ok'):
-        warn = (f'<div style="margin-top:9px;font-size:10.5px;opacity:.72;'
-                f'line-height:1.45"><b>SAMPLE-SIZE GUARDRAIL —</b> '
-                f'{s.get("clv_n", 0)} of {s.get("clv_threshold", 100)} graded picks '
-                f'carry closing-line value. Until that threshold clears, CLV is the '
-                f'only trustworthy read on this panel. Win% and P/L are noise at this '
-                f'size and must not drive model changes.</div>')
+        # v7.8: the old fixed sentence ("Win% and P/L are noise at this size")
+        # was written to prevent over-reading a streak. Once the calibration
+        # z-score clears |2|, that sentence is FALSE — it instructs the reader
+        # to discount the one number on the panel that has reached
+        # significance. Report the measurement instead of pre-empting it.
+        z = s.get('z_score')
+        zm = s.get('z_meta') or {}
+        if z is not None and abs(z) >= 2 and zm:
+            warn = (f'<div style="margin-top:9px;font-size:10.5px;opacity:.72;'
+                    f'line-height:1.45"><b>SAMPLE-SIZE GUARDRAIL —</b> '
+                    f'{s.get("clv_n", 0)} of {s.get("clv_threshold", 100)} graded '
+                    f'picks carry closing-line value; CLV remains below its '
+                    f'threshold. Separately, across {zm.get("n")} graded picks the '
+                    f'model has won {zm.get("actual_wins")} against an expected '
+                    f'{zm.get("expected_wins"):g} — a {abs(z):g}-sigma gap '
+                    f'(z {z:+g}). That is a measured calibration failure, not a '
+                    f'streak.</div>')
+        else:
+            warn = (f'<div style="margin-top:9px;font-size:10.5px;opacity:.72;'
+                    f'line-height:1.45"><b>SAMPLE-SIZE GUARDRAIL —</b> '
+                    f'{s.get("clv_n", 0)} of {s.get("clv_threshold", 100)} graded picks '
+                    f'carry closing-line value. Until that threshold clears, CLV is the '
+                    f'only trustworthy read on this panel. Win% and P/L are noise at this '
+                    f'size and must not drive model changes.</div>')
 
     buckets = ''
     if s.get('buckets'):

@@ -8,7 +8,7 @@ Tier 3 (calib): every row with a won flag, backfill included.
 
 Run on both build and grade jobs. Safe on an empty/missing archive.
 """
-import json, os
+import json, math, os
 
 ARCHIVE = 'grades_archive.jsonl'
 OUT = 'docs/stats.json'
@@ -86,6 +86,25 @@ def build():
                             'actual': round(bw / len(b) * 100, 1),
                             'model': round(avg([r['model_prob'] for r in b]) * 100, 1)})
 
+    # --- v7.8: calibration z-score ---
+    # Each graded pick is a Bernoulli trial at ITS OWN claimed probability, so
+    # expected wins = sum(p_i) and variance = sum(p_i * (1 - p_i)). Per-row
+    # probabilities, not the mean: the mean-based binomial approximation
+    # overstates the variance and understates |z|. Emitted so render.py can
+    # report a measured significance instead of asserting "noise" — at n=42
+    # this already reads z ~= -3.2, which is not noise.
+    zrows = [r for r in graded if r.get('model_prob') is not None]
+    z_score = None
+    z_meta = None
+    if len(zrows) >= 10:
+        ew = sum(r['model_prob'] for r in zrows)
+        var = sum(r['model_prob'] * (1 - r['model_prob']) for r in zrows)
+        if var > 0:
+            zw = sum(1 for r in zrows if r['won'])
+            z_score = round((zw - ew) / math.sqrt(var), 2)
+            z_meta = {'n': len(zrows), 'actual_wins': zw,
+                      'expected_wins': round(ew, 1)}
+
     # Live-only calibration, so the go-live decision never rests on backfill.
     lw = sum(1 for r in live if r['won'])
     ln = len(live)
@@ -118,6 +137,8 @@ def build():
         'closer_coverage': coverage if graded else None,
         'sample_ok': len(clv) >= CLV_THRESHOLD,
         'clv_threshold': CLV_THRESHOLD,
+        'z_score': z_score,          # v7.8: None below 10 graded rows / zero variance
+        'z_meta': z_meta,
     }
 
     os.makedirs('docs', exist_ok=True)

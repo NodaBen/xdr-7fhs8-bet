@@ -12,6 +12,146 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v7.8 — 2026-07-23 — Guardrail reports the z-score instead of pre-empting it
+
+The scorecard's sample-size guardrail read: *"Win% and P/L are noise at this
+size and must not drive model changes."* Written to prevent over-reading a
+streak; now false. Measured on the committed 42-row archive: expected wins 28.5
+(sum of per-pick claimed probabilities), actual 19, sd 2.96 → **z = −3.19**,
+roughly 1-in-700 if the model were calibrated. Prior readings −2.42 at n=28 and
+−2.41 at n=33 — three readings, same direction, strengthening. The one number on
+the panel that has reached significance was the one the panel told readers to
+discount. Closes ST-A.
+
+### Added
+- `stats.py` emits `z_score` and `z_meta` (`n`, `actual_wins`, `expected_wins`)
+  alongside `sample_ok`. Computed from **per-row** probabilities — expected wins
+  `Σ p_i`, variance `Σ p_i(1−p_i)` — not the mean-based binomial approximation,
+  which overstates the variance and understates |z|. Emits `None` below 10
+  graded rows or at zero variance.
+
+### Changed
+- `render.py` guardrail is now conditional. At `z_score` None/absent or |z| < 2
+  the original sentence renders unchanged — it is correct there. At |z| ≥ 2 the
+  card states the measurement: CLV still below threshold, then the win count
+  against expectation with the sigma gap, labeled a measured calibration
+  failure, not a streak. Inline styles identical; injected in the Python body
+  path. The v5 template file is untouched.
+- Restored the changelog's newest-first ordering (v7.7/v7.6 had been inserted
+  below v7.5). Blocks moved only; no entry text changed.
+
+### Verified
+- `z_score` from the committed archive: **−3.19** at n=42 (19 vs 28.5 expected)
+  — reproduces the execution-queue figure.
+- Rendered head byte-identical to the committed `docs/index.html` head (only
+  the pre-existing `<title>` date differs from the raw template).
+- Headless Chromium at 390/820/1440 px: no horizontal overflow, guardrail
+  visible and inside the viewport at all three.
+- Fallback paths exercised: `z_score = None`, |z| = 1.5, and key absent
+  entirely (a pre-v7.8 `stats.json`) — all render the original text, no crash.
+
+### Note
+No model logic changed. K stays 0.05. No weights, Edge Score, stakes, or pick
+selection touched. This is reporting only.
+
+---
+
+## v7.7 — 2026-07-23 — Shadow archive carries cats; Brier lands in the grade artifact
+
+Two gaps, one file (`shadow.py`), zero model logic.
+
+### Fixed
+- **The go/no-go number was never committed to any artifact.** `shadow.grade()`
+  printed the per-date bucket table but not the Brier; `summary()` printed the
+  model-vs-market Brier but was reachable only by running `python3 shadow.py` in
+  a terminal. The number the August decision rests on existed nowhere in the
+  repository. `grade()` now calls `summary()` after appending rows — `summary()`
+  re-reads the archive from disk, so the just-appended date is included — and the
+  cumulative calibration table plus the Brier comparison land in the committed
+  `docs/archive/{date}_grade.txt` from the next grade run onward. Print-only and
+  wrapped in try/except: a reporting failure must never take down grading.
+- **Archive rows dropped `composite` and `cats`.** The frozen snapshots carry
+  both (since v7.1); the archive rows did not, so every per-category analysis
+  required a manual join across `shadow_<date>.json` files. New rows now persist
+  both fields. Additive: existing rows are untouched and consumers use `.get()`.
+  Past dates are recoverable from the committed snapshots, so nothing was lost —
+  the analysis is now durable and one-file.
+
+### Verified
+- `python3 shadow.py` unchanged: 60 rows / 30 games / 2 dates,
+  Brier model 0.2919 | market 0.2502.
+- **07-22 regression** (archived picks copied over `picks.json`,
+  `grade.py grade 2026-07-22`): pick table and board grade byte-identical to the
+  committed `2026-07-22_grade.txt` — 3-6, 7/9 fired, −4.39U, avg CLV −0.32,
+  gap +19.1, Brier 0.3895 vs 0.2327. Only diffs: the dedupe counters (expected on
+  a rerun) and the new summary block. `shadow_archive.jsonl` md5-identical before
+  and after; `grades_archive.jsonl` unchanged at 42 rows, 9 duplicates skipped.
+- **Change (a) exercised in a sandbox copy**: stripped the 34 07-22 rows from a
+  scratch archive and regraded — all 34 re-appended rows carry `composite` and a
+  full 6-category `cats` dict, and bucket counts reproduce the original run.
+
+### Note
+No model logic changed. K stays 0.05. No weights, Edge Score, or unit ladder
+touched. Known limitation carried forward (S-B): `summary()` computes the model
+Brier over all rows but the market Brier over the subset with `pt_novig` —
+currently the same 60 rows, but the samples can diverge; fix belongs with the
+Item 4/5 reporting work, not here.
+
+---
+
+## v7.6 — 2026-07-23 — Commence-drift guard on the odds matcher
+
+One additive guard in `odds.py`. No model logic, no weights, no unit ladder, no
+render change. Fixes the doubleheader closer-binding bug found in the 07-23 grade.
+
+### Fixed
+- **A lone candidate event bound unconditionally, however wrong its start time.**
+  `build_odds_map()`'s time-proximity sort only ran with 2+ candidates. By the
+  evening snap, a doubleheader's game 1 has finished and dropped out of the odds
+  feed, leaving game 2 as the only team-name match — which then bound to game 1's
+  `gamePk`. Confirmed on 07-22: **both** doubleheaders broke, not just the
+  Yankees (`823518` drift 360 min, `824735` drift 340 min). The 07-23 grade
+  reported the consequence as `POST-START CLOSER -322m (untested)` — lost CLV,
+  because v7.3's negative-age guard fails closed.
+
+  New guard: after candidate selection, reject any event whose `commence`
+  diverges from MLB's scheduled `gameDate` by more than
+  `MAX_COMMENCE_DRIFT_MIN = 180`, with a loud `REJECT` line. The `continue` runs
+  **before** `claimed.add`, so a rejected event stays available for its correct
+  `gamePk`.
+
+### Threshold chosen from data, not guessed
+The queue spec proposed 90 min. Measured across all **100 bindings** in the eight
+cached `picktime_odds_*` / `closers_*` files (07-19..22):
+- Every wrong-event binding drifted **≥ 340 min**. Eight instances, three
+  distinct flavors: DH game-1→game-2 (07-19 `823523` 406m — previously
+  undetected; 07-22 both DHs), postponement→makeup (07-21 picktime, the v7.3
+  case), and **next-day same-series binding** (three 07-20 closers at +24h,
+  the "~1300-minute closers" the audit saw — same bug, wrong-day flavor).
+- The largest **legitimate** drift was **81 min**: LAD@PHI 07-21, the known
+  80-min rain delay. The feed updates `commence` to the delayed start, so the
+  threshold must clear real rain delays. 90 would have survived that one by
+  9 minutes and falsely rejected any longer delay.
+- **180** = 2.2x the observed legitimate max, half the smallest observed wrong
+  binding. The 81–340 min band is empty in all cached data.
+
+### Verified — zero Odds API credits
+- Replayed the real matcher code path on the 07-22 evening scenario (feed
+  containing only game-2 events): game 1s **reject**, game 2s **bind** with
+  correct commence, rejected events are not consumed.
+- Full sweep at 180 across all 100 cached bindings: 8 rejections, all
+  wrong-event; zero legitimate bindings between 81 and 180 min; the rain-delay
+  closer survives.
+- Note on the "zero rejections on single-header games" acceptance test: three
+  DH=`N` games do reject (07-20 closers), but they are true positives — the
+  bound event was the *next day's* game (drift 1441 min) and their CLV had
+  already been nulled as stale by `grade.py`. The guard now stops them upstream.
+
+### Rollback
+Revert `odds.py` to `6ac41d0`. Purely additive; no data migration.
+
+---
+
 ## v7.5 — 2026-07-22 — MLBAM ID join
 
 The join key was published by all three data sources and used by none of them.
@@ -125,102 +265,6 @@ a live stake, because it changes what the model is reading.
 - Small-sample shrinkage (M-F) is untouched. `snap['pit']` is still `qual=10`, so
   a starter under 10 IP whose L30 hits still puts 40% of the model on one month
   of unshrunk data. That is Task 4.
-
----
-
-## v7.7 — 2026-07-23 — Shadow archive carries cats; Brier lands in the grade artifact
-
-Two gaps, one file (`shadow.py`), zero model logic.
-
-### Fixed
-- **The go/no-go number was never committed to any artifact.** `shadow.grade()`
-  printed the per-date bucket table but not the Brier; `summary()` printed the
-  model-vs-market Brier but was reachable only by running `python3 shadow.py` in
-  a terminal. The number the August decision rests on existed nowhere in the
-  repository. `grade()` now calls `summary()` after appending rows — `summary()`
-  re-reads the archive from disk, so the just-appended date is included — and the
-  cumulative calibration table plus the Brier comparison land in the committed
-  `docs/archive/{date}_grade.txt` from the next grade run onward. Print-only and
-  wrapped in try/except: a reporting failure must never take down grading.
-- **Archive rows dropped `composite` and `cats`.** The frozen snapshots carry
-  both (since v7.1); the archive rows did not, so every per-category analysis
-  required a manual join across `shadow_<date>.json` files. New rows now persist
-  both fields. Additive: existing rows are untouched and consumers use `.get()`.
-  Past dates are recoverable from the committed snapshots, so nothing was lost —
-  the analysis is now durable and one-file.
-
-### Verified
-- `python3 shadow.py` unchanged: 60 rows / 30 games / 2 dates,
-  Brier model 0.2919 | market 0.2502.
-- **07-22 regression** (archived picks copied over `picks.json`,
-  `grade.py grade 2026-07-22`): pick table and board grade byte-identical to the
-  committed `2026-07-22_grade.txt` — 3-6, 7/9 fired, −4.39U, avg CLV −0.32,
-  gap +19.1, Brier 0.3895 vs 0.2327. Only diffs: the dedupe counters (expected on
-  a rerun) and the new summary block. `shadow_archive.jsonl` md5-identical before
-  and after; `grades_archive.jsonl` unchanged at 42 rows, 9 duplicates skipped.
-- **Change (a) exercised in a sandbox copy**: stripped the 34 07-22 rows from a
-  scratch archive and regraded — all 34 re-appended rows carry `composite` and a
-  full 6-category `cats` dict, and bucket counts reproduce the original run.
-
-### Note
-No model logic changed. K stays 0.05. No weights, Edge Score, or unit ladder
-touched. Known limitation carried forward (S-B): `summary()` computes the model
-Brier over all rows but the market Brier over the subset with `pt_novig` —
-currently the same 60 rows, but the samples can diverge; fix belongs with the
-Item 4/5 reporting work, not here.
-
----
-
-## v7.6 — 2026-07-23 — Commence-drift guard on the odds matcher
-
-One additive guard in `odds.py`. No model logic, no weights, no unit ladder, no
-render change. Fixes the doubleheader closer-binding bug found in the 07-23 grade.
-
-### Fixed
-- **A lone candidate event bound unconditionally, however wrong its start time.**
-  `build_odds_map()`'s time-proximity sort only ran with 2+ candidates. By the
-  evening snap, a doubleheader's game 1 has finished and dropped out of the odds
-  feed, leaving game 2 as the only team-name match — which then bound to game 1's
-  `gamePk`. Confirmed on 07-22: **both** doubleheaders broke, not just the
-  Yankees (`823518` drift 360 min, `824735` drift 340 min). The 07-23 grade
-  reported the consequence as `POST-START CLOSER -322m (untested)` — lost CLV,
-  because v7.3's negative-age guard fails closed.
-
-  New guard: after candidate selection, reject any event whose `commence`
-  diverges from MLB's scheduled `gameDate` by more than
-  `MAX_COMMENCE_DRIFT_MIN = 180`, with a loud `REJECT` line. The `continue` runs
-  **before** `claimed.add`, so a rejected event stays available for its correct
-  `gamePk`.
-
-### Threshold chosen from data, not guessed
-The queue spec proposed 90 min. Measured across all **100 bindings** in the eight
-cached `picktime_odds_*` / `closers_*` files (07-19..22):
-- Every wrong-event binding drifted **≥ 340 min**. Eight instances, three
-  distinct flavors: DH game-1→game-2 (07-19 `823523` 406m — previously
-  undetected; 07-22 both DHs), postponement→makeup (07-21 picktime, the v7.3
-  case), and **next-day same-series binding** (three 07-20 closers at +24h,
-  the "~1300-minute closers" the audit saw — same bug, wrong-day flavor).
-- The largest **legitimate** drift was **81 min**: LAD@PHI 07-21, the known
-  80-min rain delay. The feed updates `commence` to the delayed start, so the
-  threshold must clear real rain delays. 90 would have survived that one by
-  9 minutes and falsely rejected any longer delay.
-- **180** = 2.2x the observed legitimate max, half the smallest observed wrong
-  binding. The 81–340 min band is empty in all cached data.
-
-### Verified — zero Odds API credits
-- Replayed the real matcher code path on the 07-22 evening scenario (feed
-  containing only game-2 events): game 1s **reject**, game 2s **bind** with
-  correct commence, rejected events are not consumed.
-- Full sweep at 180 across all 100 cached bindings: 8 rejections, all
-  wrong-event; zero legitimate bindings between 81 and 180 min; the rain-delay
-  closer survives.
-- Note on the "zero rejections on single-header games" acceptance test: three
-  DH=`N` games do reject (07-20 closers), but they are true positives — the
-  bound event was the *next day's* game (drift 1441 min) and their CLV had
-  already been nulled as stale by `grade.py`. The guard now stops them upstream.
-
-### Rollback
-Revert `odds.py` to `6ac41d0`. Purely additive; no data migration.
 
 ---
 
