@@ -1,116 +1,20 @@
 [
  {
-  "pick": "Arizona Diamondbacks ML",
-  "game": "Arizona Diamondbacks @ St. Louis Cardinals",
-  "gamePk": 823042,
-  "venue": "Busch Stadium",
-  "model_prob": 0.5781,
-  "fair_ML": -137,
-  "implied": 0.4926,
-  "edge_pct": 8.55,
-  "edge_score": 81.7,
-  "units": 1,
-  "gated": true,
-  "divergence": 0.103,
-  "target_price": -107,
-  "target_anchor": "slip",
-  "condition": "OFF unless -107 or better at DK",
-  "chips": [
-   {
-    "stat": "off edge",
-    "value": "+28",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp bats cold",
-    "value": "24/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-23T15:05:15.027007+00:00",
-   "total": 7.5,
-   "books_used": 9,
-   "book_spread": 0.0153
-  },
-  "flags": [
-   "INFO|Arizona Diamondbacks: no Savant batter-vs-pitch data \u2014 matchup neutral"
-  ],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 1
- },
- {
-  "pick": "Cleveland Guardians ML",
-  "game": "Minnesota Twins @ Cleveland Guardians",
-  "gamePk": 824406,
-  "venue": "Progressive Field",
-  "model_prob": 0.6792,
-  "fair_ML": -212,
-  "implied": 0.5984,
-  "edge_pct": 8.08,
-  "edge_score": 80.1,
-  "units": 1,
-  "gated": true,
-  "divergence": 0.1103,
-  "target_price": -166,
-  "target_anchor": "slip",
-  "condition": "OFF unless -166 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "86/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "pen edge",
-    "value": "+62",
-    "dir": "+",
-    "tone": "green"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-23T15:05:15.027007+00:00",
-   "total": 7.5,
-   "books_used": 9,
-   "book_spread": 0.015
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 2
- },
- {
   "pick": "Detroit Tigers ML",
   "game": "Kansas City Royals @ Detroit Tigers",
   "gamePk": 824247,
   "venue": "Comerica Park",
-  "model_prob": 0.8502,
-  "fair_ML": -568,
-  "implied": 0.6845,
-  "edge_pct": 16.57,
-  "edge_score": 75.4,
+  "model_prob": 0.8516,
+  "fair_ML": -574,
+  "implied": 0.6988,
+  "edge_pct": 15.28,
+  "edge_score": 76.4,
   "units": 1,
   "gated": true,
-  "divergence": 0.191,
-  "target_price": -244,
+  "divergence": 0.1809,
+  "target_price": -262,
   "target_anchor": "slip",
-  "condition": "OFF unless -244 or better at DK",
+  "condition": "OFF unless -262 or better at DK",
   "chips": [
    {
     "stat": "SP score",
@@ -134,10 +38,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-23T15:05:15.027007+00:00",
+   "fetched_at": "2026-07-23T21:35:17.461339+00:00",
    "total": 8.5,
    "books_used": 9,
-   "book_spread": 0.0089
+   "book_spread": 0.013
   },
   "flags": [
    "INFO|Kansas City Royals: no Savant batter-vs-pitch data \u2014 matchup neutral"
@@ -148,110 +52,6 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 3
- },
- {
-  "pick": "Tampa Bay Rays ML",
-  "game": "Tampa Bay Rays @ Toronto Blue Jays",
-  "gamePk": 822785,
-  "venue": "Rogers Centre",
-  "model_prob": 0.845,
-  "fair_ML": -545,
-  "implied": 0.5283,
-  "edge_pct": 31.67,
-  "edge_score": 74.5,
-  "units": 1,
-  "gated": false,
-  "divergence": 0.3408,
-  "target_price": -124,
-  "target_anchor": "slip",
-  "condition": "OFF unless -124 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "79/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp SP weak",
-    "value": "22/100",
-    "dir": "-",
-    "tone": "red"
-   },
-   {
-    "stat": "off edge",
-    "value": "+53",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp bats cold",
-    "value": "12/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-23T15:05:15.027007+00:00",
-   "total": 8.5,
-   "books_used": 9,
-   "book_spread": 0.0119
-  },
-  "flags": [
-   "INFO|Tampa Bay Rays: no Savant batter-vs-pitch data \u2014 matchup neutral"
-  ],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 4
- },
- {
-  "pick": "Atlanta Braves ML",
-  "game": "San Diego Padres @ Atlanta Braves",
-  "gamePk": 824893,
-  "venue": "Truist Park",
-  "model_prob": 0.723,
-  "fair_ML": -261,
-  "implied": 0.7214,
-  "edge_pct": 0.16,
-  "edge_score": 74.1,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0318,
-  "target_price": -294,
-  "target_anchor": "vig",
-  "condition": "OFF unless -294 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "88/100",
-    "dir": "+",
-    "tone": "green"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-23T15:05:15.027007+00:00",
-   "total": 8.0,
-   "books_used": 9,
-   "book_spread": 0.0128
-  },
-  "flags": [
-   "INFO|San Diego Padres: no Savant batter-vs-pitch data \u2014 matchup neutral"
-  ],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 5
+  "rank": 1
  }
 ]

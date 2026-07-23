@@ -100,17 +100,17 @@
   "game": "Kansas City Royals @ Detroit Tigers",
   "gamePk": 824247,
   "venue": "Comerica Park",
-  "model_prob": 0.8502,
-  "fair_ML": -568,
-  "implied": 0.6845,
-  "edge_pct": 16.57,
-  "edge_score": 75.4,
+  "model_prob": 0.8516,
+  "fair_ML": -574,
+  "implied": 0.6988,
+  "edge_pct": 15.28,
+  "edge_score": 76.4,
   "units": 1,
   "gated": true,
-  "divergence": 0.191,
-  "target_price": -244,
+  "divergence": 0.1809,
+  "target_price": -262,
   "target_anchor": "slip",
-  "condition": "OFF unless -244 or better at DK",
+  "condition": "OFF unless -262 or better at DK",
   "chips": [
    {
     "stat": "SP score",
@@ -134,10 +134,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-23T15:05:15.027007+00:00",
+   "fetched_at": "2026-07-23T21:35:17.461339+00:00",
    "total": 8.5,
    "books_used": 9,
-   "book_spread": 0.0089
+   "book_spread": 0.013
   },
   "flags": [
    "INFO|Kansas City Royals: no Savant batter-vs-pitch data \u2014 matchup neutral"

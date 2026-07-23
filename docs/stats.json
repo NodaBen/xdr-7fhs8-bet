@@ -46,5 +46,11 @@
  "untested_n": 26,
  "closer_coverage": 38.1,
  "sample_ok": false,
- "clv_threshold": 100
+ "clv_threshold": 100,
+ "z_score": -3.19,
+ "z_meta": {
+  "n": 42,
+  "actual_wins": 19,
+  "expected_wins": 28.5
+ }
 }
