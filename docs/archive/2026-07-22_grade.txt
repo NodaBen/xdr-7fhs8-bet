@@ -1,0 +1,26 @@
+[shadow] +34 rows (17 games, 26 with CLV) -> shadow_archive.jsonl
+              <40%  n=  8  actual  62.5%  model  29.5%
+            40-50%  n=  9  actual  33.3%  model  45.4%
+            50-60%  n=  9  actual  66.7%  model  54.6%
+            60-70%  n=  3  actual  66.7%  model  65.2%
+              70%+  n=  5  actual  20.0%  model  73.7%
+PICK                          U  MODEL  CLOSE    CLV  RES    P/L  STATUS
+Baltimore Orioles ML          1  59.2%  43.9%     --    W     --  STALE CLOSER 200m (untested)
+Tampa Bay Rays ML             1  60.3%  49.9%   +0.5    W  +0.93  FIRED
+San Diego Padres ML           2  57.9%  49.4%   +0.7    L  -2.00  FIRED
+Washington Nationals ML       1  72.5%  57.0%   +0.7    W  +0.68  FIRED
+New York Yankees ML           2  70.6%  62.3%     --    L     --  POST-START CLOSER -322m (untested)
+Los Angeles Angels ML         1  72.1%  56.6%   +1.9    L  -1.00  FIRED
+Texas Rangers ML              1  79.9%  47.3%   -2.7    L  -1.00  FIRED
+Athletics ML                  1  74.0%  43.9%   -1.9    L  -1.00  FIRED
+Philadelphia Phillies ML      1  67.3%  46.1%   -1.4    L  -1.00  FIRED
+
+--- BOARD GRADE ---
+
+--- CLOSER COVERAGE --- usable 7/9 | stale(>45m) 2 | missing 0 | median age 18m
+!! 2/9 picks contribute ZERO CLV. A stale row means the snap sweep is too sparse around that first pitch; a missing row means it never fired at all.
+record: 3-6 | bets fired: 7/9 | paper P/L: -4.39U
+avg CLV: -0.32 pts (market moved against us)
+calibration: model avg 69.1% vs close consensus 50.0% (gap +19.1 pts)
+Brier: model 0.3895 vs close 0.2327 (close sharper — recalibrate K)
+[grade] appended 9 rows -> grades_archive.jsonl (0 duplicates skipped) (K-recalibration dataset)
