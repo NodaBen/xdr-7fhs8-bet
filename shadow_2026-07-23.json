@@ -1,0 +1,202 @@
+{
+ "824893:home": {
+  "gamePk": "824893",
+  "side": "home",
+  "team": "Atlanta Braves",
+  "model_prob": 0.723,
+  "composite": 74.87,
+  "cats": {
+   "sp": 87.8,
+   "off": 62.7,
+   "pen": 78.2,
+   "mkt": 69.1,
+   "sit": 56.0,
+   "mu": 50.0
+  },
+  "implied": 0.7214,
+  "novig": 0.6912,
+  "edge_pct": 0.16,
+  "data_quality": "FULL",
+  "frozen_at": "2026-07-23T15:05:18.928850+00:00"
+ },
+ "824893:away": {
+  "gamePk": "824893",
+  "side": "away",
+  "team": "San Diego Padres",
+  "model_prob": 0.277,
+  "composite": 55.68,
+  "cats": {
+   "sp": 53.9,
+   "off": 65.6,
+   "pen": 68.3,
+   "mkt": 30.9,
+   "sit": 44.0,
+   "mu": 43.7
+  },
+  "implied": 0.3236,
+  "novig": 0.3088,
+  "edge_pct": -4.66,
+  "data_quality": "FULL",
+  "frozen_at": "2026-07-23T15:05:18.928866+00:00"
+ },
+ "824406:home": {
+  "gamePk": "824406",
+  "side": "home",
+  "team": "Cleveland Guardians",
+  "model_prob": 0.6792,
+  "composite": 67.33,
+  "cats": {
+   "sp": 86.3,
+   "off": 45.6,
+   "pen": 71.2,
+   "mkt": 56.9,
+   "sit": 56.0,
+   "mu": 36.7
+  },
+  "implied": 0.5984,
+  "novig": 0.5689,
+  "edge_pct": 8.08,
+  "data_quality": "FULL",
+  "frozen_at": "2026-07-23T15:05:18.928871+00:00"
+ },
+ "824406:away": {
+  "gamePk": "824406",
+  "side": "away",
+  "team": "Minnesota Twins",
+  "model_prob": 0.3208,
+  "composite": 52.33,
+  "cats": {
+   "sp": 73.3,
+   "off": 51.4,
+   "pen": 9.7,
+   "mkt": 43.1,
+   "sit": 44.0,
+   "mu": 44.3
+  },
+  "implied": 0.4484,
+  "novig": 0.4311,
+  "edge_pct": -12.76,
+  "data_quality": "FULL",
+  "frozen_at": "2026-07-23T15:05:18.928874+00:00"
+ },
+ "822785:home": {
+  "gamePk": "822785",
+  "side": "home",
+  "team": "Toronto Blue Jays",
+  "model_prob": 0.155,
+  "composite": 33.28,
+  "cats": {
+   "sp": 21.6,
+   "off": 12.5,
+   "pen": 74.2,
+   "mkt": 49.6,
+   "sit": 56.0,
+   "mu": 50.0
+  },
+  "implied": 0.5192,
+  "novig": 0.4958,
+  "edge_pct": -36.42,
+  "data_quality": "FULL",
+  "frozen_at": "2026-07-23T15:05:18.928878+00:00"
+ },
+ "822785:away": {
+  "gamePk": "822785",
+  "side": "away",
+  "team": "Tampa Bay Rays",
+  "model_prob": 0.845,
+  "composite": 67.2,
+  "cats": {
+   "sp": 79.4,
+   "off": 65.9,
+   "pen": 61.2,
+   "mkt": 50.4,
+   "sit": 44.0,
+   "mu": 55.7
+  },
+  "implied": 0.5283,
+  "novig": 0.5042,
+  "edge_pct": 31.67,
+  "data_quality": "FULL",
+  "frozen_at": "2026-07-23T15:05:18.928880+00:00"
+ },
+ "823042:home": {
+  "gamePk": "823042",
+  "side": "home",
+  "team": "St. Louis Cardinals",
+  "model_prob": 0.4219,
+  "composite": 40.89,
+  "cats": {
+   "sp": 45.5,
+   "off": 23.9,
+   "pen": 40.2,
+   "mkt": 52.5,
+   "sit": 56.0,
+   "mu": 50.0
+  },
+  "implied": 0.5556,
+  "novig": 0.5249,
+  "edge_pct": -13.37,
+  "data_quality": "FULL",
+  "frozen_at": "2026-07-23T15:05:18.928887+00:00"
+ },
+ "823042:away": {
+  "gamePk": "823042",
+  "side": "away",
+  "team": "Arizona Diamondbacks",
+  "model_prob": 0.5781,
+  "composite": 47.19,
+  "cats": {
+   "sp": 48.0,
+   "off": 51.4,
+   "pen": 39.5,
+   "mkt": 47.5,
+   "sit": 44.0,
+   "mu": 46.0
+  },
+  "implied": 0.4926,
+  "novig": 0.4751,
+  "edge_pct": 8.55,
+  "data_quality": "FULL",
+  "frozen_at": "2026-07-23T15:05:18.928890+00:00"
+ },
+ "824247:home": {
+  "gamePk": "824247",
+  "side": "home",
+  "team": "Detroit Tigers",
+  "model_prob": 0.8502,
+  "composite": 59.74,
+  "cats": {
+   "sp": 80.0,
+   "off": 39.2,
+   "pen": 39.7,
+   "mkt": 65.9,
+   "sit": 56.0,
+   "mu": 50.0
+  },
+  "implied": 0.6845,
+  "novig": 0.6592,
+  "edge_pct": 16.57,
+  "data_quality": "FULL",
+  "frozen_at": "2026-07-23T15:05:18.928892+00:00"
+ },
+ "824247:away": {
+  "gamePk": "824247",
+  "side": "away",
+  "team": "Kansas City Royals",
+  "model_prob": 0.1498,
+  "composite": 25.02,
+  "cats": {
+   "sp": 9.3,
+   "off": 43.0,
+   "pen": 19.3,
+   "mkt": 34.1,
+   "sit": 44.0,
+   "mu": 37.9
+  },
+  "implied": 0.361,
+  "novig": 0.3408,
+  "edge_pct": -21.12,
+  "data_quality": "FULL",
+  "frozen_at": "2026-07-23T15:05:18.928894+00:00"
+ }
+}
