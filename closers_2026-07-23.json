@@ -262,8 +262,8 @@
   "all_books": [
    {
     "book": "fanduel",
-    "homeML": -235,
-    "awayML": 194
+    "homeML": -240,
+    "awayML": 198
    },
    {
     "book": "betonlineag",
@@ -277,8 +277,8 @@
    },
    {
     "book": "mybookieag",
-    "homeML": -231,
-    "awayML": 194
+    "homeML": -229,
+    "awayML": 192
    },
    {
     "book": "draftkings",
@@ -287,8 +287,8 @@
    },
    {
     "book": "bovada",
-    "homeML": -225,
-    "awayML": 185
+    "homeML": -230,
+    "awayML": 190
    },
    {
     "book": "betmgm",
@@ -297,7 +297,7 @@
    },
    {
     "book": "betrivers",
-    "homeML": -230,
+    "homeML": -235,
     "awayML": 195
    },
    {
@@ -306,12 +306,12 @@
     "awayML": 194
    }
   ],
-  "homeML_novig": 0.6715,
-  "awayML_novig": 0.3285,
+  "homeML_novig": 0.6725,
+  "awayML_novig": 0.3275,
   "books_used": 9,
-  "book_spread": 0.0107,
-  "fetched_at": "2026-07-23T21:50:15.709216+00:00",
+  "book_spread": 0.0097,
+  "fetched_at": "2026-07-23T22:30:17.823096+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-23T21:50:15.709382+00:00"
+  "snapped_at": "2026-07-23T22:30:17.823275+00:00"
  }
 }
