@@ -1,5 +1,5 @@
 """Daily Diamond model engine v1 — locked weights 40/25/15/10/7/3.
-Percentile-normalized category scores -> logistic win probability -> fair price.
+Percentile-normalized category scores -> market-prior logistic win probability (v8.0) -> fair price.
 Recency rule: season base with L7/L14/L30 blend; 7-day = most important recency window.
 Missing data never crashes: neutral defaults + data-quality flags (feeds Edge Score composite).
 """
@@ -280,7 +280,50 @@ def fair_ml(p):
     return int(round(100 * (1-p)/p))
 
 # ---------------- GAME ENGINE ----------------
-K = 0.05  # logistic slope: 10-pt composite gap ~ 62% win prob
+# v8.0 MARKET-AS-PRIOR. The old form was p = logistic(K * composite_diff): the
+# model competing with the market from scratch, with the market relegated to a
+# 10%-nominal / 3.3%-effective category on incompatible units. Measured against
+# the shadow archive that produced: 2.5-3.1x market dispersion (four independent
+# readings), a reproduced +0.11 intercept (~2.8 pts of uncredited home field),
+# both calibration tails inverted ~31 pts, and Brier 0.29 vs the market's 0.24.
+#
+# New form:
+#     p_home = logistic( logit(market_novig_home) + LAMBDA * composite_diff )
+#
+# Centering and scale come from the market for free; the composite contributes
+# only what LAMBDA earns. K is OBSOLETE, not refitted -- the locked decision
+# barred tuning K against outcome noise, and this removes the parameter, which
+# is the clean resolution to the open amendment in CHANGELOG.md.
+#
+# LAMBDA = 0.0, measured, not asserted. Offline fit on the 70-row shadow
+# archive (35 games, 3 dates, one row per game): lambda = -0.76 +/- 0.61,
+# 95% CI [-1.96, +0.44], P(lambda>0) = 9%, every per-date and leave-one-date-out
+# fit negative. The CI contains 0 and a negative lambda would mean fading our
+# own signal, which is not defensible at this n. Until lambda earns its way off
+# zero, the model's published probability IS the market's -- and every edge is
+# 0, so no pick clears the floor. "Passing is a position," applied to the model.
+#
+# REFIT PROTOCOL (do not deviate):
+#   - Regress won ~ offset(logit(pt_novig)) + LAMBDA * composite_diff on
+#     shadow_archive.jsonl, ONE ROW PER GAME (sides are complementary).
+#   - The regressor is composite_diff rebuilt from the archived `composite`
+#     (v7.7 persists it per side; diff = home minus away). NEVER fit against
+#     archived model_prob: at LAMBDA=0 model_prob equals the market and the fit
+#     goes blind. `cats` is also archived, so a mkt-stripped composite variant
+#     can be fit identically.
+#   - Change LAMBDA only with the interval in front of Benjamin, per the locked
+#     parameter rule.
+LAMBDA = 0.0
+
+def _prior_logit(odds):
+    """Market prior in logit space. 9-book no-vig consensus when priced;
+    0.0 (= p 0.5, an honest 'no opinion') when the board is unpriced.
+    mkt_score() already raises the DEGRADED flag on the unpriced path."""
+    nv = odds.get('homeML_novig') if odds else None
+    if nv is None:
+        return 0.0
+    nv = min(.999, max(.001, nv))
+    return math.log(nv / (1.0 - nv))
 
 def run_slate(slate, snap, odds_map):
     pens = pen_scores(snap)
@@ -317,7 +360,9 @@ def run_slate(slate, snap, odds_map):
                            'flags': sflags, 'data_quality': dq_of(sflags)}
             flags.extend(sflags)
         diff = sides['home']['composite'] - sides['away']['composite']
-        p_home = 1 / (1 + math.exp(-K * diff))
+        # v8.0: market no-vig is the prior; the composite adds only what LAMBDA
+        # has earned. At LAMBDA=0 this is exactly the market's probability.
+        p_home = 1 / (1 + math.exp(-(_prior_logit(odds) + LAMBDA * diff)))
         sides['home']['model_prob'] = round(p_home, 4)
         sides['away']['model_prob'] = round(1 - p_home, 4)
         for s in ('home', 'away'):

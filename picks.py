@@ -1,4 +1,6 @@
 """Picks layer — turns model output into v5-card-ready pick objects.
+v8.0: BOTH sides of every game are evaluated for EV; the published side is the
+one with the better priced edge, not the model favorite.
 Locked rules enforced in code:
  - Every pick carries a target price; no target -> no pick.
  - 4U-5U requires 7%+ edge AND sharp confirmation flag (impossible pre-lines -> hard cap 3U).
@@ -10,38 +12,18 @@ import json, math
 # Edge Score composite weights (tunable; the composite itself is locked)
 ES_W = {'edge': .35, 'reliability': .10, 'dq': .25, 'mkt_conf': .20, 'stability': .10}
 
-# v7.4 PICK'EM CORROBORATION THRESHOLD
-# The s_mkt branch below used to exempt ANY line whose no-vig landed on exactly
-# 0.500 from the market-divergence penalty, on the theory that -110/-110 is a
-# placeholder rather than a real price. That is true of ONE book with no
-# company. It is the opposite of true when the whole market agrees.
-#
-# Live on 07-22: Texas priced -110/-110 at NINE books, book_spread 0.0055. That
-# is not an absent opinion, it is the strongest possible consensus -- the market
-# is saying coin flip, unanimously. The model claimed 80.2%. The exemption
-# handed that pick s_mkt=45.0 instead of 0.0, worth +9.0 Edge Score points, and
-# it took rank 1 on the board: the single most divergent claim was promoted to
-# the top BECAUSE it was most divergent.
-#
-# Below this many corroborating books, a -110/-110 is still treated as a
-# placeholder. At or above it, the gap formula applies like any other price.
-# Set to 1 to restore pre-v7.4 behaviour.
-PICKEM_MIN_BOOKS = 3
+# v8.0: the v7.4 pick'em exemption (PICKEM_MIN_BOOKS / _uncorroborated) is
+# DELETED, not tuned, per the resolved amendment in CHANGELOG.md. The branch
+# guarded a lone-book -110/-110 placeholder that occurred zero times in 116
+# stored records; the one time it fired (Texas, 07-22) the "absent opinion" was
+# a nine-book consensus and the trigger was a float-rounding artifact
+# (odds.py stores novig at 4dp, so the 1e-9 tolerance was decorative). When
+# odds exist, the gap formula always applies. A genuine placeholder is the
+# run_daily.py baseline guard's problem (raw-price test), and an unpriced board
+# routes through has_odds=False.
 
 def prob_to_ml(p):
     return int(round(-100*p/(1-p))) if p >= .5 else int(round(100*(1-p)/p))
-
-def _uncorroborated(game):
-    """True when a 0.500 no-vig rests on too few books to be a real consensus.
-
-    v7.4. books_used is threaded through model.odds_meta. If it is absent --
-    only possible when re-running picks from a model_output.json written before
-    v7.4 -- fall through to the gap formula, which is the honest default: a
-    genuine placeholder is rare, and the exemption is the branch shown to be
-    wrong.
-    """
-    bu = (game.get('odds_meta') or {}).get('books_used')
-    return bu is not None and bu < PICKEM_MIN_BOOKS
 
 
 def edge_score(side, game, has_odds):
@@ -59,8 +41,6 @@ def edge_score(side, game, has_odds):
         s_mkt = 40.0
     elif nv is None:
         s_mkt = 50.0
-    elif abs(nv - 0.5) < 1e-9 and _uncorroborated(game):
-        s_mkt = 45.0   # lone -110/-110: placeholder, no real market opinion yet
     else:
         gap = abs(side['model_prob'] - nv)
         s_mkt = max(0.0, 100.0 - gap * 500.0)
@@ -178,7 +158,17 @@ def build_picks(model_output, sharp_signals=None):
     picks = []
     for g in model_output:
         h, a = g['sides']['home'], g['sides']['away']
-        fav, dog = (h, a) if h['model_prob'] >= a['model_prob'] else (a, h)
+        # v8.0 (H11): evaluate BOTH sides for EV. Favorite-only selection was
+        # half of the damage path -- it harvested the upper tail of an
+        # over-dispersed distribution on every game, which is how a symmetric
+        # +0.5-pt mean error published as a one-directional +7. The pick is now
+        # the side with the better priced edge; model_prob breaks ties. At
+        # LAMBDA=0 both edges are negative (the vig), the less-negative side is
+        # selected, and units() zeroes it at the angle floor -- by design.
+        def _e(s):
+            e = s.get('edge_pct')
+            return e if e is not None else -999.0
+        fav, dog = (h, a) if (_e(h), h['model_prob']) >= (_e(a), a['model_prob']) else (a, h)
         has_odds = fav.get('implied') is not None
         es = edge_score(fav, g, has_odds)
         sharp = sharp_signals.get(fav['team'], False)

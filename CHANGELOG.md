@@ -12,6 +12,123 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v8.0 — 2026-07-24 — Market-as-prior; both-sides EV; K removed
+
+The structural repair. Not a tune of the broken model — a change of what the
+model *is*. Decision made by Benjamin with the λ interval in front of him,
+per the pre-registered session order.
+
+### The measurement that authorized it
+
+Offline refit on the committed 70-row shadow archive (35 games, 3 dates, one
+row per game, zero credits), in exactly the deployed functional form
+`p = logistic(logit(mkt) + λ·s)`:
+
+```
+λ = −0.76 ± 0.61   Wald 95% CI [−1.96, +0.44]   bootstrap CI [−2.16, +0.46]
+P(λ>0) = 9%        LR vs λ=0: 1.66 (below the 3.84 5% bar)
+prior-methodology joint fit: model coeff −1.01 ± 0.71  (was −0.91 ± 0.56 @ n=30)
+per-date λ: −0.42 / −1.18 / −0.46 — every date negative, every
+leave-one-date-out fit negative
+Brier on the same 35 games: market 0.2449 · model-as-deployed 0.2917
+```
+
+The composite carries no demonstrable incremental information over the market
+price. The CI contains zero; a negative λ would mean fading our own signal.
+**λ ships at 0.**
+
+### Changed
+- **`model.py` — `p_home = logistic(logit(market_novig_home) + LAMBDA·composite_diff)`,
+  `LAMBDA = 0.0`.** Centering and scale come from the market for free — the
+  reproduced +0.11 intercept and the 2.5–3.1x over-dispersion both dissolve
+  structurally rather than being tuned away. Unpriced board → prior 0.5 (an
+  honest "no opinion"; `mkt_score` already flags that path DEGRADED). **K is
+  removed, not refitted** — the clean resolution to the v7.1 open amendment:
+  the locked rule barred tuning K, and this deletes the parameter.
+  At λ=0 the published probability *is* the 9-book no-vig consensus, every
+  edge is ≤0, and no pick clears the 5% floor. **A zero-pick card every day is
+  the designed output until λ earns its way off zero.** "Passing is a
+  position," applied to the whole model.
+- **`picks.py` — both sides evaluated for EV (H11).** The published side is the
+  one with the better priced edge; model_prob breaks ties. Favorite-only
+  selection was the other half of the damage path — it harvested the upper
+  tail of an over-wide distribution on every game, which is how a symmetric
+  +0.5-pt mean error published as one-directional +7. Ships together with the
+  dispersion fix by design; neither alone was worth doing.
+- **`picks.py` — the v7.4 pick'em exemption is deleted**, per the resolved
+  amendment recorded under Open items: fired once in 116 records, and that
+  once was a nine-book consensus misread as an absent opinion via a 4dp
+  rounding artifact. When odds exist the gap formula always applies. Identical
+  output to `PICKEM_MIN_BOOKS = 3` on all observed data.
+- **`run_daily.py` — CLV-baseline placeholder guard tests raw prices**
+  (`books_used <= 1 and homeML == awayML`), not a rounded no-vig. Cannot be
+  tripped by averaging or rounding; a lone-book −110/−110 still gets no
+  baseline.
+- **`daily.yml` — the archive-growth assertion is zero-pick-aware (Y-D).**
+  Mandatory, not opportunistic: at λ=0 the old unconditional
+  `AFTER <= BEFORE → exit 1` would fire **every day**, abort the grade job
+  before the publish step, and silently discard that morning's
+  `shadow_archive.jsonl` rows — destroying the exact dataset the λ refit
+  needs. Growth is now required only when yesterday's card carried units ≥1
+  picks and the grade text reports none DEFERRED or VOID. A real silent
+  failure (eligible picks, no rows, nothing deferred) still exits 1.
+
+### Added
+- **`fit_lambda.py`** — the committed refit instrument, so the protocol below
+  references a tool that exists in the repo rather than a procedure in a chat
+  log. One row per game, composite_diff regressor, Wald + LR + bootstrap,
+  per-date and leave-one-date-out splits, mkt-stripped variant from `cats`,
+  and a hard refusal to issue a verdict below 20 composite-bearing games
+  (5 today — composite persists only from v7.7 forward, so the tool starts
+  counting from 07-23; ~150 games lands early August).
+
+### λ refit protocol (documented in `model.py`, binding)
+Regress `won ~ offset(logit(pt_novig)) + λ·composite_diff` on
+`shadow_archive.jsonl`, one row per game. The regressor is rebuilt from the
+archived `composite` (persisted per side since v7.7) — **never from
+`model_prob`, which is market-degenerate at λ=0 and would blind the fit.**
+`cats` supports a mkt-stripped variant. λ changes only with the interval in
+front of Benjamin.
+
+### Verified — zero credits
+- All changed files compile; workflow YAML parses; no live odds call made.
+- Real `run_slate` + real `build_picks` on the cached 07-23 slate and
+  picktime odds (stats scorers stubbed — FanGraphs is Cloudflare-blocked from
+  the verification sandbox, itself a datapoint for the standing FG/datacenter
+  question): all five games return `model_prob == homeML_novig` to 4dp, sides
+  sum to 1, all picks 0U with negative edges, every pick still carries a
+  market-anchored target price.
+- **H11 behavioral test:** synthetic board where the model favorite is priced
+  rich and the dog carries +7% — pre-v8.0 code selects the favorite at −5.0%;
+  v8.0 selects the dog and stakes it.
+- Unpriced-board path: 0.5 prior, no crash, 0U, `model`-anchor targets intact.
+- **Zero-pick render** (the new daily state): card renders from the
+  transformed board at 390/820/1440 with zero horizontal overflow, zero JS
+  errors, marquee zero-pick copy present, CSS head byte-identical to the
+  locked v5 template (title date only).
+- **Grade regression, 07-23:** byte-identical to the committed
+  `docs/archive/2026-07-23_grade.txt` except the two dedupe-counter lines
+  (same signature as the v7.7 regression). `grades_archive.jsonl` and
+  `shadow_archive.jsonl` untouched.
+- **Workflow assertion simulated on all four cases:** eligible+no-growth+no-deferral
+  still fails loudly; normal growth passes; zero-pick day passes; all-deferred
+  day passes.
+
+### What this does to the numbers
+`grades_archive.jsonl` freezes at 46 rows until λ > 0 — the go-live sample
+stops growing by design, and the card's z −3.38 guardrail line stays frozen
+with it. The instruments that matter keep running at full rate: shadow
+archives every game both sides daily (~15 games/day), snap sweep and CLV
+capture are unchanged, and the λ refit gets ~150 games by early August.
+
+### Note
+No weights, Edge Score composite, unit ladder, or template were touched.
+`sit_score`'s missing home-field and `mkt_score`'s units mismatch are not
+fixed — they are made irrelevant: the market prior carries centering, and the
+composite is now only a candidate signal whose worth λ must prove.
+
+---
+
 ## v7.8 — 2026-07-23 — Guardrail reports the z-score instead of pre-empting it
 
 The scorecard's sample-size guardrail read: *"Win% and P/L are noise at this
@@ -799,10 +916,11 @@ changes above exist specifically to enforce them.
   check, never the headline.
 - No model parameter changes (K, ES rank order, unit ladder) until the archive
   carries a sufficient graded sample.
-  - **Open amendment (v7.1):** `calibrate.py` fits K against market no-vig
-    rather than outcomes. The lock exists to prevent fitting to outcome noise,
-    which this is not — but it names K explicitly. Whether a market-fitted K is
-    exempt has not been decided. Until it is, K stays at 0.05.
+  - **Open amendment (v7.1) — RESOLVED 2026-07-24 by v8.0.** The question was
+    whether a market-fitted K is exempt from the lock. v8.0 removes K entirely
+    (market-as-prior restructure); the parameter no longer exists to tune. The
+    lock now applies to LAMBDA, which changes only with a measured interval in
+    front of Benjamin — the refit protocol is documented in `model.py`.
   - **Open amendment (v7.4):** the lock names "ES rank order". v7.4 corrects the
     `s_mkt` branch that exempted a corroborated pick'em from the divergence
     penalty, which moves Texas from rank 1 to rank 10 on the 07-22 board. The
@@ -825,10 +943,10 @@ changes above exist specifically to enforce them.
 
 ## Open items
 
-- **Pick'em exemption: delete, don't tune.** Queued for the next `picks.py`
-  change (Tier 2). Do **not** deploy on its own — on every day observed it
-  produces output identical to `PICKEM_MIN_BOOKS = 3`, so a separate upload buys
-  nothing.
+- **Pick'em exemption: delete, don't tune. — CLOSED, shipped in v8.0
+  (2026-07-24).** The next `picks.py` change arrived and carried it exactly as
+  specified below: exemption deleted, baseline guard moved to the raw-price
+  test. Record retained for the reasoning.
 
   **STILL OPEN after v7.5, deliberately.** v7.5 *was* a `picks.py` change and
   *was* Tier 2, so by the trigger written here it should have carried the
@@ -886,18 +1004,18 @@ changes above exist specifically to enforce them.
   at 4dp; any predicate keyed on it inherits a tolerance nobody chose. These two
   call sites were the only such tests in the repo — keep it that way.
 
-- **K refit** — harness shipped in v7.1, decision pending n≥150 (~early August).
-  Watch three things as n grows: the slope interval, the intercept (currently
-  +0.112, suggesting mis-centering independent of K), and the mkt-stripped R².
-  Expect a refit to REDUCE the number of published picks; compressing the
-  probability spread shrinks every edge, and picks below the 5% angle floor
-  disappear. That is the correct outcome if the edges were manufactured by
-  over-dispersion, but the card will look emptier.
-- **Model structural fixes** — replace percentile normalization with
-  z-scores/run-values (likely the root cause of overconfidence, not K); blend
-  market as a prior; evaluate both sides for EV, since `picks.py` only ever
-  takes the model favorite; shrink small-sample SP stats; `sit_score` is a flat
-  56/44 constant doing nothing and is the leading suspect for the intercept.
+- **K refit — CLOSED by v8.0 (2026-07-24), superseded.** K no longer exists.
+  The successor question is the **λ refit**: rerun the protocol in `model.py`
+  at n≈150 shadow games (~early August). If the CI excludes 0 on the positive
+  side, λ moves off zero and picks return; if it still straddles 0 with a
+  negative point estimate — the trajectory across three consecutive samples —
+  the composite carries no edge over the market and the pivot is new signal
+  (F5), not more restructuring.
+- **Model structural fixes** — market-as-prior and both-sides EV **shipped in
+  v8.0**. Still open, contingent on λ proving the composite worth anything at
+  all: percentile normalization → z-scores/run-values, small-sample SP
+  shrinkage, `sit_score` (moot for centering under the market prior, but still
+  a dead 7% of the candidate signal), `mu` noise at 1.3% effective weight.
 - **F5 markets** — the model is 40% starting pitching, and F5 isolates that
   while removing bullpen noise.
 - **Workflow concurrency** — the group expression resolves to a unique value per
