@@ -1,0 +1,28 @@
+[shadow] +10 rows (5 games, 10 with CLV) -> shadow_archive.jsonl
+              <40%  n=  4  actual  50.0%  model  22.6%
+            40-50%  n=  1  actual   0.0%  model  42.2%
+            50-60%  n=  1  actual 100.0%  model  57.8%
+            60-70%  n=  1  actual   0.0%  model  67.9%
+              70%+  n=  3  actual  66.7%  model  80.6%
+[shadow] 70 rows | 35 games (effective n for averages) | 3 dates
+     <40%  n=  17  actual  58.8%  model  28.6%  gap +30.2
+   40-50%  n=  18  actual  44.4%  model  45.4%  gap  -0.9
+   50-60%  n=  18  actual  55.6%  model  54.6%  gap  +0.9
+   60-70%  n=   7  actual  28.6%  model  65.3%  gap -36.8
+     70%+  n=  10  actual  50.0%  model  75.7%  gap -25.7
+  Brier  model 0.2917  |  market 0.2449 (n=70)
+  Lower Brier is better. If the market beats the model, the model is not yet adding information.
+PICK                          U  MODEL  CLOSE    CLV  RES    P/L  STATUS
+Arizona Diamondbacks ML       1  57.8%  46.9%   -0.7    W  +1.04  FIRED
+Cleveland Guardians ML        1  67.9%  57.4%   +0.5    L  -1.00  FIRED
+Detroit Tigers ML             1  85.2%  67.2%   +1.3    W  +0.43  FIRED
+Tampa Bay Rays ML             1  84.5%  51.3%   +0.9    L  -1.00  FIRED
+
+--- BOARD GRADE ---
+
+--- CLOSER COVERAGE --- usable 4/4 | stale(>45m) 0 | missing 0 | median age 20m
+record: 2-2 | bets fired: 4/4 | paper P/L: -0.53U
+avg CLV: +0.52 pts (market moved toward us)
+calibration: model avg 73.8% vs close consensus 55.7% (gap +18.1 pts)
+Brier: model 0.3438 vs close 0.2456 (close sharper — recalibrate K)
+[grade] appended 4 rows -> grades_archive.jsonl (0 duplicates skipped) (K-recalibration dataset)
