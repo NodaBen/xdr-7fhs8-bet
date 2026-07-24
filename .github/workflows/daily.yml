@@ -139,7 +139,19 @@ jobs:
           test -s "docs/archive/${DATE}_grade.txt" || { echo "::error::grade output empty for ${DATE}"; exit 1; }
           AFTER=$(wc -l < grades_archive.jsonl)
           echo "[archive] rows ${BEFORE} -> ${AFTER}"
-          if [ "$AFTER" -le "$BEFORE" ]; then echo "::error::grades_archive.jsonl did not grow for ${DATE}"; exit 1; fi
+          # v8.0 (Y-D): "passing is a position" -- a zero-pick day is a VALID
+          # output, and at LAMBDA=0 it is the EXPECTED output every day. The
+          # old unconditional growth assertion would exit 1 on every such day,
+          # which aborts the job BEFORE the publish step and silently discards
+          # that morning's shadow_archive.jsonl rows -- destroying the exact
+          # dataset the LAMBDA refit needs. Growth is now required only when
+          # yesterday's card carried stakeable picks and none were reported
+          # DEFERRED or VOID by the grader.
+          ELIG=$(python3 -c "import json;print(sum(1 for p in json.load(open('picks.json')) if p.get('units',0)>=1))")
+          echo "[archive] eligible (units>=1) picks for ${DATE}: ${ELIG}"
+          if [ "$AFTER" -le "$BEFORE" ] && [ "$ELIG" -gt 0 ] && ! grep -qE 'DEFERRED|VOID' "docs/archive/${DATE}_grade.txt"; then
+            echo "::error::grades_archive.jsonl did not grow for ${DATE} (${ELIG} eligible picks, none deferred/void)"; exit 1
+          fi
           python stats.py
           TODAY=$(TZ=America/New_York date +%F)
           if [ -f "docs/archive/${TODAY}_picks.json" ]; then
