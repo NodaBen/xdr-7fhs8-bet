@@ -1,5 +1,64 @@
 [
  {
+  "pick": "Milwaukee Brewers ML",
+  "game": "Colorado Rockies @ Milwaukee Brewers",
+  "gamePk": 823759,
+  "venue": "American Family Field",
+  "model_prob": 0.879,
+  "fair_ML": -726,
+  "implied": 0.7375,
+  "edge_pct": 14.15,
+  "edge_score": 77.0,
+  "units": 1,
+  "gated": true,
+  "divergence": 0.1752,
+  "target_price": -315,
+  "target_anchor": "vig",
+  "condition": "OFF unless -315 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "74/100",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp SP weak",
+    "value": "18/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "pen edge",
+    "value": "+41",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "off edge",
+    "value": "+25",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-24T15:05:14.776239+00:00",
+   "total": 8.5,
+   "books_used": 9,
+   "book_spread": 0.0204
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 1
+ },
+ {
   "pick": "Kansas City Royals ML",
   "game": "Kansas City Royals @ Detroit Tigers",
   "gamePk": 824248,
@@ -33,7 +92,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 1
+  "rank": 2
  },
  {
   "pick": "Houston Astros ML",
@@ -76,7 +135,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 2
+  "rank": 3
  },
  {
   "pick": "Baltimore Orioles ML",
@@ -117,7 +176,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 3
+  "rank": 4
  },
  {
   "pick": "Cleveland Guardians ML",
@@ -160,7 +219,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 4
+  "rank": 5
  },
  {
   "pick": "Athletics ML",
@@ -213,7 +272,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 5
+  "rank": 6
  },
  {
   "pick": "Boston Red Sox ML",
@@ -268,7 +327,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 6
+  "rank": 7
  },
  {
   "pick": "Pittsburgh Pirates ML",
@@ -309,7 +368,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 7
+  "rank": 8
  },
  {
   "pick": "Los Angeles Dodgers ML",
@@ -350,7 +409,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 8
+  "rank": 9
  },
  {
   "pick": "Philadelphia Phillies ML",
@@ -397,7 +456,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 9
+  "rank": 10
  },
  {
   "pick": "Seattle Mariners ML",
@@ -444,7 +503,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 10
+  "rank": 11
  },
  {
   "pick": "Cincinnati Reds ML",
@@ -491,7 +550,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 11
+  "rank": 12
  },
  {
   "pick": "Los Angeles Angels ML",
@@ -540,7 +599,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 12
+  "rank": 13
  },
  {
   "pick": "Washington Nationals ML",
@@ -596,7 +655,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 13
+  "rank": 14
  },
  {
   "pick": "San Diego Padres ML",
@@ -639,6 +698,6 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 14
+  "rank": 15
  }
 ]
