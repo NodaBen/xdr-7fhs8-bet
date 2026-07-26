@@ -12,6 +12,113 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v8.1 — 2026-07-26 — Watchdog asserts all three pipelines; job timeout
+
+Monitoring only. No model logic, no stakes, no data written. Closes audit
+**Y-C** and the missing `timeout-minutes`. One file: `.github/workflows/daily.yml`.
+
+### Why now
+
+`cron-job.org` is the **sole** trigger for build, snap and grade. The only
+GitHub-side job was the 12:43 ET watchdog, and it asked exactly one question:
+*is the card fresh?* A lapsed grade or snap schedule was invisible. This repo
+already lost four days to that exact shape — the failure hid because nothing
+asserted the thing that mattered.
+
+v8.0 made it worse. At λ=0 the card is zero-pick every day, so **a stale card
+and a fresh card are visually identical.** The card used to prove its own
+liveness by changing; it does not anymore. And a silent grade failure now costs
+λ rows, which are unrecoverable once the runner is gone.
+
+### Changed
+
+- **Watchdog now asserts four things, each with its own distinct `::error::`
+  line** so a grade failure can never read like a build failure:
+  - `BUILD` — `docs/archive/{today}.html` exists and byte-matches
+    `docs/index.html` (unchanged behaviour, promoted from `::warning::` +
+    generic error to a labelled error)
+  - `GRADE` — `docs/archive/{yesterday}_grade.txt` exists and is non-empty
+  - `SHADOW` — `shadow_archive.jsonl` carries ≥1 row dated yesterday. **This is
+    the λ dataset's own heartbeat and the check that matters most:** every
+    published number can look correct while this silently stops growing.
+  - `SNAP` — `closers_{yesterday}.json` or `snap_state_{yesterday}.json` records
+    at least one closer or one call
+- Checks **do not short-circuit** — three simultaneous failures report three
+  distinct errors, then one summary line, then exit 1. Verified.
+- **`timeout-minutes: 20`** on the job (`grep -c timeout-minutes` was 0). A hung
+  run discards shadow rows exactly as a crashed one does, but goes red only
+  after GitHub's 6-hour default, with Alert-on-failure silent the whole time.
+- Rewritten as a single Python block reading `DD_TODAY`/`DD_YESTERDAY` from the
+  environment, so the whole watchdog is runnable standalone with injected dates.
+  That is what made the state matrix below testable.
+
+### Threshold derivation — 20 minutes, not a guess
+
+The Actions API returns 403 unauthenticated, so run durations could **not** be
+measured; the bound comes from the retry budget instead. `model.pull_snapshot()`
+makes 8 `fg_client.leaders()` calls, each 3 attempts × 3 impersonation profiles
+× 30s timeout + 1.5/3/4.5s backoff = **279s worst case per call**. A total
+Cloudflare block therefore raises on the *first* endpoint at ~4.7 min and the
+build fails fast; realistic degradation (one timed-out attempt per call) is ~5
+min for all 8. Grade and snap runs make no FG calls. 20 clears the realistic
+degraded case ~4× over and truncates only the 8-consecutive-near-miss case
+(~37 min), which is a broken run regardless. **Erring long is deliberate:**
+killing a slow grade run destroys the same λ rows this exists to protect.
+
+### Cry-wolf guards — a muted watchdog is worse than none
+
+The three new assertions are gated on **whether a board existed yesterday**
+(`docs/archive/{yesterday}_picks.json` row count). Unconditional assertions
+would fire every day of the All-Star break and every day of the off-season.
+
+- Empty board (0 games) → checks skipped, exit 0
+- Board file absent → `::warning::` and skip, **not** an error: that is
+  yesterday's *build* failure, and yesterday's own watchdog run is its record
+- Zero shadow rows **but** the grader printed `no new rows to append` →
+  `::warning::`, not an error (whole slate postponed, no finals, deduped re-run)
+- Closer coverage below the game count → `::warning::` only. A thin day is
+  legitimate (postponements, doubleheaders) and coverage tuning is SN-C's job,
+  not the watchdog's.
+
+### Verified by execution (zero credits)
+
+YAML parses; embedded Python compiles; watchdog block extracted from the parsed
+YAML and run standalone against the real committed repo at HEAD `b44d493`, with
+dates injected via a `date` shim so the shipped text is what was tested.
+
+| State | Result |
+|---|---|
+| All fresh, T=07-26 / Y=07-25 | pass, exit 0 — 15 games, 30 shadow rows, 15 closers / 5 calls, 376 credits |
+| All fresh, real historical T=07-25 / Y=07-24, pristine clone | pass, exit 0 — 15 games, 30 rows, 15 closers / 7 calls |
+| Today's card missing | `BUILD` error, exit 1 |
+| `index.html` ≠ today's archived card | `BUILD` error (distinct message), exit 1 |
+| Grade artifact missing | `GRADE` error, exit 1 |
+| Zero shadow rows dated yesterday | `SHADOW` error, exit 1 |
+| No closers and no snap state | `SNAP` error, exit 1 |
+| Off-day, empty board | **exit 0**, checks skipped |
+| Board file absent | **exit 0**, warning only |
+| Slate postponed (`no new rows to append`) | **exit 0**, warning only |
+| Closer coverage 4/15 | **exit 0**, warning only |
+| Build + grade + snap all down | three distinct errors + summary, exit 1 |
+
+**Zero-credit property proven, not asserted.** Traced with
+`sys.addaudithook`: the watchdog opens exactly 8 repo files
+(`docs/index.html`, `docs/archive/{today}.html`,
+`docs/archive/{yesterday}_picks.json`, `docs/archive/{yesterday}_grade.txt`,
+`shadow_archive.jsonl`, `closers_{y}.json`, `snap_state_{y}.json`,
+`credit_ledger.json`), all read-only, and fires **no** `socket.connect` or
+`socket.getaddrinfo` events. No odds/stats client is imported; `budget.py` is
+still excluded from watchdog mode by the existing `Budget report` condition.
+
+### Not changed
+
+Detection cadence is still once a day at 12:43 ET, and cron-job.org is still a
+single point of failure with no backup trigger. v8.1 makes a lapse **loud**; it
+does not make it fast, and it does not remove the dependency. The remaining
+half of Y-C — a GitHub-side backup trigger — is still open.
+
+---
+
 ## v8.0 — 2026-07-24 — Market-as-prior; both-sides EV; K removed
 
 The structural repair. Not a tune of the broken model — a change of what the
