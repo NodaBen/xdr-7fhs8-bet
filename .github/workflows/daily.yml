@@ -61,6 +61,25 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    # v8.1: a HUNG run is the same silent-loss shape as a failed one -- it never
+    # reaches Publish, so that morning's shadow rows are discarded exactly as if
+    # it had crashed, except nothing goes red for up to 6 HOURS (GitHub's
+    # default) and Alert-on-failure stays quiet the whole time.
+    #
+    # 20 is derived from the retry budget, not guessed. The slow path is the
+    # build's stats pull: model.pull_snapshot() makes 8 fg_client.leaders()
+    # calls, each 3 attempts x 3 impersonation profiles x a 30s timeout plus
+    # 1.5/3/4.5s backoff = 279s worst case per call. A TOTAL Cloudflare block
+    # therefore raises on the FIRST endpoint at ~4.7 min and the build fails
+    # fast; realistic degradation (one timed-out attempt per call) is ~5 min for
+    # all 8. Grade and snap runs make no FG calls at all and finish far sooner.
+    # 20 clears the realistic degraded case ~4x over. The only case it truncates
+    # is 8 consecutive near-misses (~37 min), which is a broken run anyway.
+    #
+    # Erring long is deliberate: killing a slow grade run destroys the same
+    # LAMBDA rows this is meant to protect, so the cost of a tight bound is
+    # higher than the cost of a loose one.
+    timeout-minutes: 20
     defaults:
       run:
         shell: bash -euo pipefail {0}
@@ -163,41 +182,149 @@ jobs:
       - name: Watchdog (zero credits)
         if: steps.mode.outputs.mode == 'watchdog'
         run: |
-          # Pure freshness check. Spends nothing. Its whole job is to make a
-          # silent scheduler failure loud -- the failure mode that hid a broken
-          # snap schedule for four days.
-          TODAY=$(TZ=America/New_York date +%F)
-          FAIL=0
-          # Check for the archive file the build writes. This is an exact filename
-          # match -- the card renders its date as "July 20, 2026", NOT as
-          # "2026-07-20", so grepping index.html for the ISO date false-alarms
-          # every single day and would open a bogus issue each morning.
-          if [ ! -s "docs/archive/${TODAY}.html" ]; then
-            echo "::warning::docs/archive/${TODAY}.html missing - the build has not run today"
-            FAIL=1
-          elif ! cmp -s "docs/archive/${TODAY}.html" docs/index.html; then
-            echo "::warning::docs/index.html does not match today's archived card"
-            FAIL=1
-          fi
+          # v8.1 (audit Y-C): this used to ask ONE question -- is the card fresh?
+          # -- while cron-job.org is the sole trigger for build, snap AND grade.
+          # A lapsed grade or snap schedule was therefore completely invisible,
+          # and this repo already lost four days to exactly that shape.
+          #
+          # It got worse at v8.0: with LAMBDA=0 the card is zero-pick every day,
+          # so a stale card and a fresh card are VISUALLY IDENTICAL. The card
+          # used to prove its own liveness by changing; it does not anymore.
+          # Each pipeline therefore gets its own assertion and its own distinct
+          # ::error:: line -- a grade failure must never read like a build
+          # failure.
+          #
+          # Spends ZERO credits. Reads only files committed to this repo plus
+          # credit_ledger.json (read-only, for the report). No odds/stats client
+          # is imported and budget.py is not called.
+          DD_TODAY=$(TZ=America/New_York date +%F)
+          DD_YESTERDAY=$(TZ=America/New_York date -d yesterday +%F)
+          export DD_TODAY DD_YESTERDAY
           python3 - <<'PY'
-          import json, datetime, sys
-          try:
-              l = json.load(open('credit_ledger.json'))
-              print('[watchdog]', l.get('quota_remaining'), 'credits remaining as of',
-                    l.get('quota_as_of'))
-              if l.get('blocks'):
-                  print('[watchdog] recent budget vetoes:')
-                  for b in l['blocks'][-5:]:
-                      print('   ', b['ts'][:16], b['purpose'], '-', b['reason'])
-          except Exception as e:
-              print('[watchdog] no credit ledger yet:', e)
+          import json, os, pathlib, sys
+
+          T = os.environ['DD_TODAY']
+          Y = os.environ['DD_YESTERDAY']
+          fails = []
+
+          def fail(code, msg):
+              print("::error::watchdog " + code + ": " + msg)
+              fails.append(code)
+
+          def ok(code, msg):
+              print("[watchdog] " + code + " ok - " + msg)
+
+          def read_json(p):
+              try:
+                  with open(p) as fh:
+                      return json.load(fh)
+              except Exception:
+                  return None
+
+          # ---- 1. BUILD: is the published card actually today's? -------------
+          # Exact filename match on purpose: the card renders its date as
+          # "July 26, 2026", NEVER as "2026-07-26", so grepping index.html for
+          # the ISO date false-alarms every single day.
+          card = pathlib.Path("docs/archive/%s.html" % T)
+          live = pathlib.Path("docs/index.html")
+          if not (card.is_file() and card.stat().st_size > 0):
+              fail("BUILD", "docs/archive/%s.html is missing or empty - the build has not run today" % T)
+          elif not (live.is_file() and live.read_bytes() == card.read_bytes()):
+              fail("BUILD", "docs/index.html does not match docs/archive/%s.html - the published card is not today's" % T)
+          else:
+              ok("BUILD", "card is fresh for %s" % T)
+
+          # ---- was there a board yesterday? ---------------------------------
+          # The three checks below are only meaningful if games were played.
+          # Asserting them unconditionally would fire every day of the All-Star
+          # break and every day of the off-season, and a watchdog that cries
+          # wolf gets muted -- which is worse than no watchdog.
+          board = read_json("docs/archive/%s_picks.json" % Y)
+          gpath = pathlib.Path("docs/archive/%s_grade.txt" % Y)
+          gtext = gpath.read_text() if gpath.is_file() else ""
+
+          if board is None:
+              print("::warning::watchdog: no archived board for %s - yesterday's build did not "
+                    "run, so GRADE/SHADOW/SNAP cannot be asserted for it. Yesterday's own "
+                    "watchdog run is the record for that failure." % Y)
+              n_games = 0
+          else:
+              n_games = len(board)
+
+          if n_games == 0:
+              print("[watchdog] %s: no board / no games - GRADE, SHADOW and SNAP checks skipped" % Y)
+          else:
+              print("[watchdog] %s: %d games on the archived board - asserting all three pipelines"
+                    % (Y, n_games))
+
+              # ---- 2. GRADE -------------------------------------------------
+              if not (gpath.is_file() and gpath.stat().st_size > 0):
+                  fail("GRADE", "docs/archive/%s_grade.txt is missing or empty - the 09:05 grade "
+                                "job did not run or did not reach the publish step" % Y)
+              else:
+                  ok("GRADE", "docs/archive/%s_grade.txt committed" % Y)
+
+              # ---- 3. SHADOW: the LAMBDA dataset's own heartbeat ------------
+              # The check that matters most. Every published number can look
+              # correct while this silently stops growing, and the rows are
+              # unrecoverable once the runner is gone.
+              n_rows = 0
+              try:
+                  with open("shadow_archive.jsonl") as fh:
+                      for line in fh:
+                          line = line.strip()
+                          if not line:
+                              continue
+                          try:
+                              if json.loads(line).get("date") == Y:
+                                  n_rows += 1
+                          except Exception:
+                              continue
+              except FileNotFoundError:
+                  pass
+              if n_rows:
+                  ok("SHADOW", "%d rows dated %s in shadow_archive.jsonl" % (n_rows, Y))
+              elif "no new rows to append" in gtext:
+                  print("::warning::watchdog SHADOW: zero rows dated %s, but the grader itself "
+                        "reported none to append (no finals, whole slate postponed, or a "
+                        "deduped re-run). Not a failure." % Y)
+              else:
+                  fail("SHADOW", "shadow_archive.jsonl carries ZERO rows dated %s against %d games "
+                                 "on the board - the LAMBDA dataset is not growing and those rows "
+                                 "are unrecoverable" % (Y, n_games))
+
+              # ---- 4. SNAP --------------------------------------------------
+              closers = read_json("closers_%s.json" % Y) or {}
+              state = read_json("snap_state_%s.json" % Y) or {}
+              calls = state.get("calls") or 0
+              if not closers and not calls:
+                  fail("SNAP", "no closer prices and no snap calls recorded for %s (closers_%s.json "
+                               "and snap_state_%s.json both absent or empty) - the snap sweep did "
+                               "not fire and no CLV is recoverable for that date" % (Y, Y, Y))
+              else:
+                  ok("SNAP", "%d closers from %d snap calls for %s" % (len(closers), calls, Y))
+                  # Coverage is a WARNING, never a failure. A thin day is
+                  # legitimate (postponements, doubleheaders) and coverage
+                  # tuning is SN-C's job, not the watchdog's.
+                  if len(closers) < n_games:
+                      print("::warning::watchdog SNAP: closer coverage %d/%d for %s - CLV is "
+                            "unrecoverable for the games without one" % (len(closers), n_games, Y))
+
+          # ---- credit ledger report (read-only) -----------------------------
+          led = read_json("credit_ledger.json")
+          if led is None:
+              print("[watchdog] no credit ledger yet")
+          else:
+              print("[watchdog]", led.get("quota_remaining"), "credits remaining as of",
+                    led.get("quota_as_of"))
+              for b in (led.get("blocks") or [])[-5:]:
+                  print("    veto", str(b.get("ts"))[:16], b.get("purpose"), "-", b.get("reason"))
+
+          if fails:
+              print("::error::watchdog: %d pipeline check(s) FAILED: %s" % (len(fails), ", ".join(fails)))
+              sys.exit(1)
+          print("[watchdog] all pipeline checks passed")
           PY
-          if [ "$FAIL" = "1" ]; then
-            echo "::error::watchdog: card is stale for $TODAY"
-            exit 1
-          fi
-          echo "[watchdog] card is fresh for $TODAY"
-          exit 0
 
       - name: Budget report
         if: always() && steps.mode.outputs.mode != 'watchdog'
