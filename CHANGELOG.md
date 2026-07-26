@@ -12,6 +12,60 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v8.1.1 — 2026-07-26 — Watchdog runnable on demand
+
+Seven lines, one file, no logic change. The v8.1 watchdog block is
+**byte-identical**.
+
+### Why
+
+v8.1 shipped after the 12:43 ET cron had already fired, so its first real run
+was a day away — and `watchdog` was not in the `workflow_dispatch` choice list,
+so it could not be triggered manually at all. GitHub validates `type: choice`
+inputs, so there was no API or CLI route around it either.
+
+That mattered more than the one-day wait: **v8.1 was verified in a sandbox, not
+on a GitHub runner.** The heredoc, `bash -euo pipefail` and the Ubuntu image
+were never exercised together. Proving that should not require waiting for a
+scheduled run.
+
+### Changed
+
+- `watchdog` added to the `workflow_dispatch` mode options.
+
+### Verified by execution (zero credits)
+
+- YAML parses; options are now `['build', 'snap', 'grade', 'watchdog']`
+- **`Resolve mode` exercised on all 8 trigger shapes** — the block extracted
+  from the parsed YAML and run standalone:
+
+| Trigger | schedule | inputs.mode | action | Resolved |
+|---|---|---|---|---|
+| scheduled cron | `43 16 * * *` | — | — | `watchdog` |
+| repository_dispatch | — | — | `snap` | `snap` |
+| repository_dispatch | — | — | `build` | `build` |
+| repository_dispatch | — | — | `grade` | `grade` |
+| **manual** | — | **`watchdog`** | — | **`watchdog`** |
+| manual | — | `build` | — | `build` |
+| manual, no input | — | — | — | `build` (default) |
+| unrecognised cron | `7 3 * * *` | — | — | `watchdog` (never spends) |
+
+  No existing route changed.
+- **Zero credits and zero writes on a manual watchdog run, proven not asserted.**
+  `Publish` executed with `MODE=watchdog`: printed
+  `[publish] watchdog mode - nothing to commit` and exited 0 **before the first
+  `git config`**, leaving the working tree untouched. `Budget report` is still
+  gated on `steps.mode.outputs.mode != 'watchdog'`, so `budget.py` never runs.
+- Watchdog step body diffed against the v8.1 upload: **identical**.
+
+### Note
+
+This does not replace the scheduled check. The 12:43 ET cron is what catches a
+lapse when nobody is looking; the manual option only makes the same check
+available on demand.
+
+---
+
 ## v8.1 — 2026-07-26 — Watchdog asserts all three pipelines; job timeout
 
 Monitoring only. No model logic, no stakes, no data written. Closes audit
