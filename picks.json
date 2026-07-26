@@ -118,6 +118,42 @@
   "rank": 3
  },
  {
+  "pick": "Kansas City Royals ML",
+  "game": "Kansas City Royals @ Detroit Tigers",
+  "gamePk": 824244,
+  "venue": "Comerica Park",
+  "model_prob": 0.4109,
+  "fair_ML": 143,
+  "implied": 0.4274,
+  "edge_pct": -1.65,
+  "edge_score": 74.1,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": 121,
+  "target_anchor": "slip",
+  "condition": "OFF unless 121 or better at DK",
+  "chips": [],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-25T15:05:16.913063+00:00",
+   "total": 8.0,
+   "books_used": 9,
+   "book_spread": 0.0119
+  },
+  "flags": [
+   "INFO|Kansas City Royals: no Savant batter-vs-pitch data \u2014 matchup neutral"
+  ],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 4
+ },
+ {
   "pick": "Chicago White Sox ML",
   "game": "Houston Astros @ Chicago White Sox",
   "gamePk": 824571,
@@ -164,7 +200,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 4
+  "rank": 5
  },
  {
   "pick": "Philadelphia Phillies ML",
@@ -211,7 +247,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 5
+  "rank": 6
  },
  {
   "pick": "Athletics ML",
@@ -272,7 +308,116 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 6
+  "rank": 7
+ },
+ {
+  "pick": "Boston Red Sox ML",
+  "game": "Toronto Blue Jays @ Boston Red Sox",
+  "gamePk": 824734,
+  "venue": "Fenway Park",
+  "model_prob": 0.5012,
+  "fair_ML": -100,
+  "implied": 0.5215,
+  "edge_pct": -2.03,
+  "edge_score": 73.4,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -121,
+  "target_anchor": "slip",
+  "condition": "OFF unless -121 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "65/100",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "off edge",
+    "value": "+35",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp bats cold",
+    "value": "12/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-25T15:05:16.913063+00:00",
+   "total": 7.5,
+   "books_used": 9,
+   "book_spread": 0.0215
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 8
+ },
+ {
+  "pick": "Washington Nationals ML",
+  "game": "Arizona Diamondbacks @ Washington Nationals",
+  "gamePk": 822704,
+  "venue": "Nationals Park",
+  "model_prob": 0.5693,
+  "fair_ML": -132,
+  "implied": 0.5902,
+  "edge_pct": -2.09,
+  "edge_score": 73.3,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -160,
+  "target_anchor": "slip",
+  "condition": "OFF unless -160 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "74/100",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp SP weak",
+    "value": "4/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "off edge",
+    "value": "+28",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-25T15:05:16.913063+00:00",
+   "total": 9.0,
+   "books_used": 9,
+   "book_spread": 0.0152
+  },
+  "flags": [
+   "INFO|Washington Nationals: no Savant batter-vs-pitch data \u2014 matchup neutral",
+   "INFO|Arizona Diamondbacks: no Savant batter-vs-pitch data \u2014 matchup neutral"
+  ],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 9
  },
  {
   "pick": "New York Mets ML",
@@ -313,7 +458,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 7
+  "rank": 10
  },
  {
   "pick": "Cincinnati Reds ML",
@@ -366,7 +511,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 8
+  "rank": 11
  },
  {
   "pick": "Texas Rangers ML",
@@ -419,7 +564,50 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 9
+  "rank": 12
+ },
+ {
+  "pick": "San Diego Padres ML",
+  "game": "San Diego Padres @ Miami Marlins",
+  "gamePk": 823841,
+  "venue": "loanDepot park",
+  "model_prob": 0.446,
+  "fair_ML": 124,
+  "implied": 0.4673,
+  "edge_pct": -2.13,
+  "edge_score": 73.3,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": 103,
+  "target_anchor": "slip",
+  "condition": "OFF unless 103 or better at DK",
+  "chips": [
+   {
+    "stat": "off edge",
+    "value": "+17",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-25T15:05:16.913063+00:00",
+   "total": 8.0,
+   "books_used": 9,
+   "book_spread": 0.0147
+  },
+  "flags": [
+   "INFO|San Diego Padres: no Savant batter-vs-pitch data \u2014 matchup neutral"
+  ],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 13
  },
  {
   "pick": "Baltimore Orioles ML",
@@ -460,6 +648,55 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 10
+  "rank": 14
+ },
+ {
+  "pick": "San Francisco Giants ML",
+  "game": "Los Angeles Angels @ San Francisco Giants",
+  "gamePk": 823197,
+  "venue": "Oracle Park",
+  "model_prob": 0.5328,
+  "fair_ML": -114,
+  "implied": 0.5556,
+  "edge_pct": -2.28,
+  "edge_score": 73.0,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -138,
+  "target_anchor": "slip",
+  "condition": "OFF unless -138 or better at DK",
+  "chips": [
+   {
+    "stat": "opp SP weak",
+    "value": "31/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "opp bats cold",
+    "value": "26/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-25T15:05:16.913063+00:00",
+   "total": 9.0,
+   "books_used": 9,
+   "book_spread": 0.0233
+  },
+  "flags": [
+   "INFO|San Francisco Giants: no Savant batter-vs-pitch data \u2014 matchup neutral"
+  ],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 15
  }
 ]
