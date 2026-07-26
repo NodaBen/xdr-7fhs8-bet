@@ -38,6 +38,13 @@ on:
           - build
           - snap
           - grade
+          # v8.1.1: watchdog is manually selectable so the pipeline health
+          # check can be run ON DEMAND, not only at 12:43 ET. It spends ZERO
+          # credits (Budget report skips watchdog mode, Publish exits 0 before
+          # committing anything), so a manual run is free and writes nothing.
+          # Added because v8.1's verification ran in a sandbox -- proving the
+          # step works on the real runner should not require waiting a day.
+          - watchdog
 
 permissions:
   contents: write
