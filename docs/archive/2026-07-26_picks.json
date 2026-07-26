@@ -34,6 +34,53 @@
   "rank": 1
  },
  {
+  "pick": "New York Yankees ML",
+  "game": "New York Yankees @ Philadelphia Phillies",
+  "gamePk": 823433,
+  "venue": "Citizens Bank Park",
+  "model_prob": 0.3513,
+  "fair_ML": 185,
+  "implied": 0.361,
+  "edge_pct": -0.97,
+  "edge_score": 75.3,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": 159,
+  "target_anchor": "slip",
+  "condition": "OFF unless 159 or better at DK",
+  "chips": [
+   {
+    "stat": "off edge",
+    "value": "+15",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp bats cold",
+    "value": "26/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-26T21:35:15.092555+00:00",
+   "total": 8.0,
+   "books_used": 9,
+   "book_spread": 0.0185
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 2
+ },
+ {
   "pick": "Athletics ML",
   "game": "Athletics @ Minnesota Twins",
   "gamePk": 823678,
@@ -72,7 +119,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 2
+  "rank": 3
  },
  {
   "pick": "Kansas City Royals ML",
@@ -115,7 +162,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 3
+  "rank": 4
  },
  {
   "pick": "San Francisco Giants ML",
@@ -158,53 +205,6 @@
   "flags": [
    "INFO|San Francisco Giants: no Savant batter-vs-pitch data \u2014 matchup neutral"
   ],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 4
- },
- {
-  "pick": "New York Yankees ML",
-  "game": "New York Yankees @ Philadelphia Phillies",
-  "gamePk": 823433,
-  "venue": "Citizens Bank Park",
-  "model_prob": 0.3703,
-  "fair_ML": 170,
-  "implied": 0.3876,
-  "edge_pct": -1.73,
-  "edge_score": 74.0,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": 142,
-  "target_anchor": "slip",
-  "condition": "OFF unless 142 or better at DK",
-  "chips": [
-   {
-    "stat": "off edge",
-    "value": "+14",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp bats cold",
-    "value": "26/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-26T15:05:15.210154+00:00",
-   "total": 8.0,
-   "books_used": 9,
-   "book_spread": 0.0128
-  },
-  "flags": [],
   "data_quality": "FULL",
   "blocked": false,
   "side_quality": {
