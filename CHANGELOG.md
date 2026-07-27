@@ -1104,6 +1104,79 @@ changes above exist specifically to enforce them.
 
 ## Open items
 
+- **Composite signal diagnostic — measured 2026-07-27, n=50 games. No change made,
+  and none authorized before the Item 6 gate (~2026-08-03).** Full write-up in
+  `MODEL_DIAGNOSTIC_2026-07-27.md`. Recorded here because these numbers will
+  otherwise be re-derived from scratch at the gate.
+
+  *Provable by inspection, no outcome data required:*
+
+  - **`sit_score` carries zero information.** Across 50 games the home-minus-away
+    `sit` difference took **exactly one value (+12.0), sd 0.00** — a fixed +0.84 on
+    every `composite_diff`, effective weight **0.0%**, while consuming 7% nominal.
+  - **The locked weights are not the weights.** Docstring says 40/25/15/10/7/3.
+    Measured share of `composite_diff` spread is **53 / 25 / 15 / 6 / 0 / 1**.
+  - **`mkt_score` is the prior re-entered as a feature.** `corr(mkt_diff,
+    logit(market_novig)) = +0.999`; total `composite_diff` correlates **+0.713**
+    with its own offset, falling only to +0.664 with mkt stripped.
+  - **`sp` is loudest, noisiest and least-regularized at once** — 52.7% effective
+    weight, diff sd **29.85** vs off 22.34 / pen 23.01, on the least-shrunk inputs
+    (`qual=10`, `pit30 qual=0`). Makes `pct()` the one deferred model item that is
+    plausibly load-bearing rather than cosmetic.
+
+  *Escalation, and the reason this is not purely cosmetic:* `sit_score` and the
+  `mkt_score` echo are **dead weight at λ = 0 but correctness bugs the instant λ > 0** —
+  `sit` would add home-field on top of a market prior that already prices it. Both
+  join the go-live blocker list if Item 6 moves λ off zero.
+
+  *Hypothesis tested and FAILED — do not re-propose.* Decontaminating the regressor
+  (drop the mkt echo and the constant `sit`, center, add a free intercept) does **not**
+  buy measurement power. λ's standard error went **0.0171 → 0.0196, wider.** An offset
+  carries no fitted coefficient, so collinearity with it cannot inflate variance. Do
+  not argue at the gate that a cleaner composite would have sharpened the decision.
+
+  *Outcome-side reads, all non-significant at n=50 and recorded only so they are not
+  rediscovered as news:* per-category fits `sp` −0.0045 (z −0.47), `off` +0.0185
+  (z +1.35), `pen` −0.0190 (z −1.48), `mu` +0.0251 (z +0.72). `sp` and `pen` lean the
+  wrong way while holding 68% of effective weight — a *mechanism* for the slightly
+  negative pooled λ, not evidence for one. **Reweighting on this is barred by the
+  standing "do not tune weights against outcomes" rule.**
+
+  *Evaluation:* none of the above would plausibly turn r ≈ 0 into an edge. It is
+  hygiene. The standing rule that adding inputs to a model with no measured signal
+  makes it more expensive rather than better applies equally to reweighting the same
+  inputs. The only candidate change with a real mechanism is **F5 markets**, already
+  the designated pivot, because it changes the information set rather than
+  rearranging it.
+
+- **The "+0.11 intercept / ~2.8 pts of uncredited home field" figure is retired.**
+  It appears in the v8.0 `model.py` comment block and in `HANDOFF_2026-07-24_v8_0.md`
+  §3, and it was measured on the retired v7.x model. A free-intercept fit on the
+  v8.0-era 50 games returns **−0.1840 ± 0.3090**, CI [−0.79, +0.42]. **Not a
+  reversal** — the interval spans a point and a half of logit and the sample cannot
+  speak to home-field either way — but the old number must stop being quoted as
+  established. Documented 2026-07-27.
+
+- **SN-E has three days of data that contradict each other on the threshold while
+  agreeing exactly on the loss rate.** Closer ages on the grader's clock (MLB
+  `gameDate`): 07-25 median **29.7**, 07-26 median **7.6**, ten of fifteen under 12
+  minutes. **Zero closers rejected for being old on either day.** What is stable:
+  **exactly one game per day snapped ~0.3 min AFTER first pitch** — `822948` on
+  07-25, `823755` on 07-26, both at −0.3 — correctly rejected by the O-C fail-closed
+  guard, costing **2 shadow CLV rows per day**. Raising `MAX_CLOSER_AGE_MIN` buys
+  nothing; lowering `LEAD_MIN` makes it worse. **The fix is allocation (queue Item 3,
+  SN-C), not a threshold.** Do not change either constant unilaterally.
+
+- **Method note, carried forward.** A hand-built zero-credit preview of the 07-27
+  grade — run an hour before the cron from committed files plus free MLB statsapi
+  finals — reproduced the λ fit **exactly** (−0.0069, SE 0.0171, identical per-date
+  and leave-one-out) but got closer ages wrong by 1–2 minutes per game and **flipped
+  one game's stale/usable verdict**, because it read the Odds API `commence` field
+  while `grade.py` reads MLB `gameDate`. **Zero-credit previews are trustworthy for
+  anything the λ fit depends on and untrustworthy for anything with a sign change
+  near zero.** The clock disagreement is also the live argument for O-D having been
+  fixed.
+
 - **Pick'em exemption: delete, don't tune. — CLOSED, shipped in v8.0
   (2026-07-24).** The next `picks.py` change arrived and carried it exactly as
   specified below: exemption deleted, baseline guard moved to the raw-price
