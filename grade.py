@@ -13,6 +13,7 @@ Files: closers_<date>.json, picktime_odds_<date>.json (baseline), grades_archive
 """
 import json, os, sys, datetime, requests
 import odds as O
+import model_meta  # v8.5: AST-reads model.py's era constants; deliberately NOT `import model`
 
 H = {'User-Agent': 'Mozilla/5.0'}
 
@@ -465,6 +466,18 @@ def grade(date):
                     continue
         new_rows = [r for r in rows if (date, r[0].get('gamePk')) not in seen]
         skipped = len(rows) - len(new_rows)
+        # v8.5 MODEL ERA STAMP. Read once per run from model.py via AST, never
+        # by importing model (curl_cffi would join the grade job's critical
+        # path). If it cannot be read the row is stamped 'unresolved' and the
+        # run screams -- it does NOT fall back to the current era, and it does
+        # NOT abort: a mislabelled row is unrecoverable, a loud one is not, and
+        # a dead grade job loses the morning's shadow rows on top.
+        era_version, era_lambda = model_meta.model_version(), model_meta.lam()
+        if era_version == model_meta.UNRESOLVED or era_lambda is None:
+            print(f"::error::[grade] model era unreadable from model.py "
+                  f"(version={era_version}, lambda={era_lambda}). {len(new_rows)} row(s) "
+                  f"will be stamped '{model_meta.UNRESOLVED}' and must be repaired by hand "
+                  f"before they are read as either era.")
         with open('grades_archive.jsonl', 'a') as f:
             for p, won, clv, pl, st, age in new_rows:
                 # v6.8: provenance is STRUCTURAL. 'live' means this row was graded
@@ -484,7 +497,11 @@ def grade(date):
                                     'pt_novig': p.get('_pt_novig'), 'close_novig': p.get('_close_novig'),
                                     'books_used': p.get('_books_used'),
                                     'book_spread': p.get('_book_spread'),
-                                    'paper_pl': pl, 'status': st}) + '\n')
+                                    'paper_pl': pl, 'status': st,
+                                    # v8.5: era axis. `provenance` says HOW the row
+                                    # was graded; these say WHICH MODEL made the claim.
+                                    'model_version': era_version,
+                                    'lambda': era_lambda}) + '\n')
         if name_unmatched:
             print(f"::error::[grade] {len(name_unmatched)} pick(s) were NOT graded "
                   f"because the team name matched neither side. This is the C8 class "

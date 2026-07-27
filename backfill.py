@@ -16,6 +16,9 @@ import json, os, sys, datetime, urllib.request
 
 ARCHIVE = 'grades_archive.jsonl'
 
+# v8.5: overridden by --era=<version>. Never defaults to the running model.
+ERA = 'unstamped-backfill'
+
 
 def finals(date):
     url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={date}"
@@ -116,6 +119,15 @@ def run(date, seen):
             'target': p['target_price'], 'gated': p.get('gated', False),
             'won': won, 'clv_pts': None, 'paper_pl': None,
             'status': 'BACKFILL (no closer)',
+            # v8.5: era axis. A backfilled row is reconstructed from an archived
+            # pick file that records no model version, so the era CANNOT be read
+            # from the data -- it is declared by the operator with --era, against
+            # CHANGELOG.md. Undeclared rows are stamped 'unstamped-backfill', not
+            # defaulted to the running model: a wrong era stamp is unrecoverable.
+            # lambda is always null here, because a reconstructed row cannot
+            # assert what LAMBDA was in force. That keeps such rows in their own
+            # segment (@lambda=null) instead of silently merging into a live one.
+            'model_version': ERA, 'lambda': None,
         })
         seen.add((date, p.get('gamePk')))
 
@@ -137,7 +149,15 @@ def run(date, seen):
 
 
 if __name__ == '__main__':
-    dates = sys.argv[1:] or ['2026-07-17', '2026-07-18']
+    args = sys.argv[1:]
+    era = [a.split('=', 1)[1] for a in args if a.startswith('--era=')]
+    if era:
+        ERA = era[0]
+    else:
+        print(f"[backfill] WARNING: no --era=<version> given. Rows will be stamped "
+              f"'{ERA}'. Declare the era from CHANGELOG.md if you want these rows "
+              f"to segment with a real model.")
+    dates = [a for a in args if not a.startswith('--')] or ['2026-07-17', '2026-07-18']
     seen = seen_pairs()
     total = sum(run(d, seen) for d in dates)
     print(f"[backfill] total {total} rows -> {ARCHIVE}")

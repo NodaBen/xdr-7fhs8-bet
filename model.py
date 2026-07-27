@@ -315,6 +315,30 @@ def fair_ml(p):
 #     parameter rule.
 LAMBDA = 0.0
 
+# v8.5 MODEL ERA STAMP. grade.py writes MODEL_VERSION and LAMBDA into every
+# archive row; stats.py segments on the PAIR. Both files read these constants
+# through model_meta.py, which AST-parses this file rather than importing it --
+# importing model.py drags in curl_cffi via fg_client, and the grade job must
+# never depend on the Cloudflare client to write a row.
+#
+# WHAT THIS STRING MEANS: the era of the PUBLISHED PROBABILITY PATH, not the
+# repo release. Bump it when the computation that produces model_prob changes
+# -- the functional form, LAMBDA, or the composite that feeds it. Do NOT bump
+# it for a reporting, workflow, or instrument change: v8.5 itself adds no model
+# behaviour, so it ships with MODEL_VERSION still 'v8.0'. The exact code
+# release behind any row is recoverable from git by the row's date; the era is
+# not, which is why it is the thing stored.
+#
+# WHY IT EXISTS: until v8.5 a grade row carried no era marker at all. The only
+# test available was model_prob == pt_novig, which works ONLY while LAMBDA is
+# exactly 0 -- at LAMBDA=0.3 a v8.x row is indistinguishable from a v7.8 row --
+# and it could not classify the 28 of 47 rows that predate pt_novig. The first
+# staked row after the Item 6 gate would have landed in a 47-row archive of a
+# retired model (21-26, ROI -28.6%, z -3.64) with no way to separate them
+# afterwards.
+MODEL_VERSION = 'v8.0'
+
+
 def _prior_logit(odds):
     """Market prior in logit space. 9-book no-vig consensus when priced;
     0.0 (= p 0.5, an honest 'no opinion') when the board is unpriced.

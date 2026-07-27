@@ -12,6 +12,128 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v8.5 — 2026-07-27 — Model-era stamp on grade rows
+
+Five files. Additive schema change on `grades_archive.jsonl`, a one-shot
+backfill of the 47 existing rows, and era segmentation in `stats.py`. **No
+model behaviour changes: `LAMBDA` is still 0.0 and `MODEL_VERSION` ships as
+`'v8.0'`** (see the bump rule below). Zero API credits.
+
+### Why
+
+`grades_archive.jsonl` holds 47 rows, none of them from v8.0. That is correct
+behaviour, not a defect — at λ=0 nothing stakes, so the file is closed by
+design. The exposure is what happens the moment the Item 6 gate moves λ off
+zero.
+
+The only era test available was `model_prob == pt_novig`. **It works only while
+λ is exactly 0.** At λ=0.3 a v8.x row is indistinguishable from a v7.8 row by
+that test. Verified at HEAD: grade rows carried no version, no λ, and no era
+field of any kind — `provenance` is a different axis (live vs backfill).
+
+So the first staked row would have appended to a 47-row archive describing a
+model that went **21-26, ROI −28.6%, z −3.64**; every panel headline would have
+blended two structurally different models and read as neither; and there would
+have been **no way to separate them afterwards**, because nothing in the row
+records which model made the claim. The fix would then have been forced into
+the same session that turns stakes on.
+
+**Measured while building this, and it makes the case stronger than the audit
+note did: 28 of the 47 rows have no `pt_novig` at all.** The signature test had
+no opinion on those rows and swept them into "not v8.0" by absence rather than
+by evidence. It reached the right answer by luck.
+
+### What changed
+
+- **`model.py`** — `MODEL_VERSION = 'v8.0'` added beside `LAMBDA`, with the bump
+  rule stated at the constant. Two lines of code; the rest is comment.
+- **`model_meta.py`** — NEW. Reads `MODEL_VERSION` and `LAMBDA` out of
+  `model.py` by AST-parsing its source. Stdlib only; `model.py` is never
+  imported or executed.
+- **`grade.py`** — stamps `model_version` and `lambda` into every appended row,
+  beside `provenance`.
+- **`backfill.py`** — takes `--era=<version>`; undeclared rows are stamped
+  `'unstamped-backfill'`, never the running model. `lambda` is always null on a
+  reconstructed row.
+- **`stats.py`** — segments on the **(model_version, lambda) pair** and emits
+  `eras[]`, `era_*`, `model_version`, `lambda`, `era_key`, `unstamped_n`, and
+  `sample_closed`. Every pre-existing key is unchanged.
+- **`stamp_era_once.py`** — NEW. One-shot backfill of the 47 rows to
+  `model_version: '<=v7.8'`, `lambda: null`. Idempotent, writes a `.bak`, and
+  refuses any row dated after the v8.0 cut.
+- **`.gitignore`** — `*.bak` (audit C-H).
+
+### Three decisions worth stating, because each could have gone the other way
+
+**1. `model_meta.py` exists so the grade job never imports `model.py`.** The
+obvious implementation is `from model import MODEL_VERSION, LAMBDA` in
+`grade.py`. That drags in `fg_client` → **`curl_cffi`**, putting the Cloudflare
+HTTP client on the critical path of the job that grades and writes shadow rows —
+a path that today needs only `requests`. A failed import there costs a morning
+of shadow rows and those are not recoverable. AST-parsing gets the same constants
+with no dependency and no execution. `model.py` remains the single source of
+truth.
+
+**2. `MODEL_VERSION` is the era of the published probability path, not the repo
+release.** Bump it when the computation producing `model_prob` changes — the
+functional form, `LAMBDA`, or the composite feeding it. Do not bump it for a
+reporting, workflow, or instrument change. v8.5 adds no model behaviour, so it
+ships with `MODEL_VERSION` still `'v8.0'`. Bumping on every release would
+fragment segmentation into many identical-behaviour eras; the exact code release
+behind a row stays recoverable from git by the row's date, while the era does
+not, which is why the era is the thing stored.
+
+**3. Segmentation is on the (version, λ) pair, not the version alone.** If
+`LAMBDA` ever moves without a version bump, version-only segmentation silently
+merges two different models — the same hole in a new place. Verified: a
+synthetic `v8.1@lambda=0.3` row and a `v8.1@lambda=0.0` row stay in separate
+segments.
+
+An unstamped row is bucketed as `unstamped`, counted in `unstamped_n`, and
+printed as `::error::`. It is **never** absorbed into the current era: a
+mislabelled row is unrecoverable, a loud one is not.
+
+### Verification — by execution, zero credits
+
+- All files compile.
+- **Grade regression, 2026-07-23** against a copy with that date's rows removed:
+  stdout **byte-identical** to the pre-change baseline. Appended rows gained
+  **exactly** `model_version` and `lambda` — nothing else added, removed, or
+  altered, field by field.
+- **Backfill:** `.bak` written and its md5 equals the pre-stamp archive md5;
+  **47 rows in, 47 out**; ordering preserved; every row gained exactly the two
+  fields; zero other field differences. Re-run is a no-op and does not clobber
+  the `.bak`.
+- **`stats.py`:** no pre-existing key changed. The closed-era segment reproduces
+  the published figures exactly — **47 / 21-26 / z −3.64 / ROI −28.6% / CLV n=21
+  avg +0.08 / P/L −6.57U**. The empty current-era segment does not crash;
+  `sample_closed: true`, `unstamped_n: 0`.
+- **Synthetic mixed-era test on a copy** (never the real archive): a fabricated
+  v8.1 row separates cleanly, the closed era still reads 47 / 21-26 / −3.64, and
+  `sample_closed` flips to false by itself.
+- **`backfill.py`:** re-backfilling 07-17 with `--era='<=v7.8'` reproduces the
+  same 47-row era distribution; omitting the flag warns and stamps
+  `unstamped-backfill`.
+- **`render.py` untouched and unaffected:** re-render from cached `picks.json`
+  differs from the published card only in the snapshot timestamp, and the head
+  is byte-identical to the published head.
+
+### What this does NOT do
+
+`render.py` is not touched. The panel still reads `RUNNING SCORECARD` over a
+closed sample. `stats.json` now carries `sample_closed` and the era blocks the
+relabel needs — **consuming them is Item 4e**, and the key names above are the
+agreed contract.
+
+### Rollback
+
+Revert the five files, delete the two new ones, restore `grades_archive.jsonl`
+from `grades_archive.jsonl.bak`. Every field is additive and every consumer uses
+`.get()`, so a partial rollback degrades to current behaviour rather than
+breaking.
+
+---
+
 ## v8.1.1 — 2026-07-26 — Watchdog runnable on demand
 
 Seven lines, one file, no logic change. The v8.1 watchdog block is
@@ -1103,6 +1225,20 @@ changes above exist specifically to enforce them.
 ---
 
 ## Open items
+
+- **The scorecard panel still labels a closed sample "RUNNING SCORECARD" (queue
+  Item 4e).** v8.5 supplies the data — `stats.json` now carries `sample_closed`,
+  `model_version`, `lambda`, `era_key`, `era_*` and `eras[]` — but `render.py`
+  was deliberately not touched, so the label is unchanged on the live card.
+  **These key names are the agreed contract between Item 7 and Item 4e**; 4e
+  consumes them and must not rename them.
+
+- **`shadow_archive.jsonl` carries no era stamp.** v8.5 stamps grade rows only.
+  Shadow rows are the λ dataset and today they are all one era, but the same
+  argument applies the moment λ moves: `fit_lambda.py` would pool rows from two
+  models without noticing. Not urgent while λ = 0 and the archive is short —
+  recorded so it is not discovered at the gate.
+
 
 - **Composite signal diagnostic — measured 2026-07-27, n=50 games. No change made,
   and none authorized before the Item 6 gate (~2026-08-03).** Full write-up in
