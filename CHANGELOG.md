@@ -12,6 +12,125 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v8.6 — 2026-07-27 — λ parameterization pinned; snapshot backfill (queue Item 4a)
+
+One file, `fit_lambda.py`. Read-only instrument — no pipeline dependents, no
+workflow reference, no model behaviour change. `LAMBDA` is still `0.0`. Zero API
+credits. Neither archive is written to (md5 identical before and after).
+
+### The finding — the two λ figures were never the same measurement
+
+Two numbers ~30–50× apart have both been called "λ" in committed project
+documents: **−0.76 ± 0.61** (handoff §2 and the `model.py` comment block — the
+figure Benjamin saw before any v8.0 code was written) and **−0.0148 / −0.0069**
+(`fit_lambda.py` at HEAD). The queue assumed a units mismatch inside one
+measurement. It is not that. They are **two different estimands.**
+
+Reconstructed from committed data on the exact window the authorizing fit used —
+07-21 + 07-22 + 07-23, the 70-row archive as it stood on 07-24, 35 games — the
+authorizing regressor was
+
+    logit(model_prob_v7.8) − logit(pt_novig)
+
+not `composite_diff`. That reproduces **λ = −0.7570 ± 0.6112, LR 1.66, per-date
+−0.424 / −1.177 / −0.459, Brier market 0.2449 / model 0.2917** — every figure in
+handoff §2, to 4 dp, from the repo.
+
+| name | regressor | units | writable into `model.LAMBDA` |
+|---|---|---|---|
+| `lambda_pt` | `composite_diff` | per raw composite point, 0–100 scale | **yes — this one only** |
+| `lambda_blend` | `logit(model_prob) − logit(pt_novig)` | dimensionless logit-pool weight: 0 = pure market, 1 = pure model | no |
+
+They are **not** a rescale of one another and no scalar converts between them.
+Under v7.8 `logit(model_prob)` was exactly `K · composite_diff` with K = 0.05,
+which accounts for ~20× of the gap; the remainder is the `−logit(market)` term
+that only the blend regressor carries. On the same 35 games: `lambda_pt`
+−0.0245 ± 0.0240 vs `lambda_blend` −0.7570 ± 0.6112 — ratio **30.9×**, and the
+ratio is sample-dependent, which is what proves it is not a conversion.
+
+**The v8.0 decision is unaffected, for a precise reason.** The two
+parameterizations coincide at exactly one point — **zero** — where both publish
+the market unchanged. Zero is the value v8.0 set. Both fits are negative with
+the CI straddling zero on their own samples, so it is the same call under either
+parameter. What was wrong was the label, not the decision.
+
+**The reconciliation window was closing and is now shut.** `lambda_blend`'s
+regressor is identically zero on every v8.0-era row, because at λ = 0 the
+published probability *is* the market. It is not computable on any date from
+07-25 forward. Had this waited for the Item 6 gate, the authorizing figure could
+no longer have been re-derived — only asserted. It is now reproduced from data
+on every run and pinned as a regression test.
+
+### The change
+
+- **Snapshot backfill.** `composite` persists in `shadow_archive.jsonl` only
+  from v7.7 (07-23), but it is committed per side in `shadow_<date>.json` for
+  every earlier date. Those snapshots freeze **pre-game** — no lookahead, the
+  same provenance argument that cleared the 07-17/07-18 grade backfill. Sample
+  **50 → 80 games**. Both sides are always taken from the same source so a diff
+  is never half-archive/half-snapshot; a one-sided case is counted and warned.
+  `won` and `pt_novig` still come only from the archive — the snapshot is a
+  pre-game file and holds no outcome.
+- **Source split reported per run**, so a snapshot-derived fit is never silently
+  mixed with an archive-derived one.
+- **Units printed at the top of every run**, before any number.
+- **The authorizing fit is a frozen regression test.** Its expected values are
+  constants in the file; a run that fails to reproduce them prints `::error::`,
+  states what it got, and says not to quote either number until resolved.
+- **Overlap check runs every time, not once at build time.** 100 rows carry
+  `composite` in both the archive and a snapshot: **0 mismatches**; snapshot
+  `novig` matched archive `pt_novig` on all 100 as well. That overlap is the
+  only evidence the backfilled rows are the same quantity as the archived ones.
+- **Degeneracy guard** on the reconciliation block: if any row in the window has
+  `model_prob == pt_novig` it refuses rather than fitting an all-zero regressor.
+- **Numerical fix.** `np.logaddexp(0, z)` replaces `log1p(exp(z))` in the NLL.
+  Raw composite diffs reach ~50, so the old form overflowed inside the
+  optimizer. Same function; verified to change **no digit** of the HEAD output.
+
+### Result at 80 games (was 50)
+
+    lambda_pt = -0.0138   SE 0.0148   Wald 95% CI [-0.0429, +0.0153]   LR 0.86
+    bootstrap 95% CI [-0.0445, +0.0155]   P(lambda_pt > 0) = 0.175
+    mkt-stripped: -0.0141   SE 0.0143   LR 0.96
+    per-date: 07-21 -0.011 | 07-22 -0.052 | 07-23 -0.006
+              07-24 -0.039 | 07-25 +0.003 | 07-26 +0.018
+
+**This is not new information about λ.** Negative point estimate, CI straddling
+zero, LR 0.86 against a 3.84 bar. Only the pre-registered Item 6 rule moves λ.
+
+### Consequence Benjamin must rule on — the gate arrives sooner
+
+The Item 6 gate is pre-registered at **~150 composite-bearing games**. Backfill
+moves the count from 50 to 80 today, so at ~15 games/day the gate lands around
+**08-01 instead of ~08-03**. The backfill was written into the queue on 07-24,
+before any of these numbers were seen, which is the defence against it being a
+sample choice made to reach a threshold — but the fit was run before the
+inclusion was final, so this is stated rather than assumed. **If Benjamin wants
+the pre-registered n to mean archive-only games, say so and the counter reverts;
+the backfill then remains a reconciliation tool only.**
+
+### Verification — by execution, zero API credits
+
+1. Compiles. Full run against a clone at HEAD `379d178`.
+2. `md5sum` on `shadow_archive.jsonl` and `grades_archive.jsonl` identical
+   before and after every run.
+3. **No-backfill path reproduces HEAD byte for byte** — snapshots suppressed,
+   the tool returns 50 games, −0.0069 ± 0.0171, LR 0.16, Brier 0.2424 / 0.2414,
+   bootstrap [−0.0400, +0.0317], P = 0.347, mkt-stripped −0.0072, and every
+   per-date figure unchanged. The `logaddexp` switch moved nothing.
+4. **Authorizing figure reproduced**: n = 35, −0.7570 ± 0.6112, LR 1.66,
+   per-date −0.424 / −1.177 / −0.459, Brier 0.2449 / 0.2917 — PASS.
+5. **Overlap**: 100 rows with `composite` in both sources, 0 mismatches.
+6. **Self-refusal below 20 games still fires** — archive truncated to 12 games
+   on a copy, `REFUSING a verdict below 20 games` printed.
+7. **Degeneracy guard fires** — on a copy, the 35 authorizing-window home rows
+   forced to `model_prob == pt_novig`; the block printed `::error::` and refused
+   instead of fitting.
+8. No dependents: `grep -rn fit_lambda` across `*.py` and `.github/` returns
+   nothing outside `notes/`.
+
+---
+
 ## v8.5 — 2026-07-27 — Model-era stamp on grade rows
 
 Five files. Additive schema change on `grades_archive.jsonl`, a one-shot
@@ -1225,6 +1344,18 @@ changes above exist specifically to enforce them.
 ---
 
 ## Open items
+
+- **Every λ figure in the committed docs predating v8.6 is unlabelled.** The
+  handoff §2 figure (−0.76 ± 0.61) is `lambda_blend`; the `MODEL_DIAGNOSTIC` and
+  queue trajectory figures (−0.0069 … −0.0247) are `lambda_pt`. v8.6 pins both
+  in `fit_lambda.py`'s own output and reproduces the authorizing one as a
+  regression test, but it did **not** rewrite the historical prose in `notes/`.
+  Read any pre-v8.6 λ quote against the table in the v8.6 entry.
+
+- **`model.py`'s LAMBDA comment block still describes the authorizing fit
+  without naming its estimand.** Left untouched deliberately at v8.6 — the file
+  is on the publish path and the queue item was scoped to the instrument. Worth
+  one comment-only edit whenever `model.py` is next opened.
 
 - **The scorecard panel still labels a closed sample "RUNNING SCORECARD" (queue
   Item 4e).** v8.5 supplies the data — `stats.json` now carries `sample_closed`,
