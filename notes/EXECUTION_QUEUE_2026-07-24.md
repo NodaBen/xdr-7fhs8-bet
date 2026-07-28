@@ -1,21 +1,30 @@
 # Daily Diamond — Execution Queue (post-v8.0)
 **Created:** 2026-07-24 · **Repo HEAD at time of writing:** `fb8e4a4` (v8.0 deployed 14:22 ET)
-**Last updated:** 2026-07-27 · **HEAD at update:** `9bd9d2a` ("run 2026-07-27 09:05 EDT [grade]")
-**07-27 09:05 grade verified clean — see the progress log. Item 2's last box (the 12:43 ET
-SCHEDULED watchdog run) was still PENDING as of 09:54 ET; check it and close the item.**
+**Last updated:** 2026-07-27 (evening, 2nd session) · **HEAD at update:** `379d178` ("v8.5: gitignore *.bak")
+**ITEM 2 IS NOW FULLY CLOSED — the 12:43 ET SCHEDULED watchdog run went GREEN on 07-27.**
+See the progress log. **Item 2 is done; no more boxes remain on it.**
 **NEW COMPANION FILE: `MODEL_DIAGNOSTIC_2026-07-27.md`** — measured decomposition of the
 composite signal. Diagnostic only; it authorizes no change and is binding on nothing
 before the Item 6 gate. Attach it to any session that touches `model.py`.
 **ITEM 1 IS NOW FULLY CLOSED — box 1d PASSED on the 07-26 grade. See the progress log.**
-**ITEM 2 (v8.1 + v8.1.1) IS SHIPPED, DEPLOYED AND VERIFIED ON THE REAL RUNNER 07-26.**
-Deploy confirmed at HEAD `320efad`; a manual `watchdog` run went **green** with all four
-checks passing and **committed nothing**. **One box remains: the 12:43 ET SCHEDULED run
-must go green** — that proves cron delivery, which the manual run does not. Check it on
-07-27 and close the item.
+**ITEM 2 (v8.1 + v8.1.1) IS SHIPPED, DEPLOYED, AND FULLY VERIFIED 07-27.**
+**ITEM 7 (v8.5, model-era stamp) IS SHIPPED AND CONFIRMED IN THE REPO 07-27** at HEAD
+`379d178` — `model_meta.py` and `stamp_era_once.py` present, all 47 grade rows stamped
+`('<=v7.8', None)`. Three deliberate deviations from the item's spec are recorded in
+Item 7 for Benjamin to overrule.
+**ITEM 4a IS BUILT AND FULLY VERIFIED 07-27 (v8.6) — OPERATOR UPLOAD OWED.** One file,
+`fit_lambda.py`, plus `CHANGELOG.md`. **The two λ figures were never the same
+measurement** — the authorizing −0.76 is a logit-pool blend weight, not a coefficient on
+`composite_diff`, and it is now reproduced from committed data as a frozen regression
+test. Sample 50 → 80 games via snapshot backfill. **One decision for Benjamin: the Item 6
+gate now arrives ~08-01 instead of ~08-03.** See Item 4a and the progress log.
+Deploy confirmed at HEAD `320efad`; a manual `watchdog` run went green 07-26, and the real
+**scheduled** run (#315, event `Scheduled`, conclusion `success`, 12s) went green 07-27 at
+~16:55 ET — cron delivery is now proven, not just the logic. Nothing to check on Item 2.
 **Item 4 scope EXPANDED — three new sub-items (4c, 4d, 4e) found during the Item 1 check;
 4d is now confirmed live in a committed artifact, not just predicted.**
-**NEXT after the v8.1 deploy check: Item 7 (v8.5, model-era stamp) or Item 4 (v8.3) — see
-the recommendation in the 07-26 progress-log entry. Item 3 has no deadline this cycle.**
+**NEXT: upload v8.6, then Item 4d** (the only open defect actively degrading a committed
+artifact once per day), then 4b/4c/4e, then Item 3. **Item 6 gate now ~08-01.**
 **Supersedes `EXECUTION_QUEUE_2026-07-23.md`** — that queue is closed, all five items
 shipped. Keep the old file only as the execution record.
 **Status:** paper-only. Nothing in this file supports going live.
@@ -76,12 +85,12 @@ That reframes priority completely:
 | # | Item | Version | Deadline | Files |
 |---|---|---|---|---|
 | ~~**1**~~ | ~~v8.0 post-deploy verification~~ | none | **FULLY CLOSED. 1a/1b/1c 07-25; 1d PASSED 07-26** | none (operator) |
-| ~~**2**~~ | ~~Watchdog sees grade + snap; add `timeout-minutes`~~ | v8.1 + v8.1.1 | **SHIPPED 07-26. Manual run GREEN on the runner. Only the scheduled 12:43 ET run remains — check 07-27.** | `daily.yml`, `CHANGELOG.md` |
+| ~~**2**~~ | ~~Watchdog sees grade + snap; add `timeout-minutes`~~ | v8.1 + v8.1.1 | **FULLY CLOSED 07-27. Manual run GREEN 07-26; scheduled 12:43 ET run (#315) GREEN 07-27. No boxes remain.** | `daily.yml`, `CHANGELOG.md` |
 | **3** | Coverage-aware snap spend (SN-C) | v8.2 | ~~Before ~07-28~~ → **no hard deadline this cycle**, see note | `snap_smart.py` |
-| **4** | Decision-instrument fidelity — **now 5 sub-items** | v8.3 | **Before the λ refit** | `fit_lambda.py`, `shadow.py`, `stats.py`, `render.py` |
+| **4** | Decision-instrument fidelity — **5 sub-items; 4a DONE (v8.6)** | v8.3 for 4b–4e | **Before the λ refit** | ~~`fit_lambda.py`~~, `shadow.py`, `stats.py`, `render.py` |
 | **5** | Resolve orphaned `calibration_log.jsonl` (CL-A) | v8.4 | No deadline | one file, likely a deletion |
 | **6** | The λ refit — decision gate | none | **~150 composite-bearing games, early August** | none (decision) |
-| **7** | Model-era stamp on grade rows — **prerequisite for any λ>0 stake** | v8.5 | **No date, but must land BEFORE Item 6 turns λ off zero. Cheapest now.** | `model.py`, `grade.py`, `stats.py` |
+| ~~**7**~~ | ~~Model-era stamp on grade rows~~ | v8.5 | **SHIPPED AND CONFIRMED IN REPO 07-27 (`379d178`).** | `model.py`, `model_meta.py`, `grade.py`, `stats.py`, `backfill.py` |
 
 **Item 3 deadline note (measured 07-25):** the "month-end credit pressure" rationale does
 **not** bind this cycle. `credit_ledger.json` shows **385 remaining** with 7 days left in
@@ -214,17 +223,22 @@ Both of today's builds are v8.0, so this is the first chance to confirm the free
 
 # ITEM 2 — Watchdog sees grade and snap; add `timeout-minutes` (v8.1)
 
-> ## SHIPPED 2026-07-26 (v8.1) + v8.1.1 — VERIFIED ON THE REAL RUNNER
-> Deployed at HEAD `320efad`. A **manual `watchdog` run went green**: all four checks
+> ## ✅ FULLY CLOSED 2026-07-27 — v8.1 + v8.1.1, manual AND scheduled runs both GREEN
+> Deployed at HEAD `320efad`. A **manual `watchdog` run went green** 07-26: all four checks
 > passed, output matched the sandbox rehearsal **line for line** including the credit
 > figure and its timestamp, and HEAD was unchanged afterwards — the zero-write property
 > holds on the runner, not just in a sandbox. **v8.1.1** (7 lines) added `watchdog` to the
 > `workflow_dispatch` options so the check is runnable on demand; the v8.1 watchdog block
 > is byte-identical.
-> **STILL OPEN — one box: the 12:43 ET SCHEDULED run on 07-27 must go green.** The manual
-> run proves the watchdog logic on the runner; only the scheduled run proves **cron
-> delivery**, and cron delivery is precisely this repo's historical failure mode. If it
-> goes red on a normal day, a cry-wolf guard is wrong and that jumps the queue.
+> **THE LAST BOX CLOSED 07-27: the 12:43 ET SCHEDULED run went green.** Observed via the
+> Actions UI (GitHub's REST API was rate-limited from this session's vantage point at the
+> time): run **#315**, event **`Scheduled`**, conclusion **success**, duration **12s**,
+> landed ~16:55 ET — roughly 4h12m after the nominal 12:43 ET trigger, consistent with
+> every prior day this week (3.5–4h late is now the established pattern for this specific
+> GitHub-native cron, not a new problem). **Cron delivery is now proven in production, not
+> just the watchdog logic.** Re-fetched `origin/main` immediately after: HEAD was still the
+> 14:30 EDT snap commit from before the run — the zero-write property held on the real
+> scheduled trigger too, not only the manual test. **Do not re-check this box.**
 >
 > ### Original build note (retained)
 > Built against HEAD `b44d493`. Every box below is checked and was verified **by
@@ -320,8 +334,9 @@ Revert `daily.yml`. Purely additive assertions; removal restores prior behaviour
 - [x] **Manual `watchdog` run GREEN on the real runner (v8.1.1).** All four checks passed;
       output matched the sandbox rehearsal line for line, credits `369` with matching
       timestamp; **HEAD unchanged after the run** — Publish exited before committing.
-- [ ] **Scheduled 12:43 ET watchdog run on 07-27 observed GREEN** ← the only remaining box.
-      Proves cron delivery, which the manual run does not.
+- [x] **Scheduled 12:43 ET watchdog run on 07-27 observed GREEN.** Run #315, `Scheduled`,
+      success, 12s, ~16:55 ET. Proves cron delivery, which the manual run alone did not.
+      **Item 2 has no remaining boxes.**
 - [x] Progress log updated
 
 ### Threshold note — 20 minutes was derived, not picked
@@ -449,7 +464,46 @@ to be* — which is why they belong in one version. 4e is the most consequential
 five: it is the only one on the public card, and it is the only one that has already
 misled a reader.
 
-### 4a — `fit_lambda.py` undercounts, AND its λ is on a different scale than the authorizing figure
+### 4a — ✅ RESOLVED 2026-07-27 (v8.6) — the two λ figures were never the same measurement
+
+> **ANSWER, established by execution on committed data — read this before the rest of the
+> item, which is preserved as the record of how the question was framed.**
+>
+> The authorizing regressor was **`logit(model_prob_v7.8) − logit(pt_novig)`**, not
+> `composite_diff`. On the exact 35-game window the authorizing fit used (07-21 + 07-22 +
+> 07-23 = the 70-row archive as of 07-24) that reproduces **−0.7570 ± 0.6112, LR 1.66,
+> per-date −0.424 / −1.177 / −0.459, Brier 0.2449 / 0.2917** — every figure in handoff §2,
+> to 4 dp, from the repo. **PASS, and now a frozen regression test inside the tool.**
+>
+> | name | regressor | units | writable into `model.LAMBDA` |
+> |---|---|---|---|
+> | `lambda_pt` | `composite_diff` | per raw composite point (0–100) | **yes — this one only** |
+> | `lambda_blend` | `logit(model_prob) − logit(pt_novig)` | logit-pool weight; 0 = pure market, 1 = pure model | no |
+>
+> **Not a units mismatch and no scalar converts them.** Under v7.8 `logit(model_prob)` was
+> exactly `K·composite_diff` (K=0.05), which is ~20× of the gap; the rest is the
+> `−logit(market)` term only the blend regressor carries. Same 35 games: `lambda_pt`
+> −0.0245 ± 0.0240 vs `lambda_blend` −0.7570 ± 0.6112, **ratio 30.9×** — and the ratio is
+> sample-dependent, which is the proof it is not a conversion. The "~51×" in the notes
+> below was two different estimands measured on two different samples.
+>
+> **The v8.0 decision stands, for a precise reason:** the two parameterizations coincide at
+> exactly one point — **zero** — where both publish the market unchanged. Zero is what v8.0
+> set. Both fits are negative with the CI straddling zero. The label was wrong, not the call.
+>
+> **The window has now shut.** `lambda_blend`'s regressor is identically zero on every
+> v8.0-era row (at λ=0 `model_prob` **is** the market), so it is not computable on any date
+> from 07-25 forward. Deferring this to the Item 6 gate would have made the authorizing
+> figure unrecoverable — assertable but not re-derivable. It is now reproduced on every run.
+>
+> **Backfill also shipped:** 50 → **80 games**, both sides always from the same source,
+> overlap verified at **100 rows / 0 mismatches**, source split printed. **Consequence
+> requiring a Benjamin ruling: the ~150-game Item 6 gate now lands ~08-01, not ~08-03.**
+> The backfill was pre-registered in this file on 07-24, before any of these numbers were
+> seen — but the fit was run before inclusion was final, so it is stated rather than
+> assumed. **If the pre-registered n should mean archive-only games, say so and it reverts.**
+
+#### Original framing (preserved — this is the record, not the answer)
 
 **Re-measured at HEAD `adb6695` on 07-25. The tool no longer self-refuses, and the
 problem got worse than the original framing.**
@@ -708,12 +762,14 @@ current header when it is absent — the same pattern v7.8 used for `z_score`.
 
 ### Definition of done
 
-- [ ] All four files compile; **neither archive modified** (md5 identical)
-- [ ] Backfilled fit runs at 35+ games, **and the λ parameterization is pinned and stated
-      in the tool's own output**, with the authorizing figure reproduced in those units
-      (4a — this is now the harder half of 4a, not the backfill)
-- [ ] Snapshot-derived composite matches archived composite on the overlap
-- [ ] Self-refusal still fires below 20
+- [x] **4a: `fit_lambda.py` compiles; neither archive modified (md5 identical) — v8.6**
+- [x] **4a: backfilled fit runs at 80 games; λ parameterization pinned and stated in the
+      tool's own output; authorizing figure reproduced in its own units as a PASS/FAIL
+      regression test — v8.6**
+- [x] **4a: snapshot-derived composite matches archived composite on the overlap —
+      100 rows, 0 mismatches (and `novig` matched `pt_novig` on all 100)**
+- [x] **4a: self-refusal still fires below 20 — verified on a 12-game truncated copy**
+- [ ] `shadow.py` / `stats.py` / `render.py` compile; **neither archive modified** (4b–4e)
 - [ ] Both Briers on a common sample with n printed
 - [ ] **4c:** both-sides CLV aggregate no longer reported as a statistic; per-pick CLV
       cross-checks against `grades_archive.jsonl`
@@ -794,10 +850,16 @@ with the output in front of Benjamin.
 
 ---
 
-# ITEM 7 — Model-era stamp on grade rows (v8.5)
+# ITEM 7 — Model-era stamp on grade rows (v8.5) — **BUILT AND VERIFIED 2026-07-27; UPLOAD OWED**
 
 **No calendar deadline. Hard prerequisite for the first λ>0 stake — see Item 6.
 Cheapest to ship NOW, while nothing writes to the file.**
+
+**STATUS 2026-07-27: code complete, every verification box passed by execution, zero
+credits. The only remaining box is the operator upload + re-clone + diff.** Bundle is
+`model.py`, `model_meta.py` (new), `grade.py`, `stats.py`, `backfill.py`,
+`stamp_era_once.py` (new), the **already-stamped** `grades_archive.jsonl`, `CHANGELOG.md`,
+and one line in `.gitignore`.
 
 Filed 2026-07-25 in answer to *"zero of the 47 rows carry the v8.0 signature — how do we
 address this?"*
@@ -886,20 +948,59 @@ Revert the three files and restore `grades_archive.jsonl` from the `.bak`. The f
 additive and every consumer uses `.get()`, so a partial rollback degrades to current
 behaviour rather than breaking.
 
-### Definition of done
+### Definition of done — RESULTS 2026-07-27 (v8.5)
 
-- [ ] Three files compile
-- [ ] New rows carry `model_version` + `lambda`; grade regression otherwise byte-identical
-- [ ] Backfill: `.bak` written, 47 rows in and 47 out, only the two fields added,
-      field-by-field diff shown
-- [ ] Closed-era segment reproduces the published 47 / 21-26 / −3.64 / −28.6% / +0.08
-- [ ] Empty current-era segment does not crash (the λ=0 normal case)
-- [ ] Synthetic mixed-era test separates correctly
-- [ ] Key names agreed with Item 4e
-- [ ] `*.bak` added to `.gitignore` (audit C-H)
-- [ ] `CHANGELOG.md` v8.5 entry in the same upload
-- [ ] Uploaded, re-cloned, diffed
-- [ ] Progress log updated
+- [x] All files compile — and **five files, not three**: `model_meta.py` and
+      `stamp_era_once.py` were added, `backfill.py` was amended. See the deviations below.
+- [x] New rows carry `model_version` + `lambda`; **grade regression stdout byte-identical**
+      to baseline on 2026-07-23 (rows removed from a copy first, so they were genuinely
+      new — not even a dedupe-counter diff). Rows gained **exactly** the two fields.
+- [x] Backfill: `.bak` written, its md5 equals the pre-stamp archive md5, **47 in / 47 out**,
+      ordering preserved, exactly two fields added per row, **zero** other field differences
+      (diffed field-by-field, not by eye). Re-run is a no-op and does not clobber the `.bak`.
+- [x] Closed-era segment reproduces the published figures exactly —
+      **47 / 21-26 / z −3.64 / ROI −28.6% / CLV n=21 avg +0.08 / P/L −6.57U**
+- [x] Empty current-era segment does not crash; `sample_closed: true`, `unstamped_n: 0`
+- [x] Synthetic mixed-era test separates correctly, **on a copy** — and two extra hazards
+      were tested beyond the spec: a same-version/different-λ pair stays split, and an
+      unstamped row is bucketed as `unstamped` rather than absorbed into the current era
+- [x] Key names agreed with Item 4e — **contract recorded in `CHANGELOG.md` Open items**:
+      `sample_closed`, `model_version`, `lambda`, `era_key`, `era_*`, `eras[]`,
+      `unstamped_n`. **4e consumes these and must not rename them.**
+- [x] `*.bak` added to `.gitignore` (audit C-H)
+- [x] `CHANGELOG.md` v8.5 entry written, in the same upload
+- [ ] Uploaded, re-cloned, diffed — **OPERATOR STEP, still owed**
+- [x] Progress log updated
+
+### Three deviations from this item's spec, all deliberate
+
+**1. `model_meta.py` (NEW) instead of `import model`.** The spec had `grade.py` and
+`stats.py` read `MODEL_VERSION` from `model.py`. That means `import model`, which pulls
+`fg_client` → **`curl_cffi`** onto the critical path of the grade job — a job that today
+needs only `requests`. A failed import there costs a morning of shadow rows, which are
+not recoverable. `model_meta.py` AST-parses `model.py` instead: stdlib only, never
+imports or executes it, `model.py` stays the single source of truth.
+
+**2. `MODEL_VERSION` is the era of the published probability path, not the repo release.**
+The spec said "bumped with each version like the changelog entry." Doing that would
+fragment segmentation into many identical-behaviour eras. v8.5 changes no model
+behaviour, so **it ships with `MODEL_VERSION = 'v8.0'`.** Bump it when the computation
+producing `model_prob` changes — form, `LAMBDA`, or the composite. The exact code release
+behind a row stays recoverable from git by the row's date; the era does not, which is why
+the era is what gets stored. **Benjamin can overrule this; it is a one-line change.**
+
+**3. Segmentation is on the (version, λ) PAIR.** If `LAMBDA` moves without a version bump,
+version-only segmentation silently merges two different models — the same hole in a new
+place. `backfill.py` was amended in the same spirit: it takes `--era=<version>` and stamps
+`unstamped-backfill` when undeclared, never the running model.
+
+### Finding — the era test was weaker than this item assumed
+
+The audit note said the `model_prob == pt_novig` signature established "0 of 47". Measured
+at HEAD: **28 of the 47 rows have no `pt_novig` field at all.** The test had no opinion on
+those rows and swept them into "not v8.0" by absence rather than by evidence. It reached
+the right answer by luck, on 60% of the file, and that is a second independent reason the
+stored field was necessary.
 
 ---
 
@@ -951,11 +1052,19 @@ moves λ off zero — at which point the go-live blockers among them come first.
   header that still says "RUNNING SCORECARD". Nothing on it can change at λ=0. Found
   07-25, filed as Items 4e and 7.
 - **Do not identify a model era by `model_prob == novig`.** That signature exists only
-  while λ is exactly 0 and stops working the moment λ moves. Until Item 7 ships there is
-  **no** durable era marker on a grade row.
-- **Do not quote a λ figure without its units.** Two numbers ~30× apart are both called "λ"
-  in committed project documents (−0.76 authorizing, −0.0247 from the tool at HEAD).
-  Reconcile via Item 4a before Item 6; until then, always cite the source and the n.
+  while λ is exactly 0 and stops working the moment λ moves. **Worse than documented: 28
+  of the 47 rows have no `pt_novig` at all, so the test never classified 60% of the file —
+  it swept them into "not v8.0" by absence.** Superseded by the stored `model_version` +
+  `lambda` fields (v8.5, built 07-27). **Read the fields; never re-derive the era.**
+- **Do not quote a λ figure without its units.** ✅ **RESOLVED v8.6 — the two numbers are
+  different estimands, not a units mismatch.** `lambda_blend` = coefficient on
+  `logit(model_prob) − logit(pt_novig)`, a logit-pool weight (this is the **−0.76**
+  authorizing figure). `lambda_pt` = coefficient on `composite_diff`, per raw composite
+  point (this is the **−0.0138** the tool reports, and the **only** one writable into
+  `model.LAMBDA`). No scalar converts them; they agree only at zero. `fit_lambda.py`
+  prints both with a UNITS block and reproduces the authorizing figure as a regression
+  test. **Every λ quote in docs written before v8.6 is unlabelled — read it against that
+  table.**
 - **Do not read `MODEL_DIAGNOSTIC_2026-07-27.md` as a work plan.** It is a measurement
   of the candidate signal, deliberately produced *before* the Item 6 gate so the numbers
   exist when the decision arrives. Every item in it alters `composite`, which is the λ
@@ -1049,9 +1158,12 @@ done; several items in older notes are stale.
 
 | Date | Item | Version | Verified | Notes |
 |---|---|---|---|---|
+| 2026-07-27 (2nd session) | 4a | **v8.6 (built, upload owed)** | Built against a fresh `--depth 1` clone at HEAD `379d178`. Zero credits. **All verification by execution.** **v8.5 confirmed landed first** — `model_meta.py` + `stamp_era_once.py` present, all 47 grade rows stamped `('<=v7.8', None)`; Item 7 closed in the table. New `fit_lambda.py`: 80 usable games (50 archive / 30 snapshot-backfilled), **λ_pt = −0.0138 ± 0.0148, CI [−0.0429, +0.0153], LR 0.86, bootstrap [−0.0445, +0.0155], P(λ>0) = 0.175, mkt-stripped −0.0141.** **No-backfill path reproduces HEAD to the digit** (snapshots suppressed → 50 games, −0.0069 ± 0.0171, LR 0.16, Brier 0.2424/0.2414, bootstrap [−0.0400,+0.0317], P 0.347, mkt-stripped −0.0072, every per-date identical) — so the `logaddexp` numerical fix moved nothing. Overlap **100 rows / 0 composite mismatches** and snapshot `novig` matched archive `pt_novig` on all 100. Self-refusal fires on a 12-game truncated copy. Degeneracy guard fires when the authorizing window is forced to `model_prob == pt_novig`. `md5sum` on both archives identical before and after. `grep -rn fit_lambda` finds no dependent outside `notes/`. | **THE ~51× WAS NOT A UNITS MISMATCH — IT WAS TWO DIFFERENT ESTIMANDS, AND THIS IS THE FINDING OF THE SESSION.** The authorizing regressor was **`logit(model_prob_v7.8) − logit(pt_novig)`**, never `composite_diff`. On the exact 35-game authorizing window (07-21+07-22+07-23 = the 70-row archive as of 07-24) it reproduces **−0.7570 ± 0.6112, LR 1.66, per-date −0.424/−1.177/−0.459, Brier 0.2449/0.2917** — *every* figure in handoff §2 to 4 dp, from committed data. `lambda_blend` is a dimensionless logit-pool weight (0 = pure market, 1 = pure model); `lambda_pt` is per raw composite point and is the **only** one writable into `model.LAMBDA`. **No scalar converts them:** under v7.8 `logit(model_prob)` was exactly `K·composite_diff` (K=0.05) = ~20× of the gap, and the remainder is the `−logit(market)` term only the blend regressor carries; on the same 35 games the ratio is **30.9×**, and it is sample-dependent, which is the proof. **The v8.0 decision is untouched and the reason is exact: the two parameterizations coincide at precisely one point — zero — where both publish the market unchanged, and zero is what v8.0 set.** The label was wrong, not the call. **THE WINDOW HAS NOW SHUT AND WOULD HAVE SHUT SILENTLY.** `lambda_blend`'s regressor is identically zero on every v8.0-era row, because at λ=0 `model_prob` **is** the market — it is not computable on any date from 07-25 forward. Waiting for the Item 6 gate would have left the authorizing figure assertable but not re-derivable. It is now reproduced on every run as a PASS/FAIL regression test with the expected values frozen as constants, and a degeneracy guard that refuses rather than fitting an all-zero regressor. **This is the one sub-item in the whole queue that had a genuine expiry, and nothing in the file said so.** **DECISION OWED FROM BENJAMIN:** backfill moves the count 50 → 80, so the pre-registered ~150-game **Item 6 gate now lands ~08-01, not ~08-03**. The backfill was written into this file on 07-24 before any of these numbers were seen — that is the defence against it being a sample choice made to reach a threshold — **but the fit was run before inclusion was final, so it is stated, not assumed. If the pre-registered n should mean archive-only games, say so and the counter reverts and the backfill stays a reconciliation tool only.** **DEVIATION, for Benjamin to overrule:** shipped as **v8.6, not v8.3**. Item 4 was scoped as one version across five sub-items, but 4a touches only `fit_lambda.py` — a read-only instrument with no pipeline dependents and no workflow reference — while 4b–4e touch `shadow.py`, `stats.py`, `render.py`. Holding a finished, expiring reconciliation hostage to four reporting fixes was the worse trade. **4b–4e keep v8.3** (out of numeric order, same as v8.5 landing before v8.3). **SECOND FINDING, unrelated and worth a minute:** the repo's own `notes/EXECUTION_QUEUE_2026-07-24.md` is **stale** — it is at the 07-27 09:05 state (128 differing lines) and still says Item 2 has an open box and Item 7 is unstarted. Project knowledge is ahead of the repo. Upload this file to `notes/` too, or the repo copy keeps drifting. **NOT DONE, deliberately:** `model.py`'s LAMBDA comment block still describes the authorizing fit without naming its estimand. It is on the publish path and the item was scoped to the instrument; filed under CHANGELOG Open items for the next time `model.py` is opened. NEXT: **operator upload + re-clone + diff, then Item 4d** — the only open defect still degrading a committed artifact once per day — then 4b/4c/4e as v8.3, then Item 3, then the **Item 6 gate ~08-01.** |
 | 2026-07-27 | operator check + model diagnostic | **none — no code, no version** | Verified by execution against HEAD `9bd9d2a` ("run 2026-07-27 09:05 EDT [grade]", committed 13:05:17 UTC). **Zero Odds API credits** — ledger unchanged at **364**, `quota_as_of` still `2026-07-26T23:10:20Z`. **THE 09:05 GRADE RAN CLEAN AND EVERY PREDICTED INVARIANT HELD.** `docs/archive/2026-07-26_grade.txt` committed (915 B). `shadow_archive.jsonl` **130 → 160 rows / 65 → 80 games / 6 dates**. `grades_archive.jsonl` **held at 47** — λ=0 freeze holds a **third** consecutive day. `stats.json` held at **47 / 21-26 / z −3.64 / P/L −6.57U / ROI −28.6% / CLV n=21 avg +0.08 beat 61.9%**. **Y-D held again** (no `exit 1` on zero pick growth; publish step ran; λ rows landed). Board was 15 games, **0 staked**, max `edge_pct` **−0.92**, all 30 shadow rows `model_prob == pt_novig`, all `FULL`, composite **sd 11.61 / 30 distinct** — FG + Savant path alive from Actions a **third** day. Exactly one file added to the repo. | **ONE REAL LOSS, AND IT IS THE SECOND CONSECUTIVE DAY OF THE IDENTICAL FAILURE.** `823755` (COL @ MIL) snapped at `closer_age_min` **−0.3** → 0.3 min *after* first pitch → O-C fail-closed guard correctly rejected it → **28 of 30 rows carry CLV, not 30**. On 07-25 it was `822948`, also at **−0.3**. Same value, same shape, two for two. **SN-E now has three days of data and they contradict each other on the threshold while agreeing on the loss rate** — 07-25 median age 29.7, 07-26 median **7.6**, ten of fifteen under 12 minutes; zero rejected for being *old* on either day. Raising `MAX_CLOSER_AGE_MIN` buys nothing, lowering `LEAD_MIN` makes it worse; **the fix is allocation (Item 3)**. Item 3 write-up updated with the table. **METHOD CORRECTION WORTH CARRYING:** a hand-built preview of this grade, run an hour before the cron off committed files + free MLB statsapi finals, reproduced the λ fit **exactly** (−0.0069, SE 0.0171, identical per-date and LOO) but got the closer ages wrong by 1–2 min per game and **flipped one game's sign**, because it used the Odds API `commence` field while `grade.py` uses MLB `gameDate`. The two clocks disagree. **Zero-credit previews are trustworthy for anything the λ fit depends on and untrustworthy for anything with a sign change near zero.** That disagreement is also the standing argument for O-D having been fixed. **4d CONFIRMED A SECOND DAY AND NOW MEASURABLY DRIFTING.** `2026-07-26_grade.txt`'s daily table reads `<40% actual 33.3 / model 33.2`, `40-50% actual 50.0 / model 46.6`, `50-60% actual 50.0 / model 53.4` — near-perfect calibration, because the `model` column **is** the nine-book novig. Cumulative Brier moved **model 0.2816 \| market 0.2468 (n=130) → model 0.2735 \| market 0.2453 (n=160)**: the gap narrowed by 0.008 **purely by dilution**, and the artifact prints "If the market beats the model, the model is not yet adding information" directly beneath a comparison that is structurally a tie. **Era split, computed to settle a "results are getting worse" reading and it should be reused verbatim next time that comes up:** the 100 pre-v8.0 rows (07-21..07-24) carry **every** bad gap (`<40%` +31.3, `60-70%` −37.6, `70%+` −26.4; Brier model 0.2958 \| market 0.2506) and **are frozen forever**; the 60 v8.0 rows are gaps of −0.1/+0.1 with Brier **model 0.2364 \| market 0.2364, identical because they are the same number**. **The blended table can only ever look better from here, never worse. Nothing deteriorated.** **λ TRAJECTORY — INFORMATIONAL, NOT A TRIGGER, AND THE PRE-REGISTERED TRAP FIRED AGAIN.** n=50: **λ = −0.0069, SE 0.0171, CI [−0.0404, +0.0266], P(λ>0) = 0.347, LR 0.16** (bar 3.84), mkt-stripped −0.0072. Pooled λ moved −0.0148 (n=35) → −0.0069; P(λ>0) 24% → 35%. **07-26 is the SECOND consecutive positive per-date fit (+0.018, the largest yet)** and **the first positive leave-one-out fit appeared** (without 07-24 = +0.005). 07-24 (−0.039) now single-handedly carries the negative pooled estimate. The 07-26 entry pre-registered a note against exactly this and it fired the very next day. **Only the Item 6 rule moves λ.** **NEW COMPANION DOC: `MODEL_DIAGNOSTIC_2026-07-27.md`** — written in answer to "what could we adjust in the model code," explicitly as evaluation, no change requested or made. Key measured results, all zero-credit, all read-only: (a) **`sit_score` diff took exactly one value (+12.0), sd 0.00, effective weight 0.0%** across 50 games — a fixed +0.84 on every `composite_diff`, and a **correctness bug rather than dead weight the moment λ > 0**, since it adds home-field on top of a prior that already prices it; (b) **the locked weights are not the weights** — nominal 40/25/15/10/7/3, **effective 53/25/15/6/0/1**; (c) **`mkt_diff` correlates +0.999 with `logit(market_novig)`** — the prior re-entered as a feature — and total `composite_diff` correlates +0.713 with its own offset, only falling to +0.664 when mkt is stripped; (d) **`sp` is simultaneously loudest (52.7% effective), noisiest (sd 29.85, ~2x off/pen) and least-regularized**, which makes `pct()` the one Deferred item that is plausibly load-bearing; (e) per-category fits are **all \|z\| < 1.5** (`sp` −0.47, `off` +1.35, `pen` −1.48, `mu` +0.72) — nothing significant, though `sp`+`pen` lean negative and hold **68% of effective weight**, which is a *mechanism* for the negative pooled λ and not evidence. **A HYPOTHESIS WAS TESTED AND FAILED — recorded so it is not re-proposed in August:** decontaminating the regressor (drop mkt echo + constant sit, center, free intercept) does **not** tighten λ's SE. It went **0.0171 → 0.0196, wider.** An offset carries no fitted coefficient, so collinearity with it cannot inflate variance. **Do not argue at the gate that cleaning the composite would have sharpened the decision.** **AND AN OLD FIGURE RETIRED:** the v8.0 comment block's "+0.11 intercept / ~2.8 pts uncredited home field" **does not reproduce** — free-intercept fit on the v8.0-era sample returns **−0.1840 ± 0.3090**, CI [−0.79, +0.42]. Not a reversal; the sample simply cannot speak to home-field. Stop quoting the old number. Deferred table and standing rules updated accordingly. **EVALUATION CONCLUSION, for the record:** nothing in the diagnostic would plausibly turn r ≈ 0 into an edge — it is hygiene, and the standing rule against adding inputs to a model with no measured signal applies equally to reweighting the same inputs. **The only change with a real mechanism is F5 markets**, already the queue's designated pivot, because it changes the information set rather than rearranging it. **NEXT: Item 2's last box — the 12:43 ET SCHEDULED watchdog run — was still PENDING as of 09:54 ET. Observe it, then close Item 2. Then Item 7 (v8.5, model-era stamp).** |
+| 2026-07-27 | 2 (final box) | **none — operator observation only, closes Item 2** | Watched the Actions UI directly (GitHub's REST API was rate-limited from this session's egress for most of the afternoon — dozens of 403s across rotating IPs, occasional 200s; not a repo issue, just shared unauthenticated-quota pressure). Confirmed via screenshot and a follow-up `git fetch`: run **#315**, event **`Scheduled`**, conclusion **success**, duration **12s**, landed **~16:55 ET** (~4h12m after the nominal 12:43 ET trigger — consistent with 07-23 through 07-26's 3.5–4h lateness; not a new or worsening delay). Re-fetched `origin/main` immediately after: HEAD was unchanged at the prior 14:30 EDT snap commit, confirming the **zero-write property held on the real scheduled trigger**, not only the 07-26 manual test. Six runs (5 snap, 1 watchdog) completed between the last-seen commit and this check, none of them committed — consistent with `snap_smart.py`'s existing free-wake-up behavior (no imminent game, no spend, no state change) plus the watchdog's designed no-op-on-green path; not evidence of anything broken. | **ITEM 2 IS NOW FULLY CLOSED.** Both required proofs are in: the manual run (07-26) proved the watchdog logic on the runner; the scheduled run (07-27, #315) proves **cron delivery**, which is this repo's own historical failure mode and the reason Item 2 existed. No further verification needed on this item. **NEXT: Item 7 (v8.5, model-era stamp on grade rows)** — reaffirmed as the recommended next item in the 07-26 log entry and unchanged by today's diagnostic-only session. It is a hard prerequisite for Item 6 moving λ off zero, and cheapest to ship now while `grades_archive.jsonl` is frozen at 47 rows and nothing writes to it. Item 4 (five sub-items, 4d actively drifting a committed artifact daily) remains the defensible alternative if Benjamin prefers to stop that drift first. Item 3 still has no deadline this cycle. |
 | 2026-07-26 | 2 (deploy) | **v8.1 deployed + v8.1.1** | Deploy verified by execution against HEAD `320efad`. v8.1 landed `a6ee3b9` (daily.yml) + `8205fab` (CHANGELOG) at 13:52 ET; v8.1.1 landed `320efad` + `8c613d0` at 14:28 ET. All four files **byte-identical** to what was built; no `(1)` files; no YAML at repo root; `daily.yml` in `.github/workflows/`. Deployed YAML parses, `timeout-minutes: 20`, options `['build','snap','grade','watchdog']`. **Manual `watchdog` run GREEN on the real runner** — all four checks passed and the output matched the sandbox rehearsal **line for line**, including `369 credits remaining as of 2026-07-26T18:10:16.617868+00:00`. **HEAD unchanged after the run** (still `320efad`), so Publish exited before committing: the zero-write property holds on the runner, not only under `sys.addaudithook` in a sandbox. | **v8.1.1 was not in the queue — it was added because v8.1 had no way to be tested.** v8.1 shipped at 13:52 ET, *after* the 12:43 cron had already fired, and `watchdog` was absent from the `workflow_dispatch` choice list; GitHub validates `type: choice` inputs, so there was no API or CLI route around it either. The first real run would have been a day away, and **v8.1 had only ever been verified in a sandbox — the heredoc, `bash -euo pipefail` and the Ubuntu image had never been exercised together.** Seven lines added `watchdog` to the options; the v8.1 watchdog block is byte-identical. Verified: all 8 trigger shapes routed through the real `Resolve mode` block (scheduled cron → watchdog, three dispatch types unchanged, manual watchdog → watchdog, manual build → build, empty input → build default, unrecognised cron → watchdog), and `Publish` run with `MODE=watchdog` printed `nothing to commit` and exited 0 **before the first `git config`**. **Finding worth carrying forward: the sandbox harness is a faithful proxy for the runner.** Rehearsal and live output agreed to the character, including a floating-point-precision timestamp. Extracting a workflow block from the *parsed* YAML and running it under a `date` shim can be trusted for future assertions — that is now demonstrated rather than assumed. **Process note, not a defect:** both versions were uploaded as two commits ~15s apart rather than one. Functionally fine — the changelog-in-the-same-commit rule exists so a changelog is not updated *later* and quietly stops being true, and 15 seconds is not later. The only cost is a second `pages build and deployment` run, which shows as a cancelled/queued pair in the Actions list and is cosmetic; Pages served the new content correctly both times (live page byte-identical to `docs/index.html`). **ONE BOX REMAINS: the 12:43 ET SCHEDULED run on 07-27 must go green.** The manual run proves the watchdog logic on the runner; only the scheduled run proves **cron delivery**, and cron delivery is this repo's historical failure mode. Do not close Item 2 until it is seen. **Also measured this session, unprompted, both already-filed items — bring them to Benjamin, do not change them:** (a) **SN-D is downgraded.** Earliest first pitch across 8 committed dates is **12:16 ET**; **zero** games before noon. The ~11:10 sweep floor has never bound. Extend the crontab to `10,30,50 9-23` as free insurance, not for yield. (b) **SN-E is framed backwards.** On the valid sample (completed dates under v7.6, n=35): median closer age **20.7 min**, max **40.7**, min **0.7**, and **zero** rejected as stale (>45). So `LEAD_MIN=50` vs `MAX_CLOSER_AGE_MIN=45` is **not** costing rows today. The exposure is at the **late** edge — 4 closers at 0.7 min, one sweep cycle from missing first pitch entirely, which is exactly how `822948` was lost by 18 seconds on 07-25 — while 4 more sit at 40.7, one cycle from rejection. Ages quantize to the 5-minute sweep grid, so **both tails are one 20-minute cycle from failure**. Lowering `LEAD_MIN` would make it worse; raising `MAX_CLOSER_AGE_MIN` buys nothing since nothing is being rejected. The real fix is allocation — **Item 3 (SN-C)**. |
 | 2026-07-26 | 2 | **v8.1 (built, deploy pending)** | Built against HEAD `b44d493`. Zero credits. **YAML parses**, `timeout-minutes: 20` present (`grep -c` was 0). Watchdog block **extracted from the parsed YAML** and run standalone under `bash -euo pipefail` with `DD_TODAY`/`DD_YESTERDAY` injected through a `date` shim, so the shipped text is the tested text; embedded Python compiles. **12 states exercised.** All-fresh x2: T=07-26/Y=07-25 (15 games, 30 shadow rows, 15 closers / 5 calls, 376 credits) and T=07-25/Y=07-24 on a **pristine clone with no synthesis** (15 games, 30 rows, 15 closers / 7 calls) — both exit 0. Five error states each produce a distinct `::error::watchdog <CODE>:` line and exit 1: card missing, index/archive mismatch, grade artifact missing, zero shadow rows for yesterday, no closers+no snap state. Multi-failure state produces **three distinct errors plus a summary** — checks do not short-circuit. Four cry-wolf states verified exit 0. **Zero-credit property proven with `sys.addaudithook`:** exactly 8 repo files opened, all read-only, **zero** `socket.connect`/`socket.getaddrinfo` events, no odds/stats client imported, `budget.py` still excluded from watchdog mode. Pure ASCII, no tabs. | Closes audit **Y-C** (half of it — see below) and the missing `timeout-minutes`. Monitoring only: no model logic, no stakes, nothing written by the watchdog. **The check that matters is SHADOW** — `shadow_archive.jsonl` must carry rows dated yesterday. At λ=0 every published number can look correct while the λ dataset silently stops growing, and those rows are unrecoverable once the runner is gone. **Deviation from the queue spec, and it is the load-bearing part:** the spec asserted grade/shadow/snap *unconditionally*, which would fire every day of the All-Star break and every day of the off-season. Per the queue's own verification step 3 — a watchdog that cries wolf gets muted, which is worse than none — the three new assertions are gated on whether a board existed yesterday (`docs/archive/{Y}_picks.json` row count), with four warning-not-error escape hatches: empty board, absent board file (that is *yesterday's* build failure and yesterday's watchdog is its record), zero shadow rows when the grader itself printed `no new rows to append` (postponed slate / no finals / deduped re-run), and thin closer coverage. **Coverage is deliberately a warning and never a failure** — postponements and doubleheaders make thin days legitimate, and coverage tuning is Item 3's job. **Surprise: the `timeout-minutes` value could not be chosen from data.** The Actions API returns **403 unauthenticated**, so run durations are unreadable from here; committed commit timestamps do not help either, because the commit message time is generated *at commit time* and so trivially matches it. Derived from the retry budget instead: 8 `fg_client.leaders()` calls x 3 attempts x 3 impersonation profiles x 30s timeout + 1.5/3/4.5s backoff = 279s worst case per call; a total Cloudflare block raises on the FIRST endpoint at ~4.7 min so the build fails fast, realistic degradation is ~5 min for all 8, and grade/snap make no FG calls at all. 20 clears the realistic case ~4x and truncates only 8 consecutive near-misses (~37 min). Erring long is deliberate — killing a slow grade run destroys the same λ rows this protects. **Tighten from the Actions UI if Benjamin wants to.** **Second observation, not acted on:** the watchdog was rewritten as one Python block reading dates from the environment specifically so it is runnable standalone; that is what made a 12-state matrix testable at all, and it is the pattern to reuse for any future assertion. **Y-C IS ONLY HALF CLOSED.** Detection is still once a day at 12:43 ET and cron-job.org is still a single point of failure with **no backup trigger** — v8.1 makes a lapse loud, not fast, and does not remove the dependency. Left open deliberately; a GitHub-side backup trigger is a separate change and would spend credits if done carelessly. **OUTSTANDING, next session, in order:** (1) confirm the deploy — re-clone, diff, no `(1)` files, `daily.yml` in `.github/workflows/` not root; (2) **watch the first 12:43 ET watchdog run go GREEN.** If it goes red on a normal day a cry-wolf guard is wrong and that jumps the queue. (3) Also still open from Item 1: nothing — Item 1 is fully closed. **RECOMMENDED NEXT ITEM: Item 7 (v8.5, model-era stamp on grade rows).** Reasoning: it is a hard prerequisite for Item 6 turning λ off zero, it is cheapest right now while `grades_archive.jsonl` is frozen at 47 rows and nothing writes to it, and it must agree on key names with 4e — shipping it first settles those names instead of guessing them. Item 4 is larger (five sub-items) and 4d is degrading a committed artifact once a day, so if Benjamin prefers to stop the ongoing damage first, Item 4 is the defensible alternative. Item 3 has no deadline this cycle (ledger 376 with 5 days left in July). |
+| 2026-07-27 | 7 | **v8.5 (built, upload owed)** | Built against a fresh `--depth 1` clone at HEAD `7ed2a3e`. Zero credits. **All verification passed by execution, not by reading.** Grade regression on 2026-07-23 (rows removed from a copy first so they were genuinely new): **stdout byte-identical** to the pre-change baseline, and the appended rows gained **exactly** `model_version` + `lambda` — nothing else added, removed, or changed, diffed field by field. Backfill: `.bak` md5 == pre-stamp md5, **47 in / 47 out**, ordering preserved, zero other field differences, re-run is a no-op that does not clobber the `.bak`. `stats.py`: **no pre-existing key changed**, closed-era segment reproduces **47 / 21-26 / z −3.64 / ROI −28.6% / CLV n=21 avg +0.08 / P/L −6.57U** exactly, empty current-era segment does not crash, `sample_closed: true`, `unstamped_n: 0`. Synthetic mixed-era test on a **copy** separates cleanly and `sample_closed` flips by itself. `render.py` untouched: re-render from cached `picks.json` differs from the published card **only in the snapshot timestamp**, head byte-identical to the published head. | **Shipped as five files, not three, and all three deviations are recorded in Item 7 above for Benjamin to overrule.** (a) **`model_meta.py` is new because `import model` would put `curl_cffi` on the grade job's critical path** via `fg_client` — a job that today needs only `requests`, and whose failure costs a morning of unrecoverable shadow rows. It AST-parses `model.py` instead; `model.py` stays the single source of truth. (b) **`MODEL_VERSION` ships as `'v8.0'`, not `'v8.5'`** — it stamps the era of the published probability path, not the repo release, because bumping every release fragments segmentation into identical-behaviour eras. Bump it when the computation producing `model_prob` changes. (c) **Segmentation is on the (version, λ) pair**, because λ moving without a version bump would otherwise merge two models — the same hole in a new place; verified with a synthetic `v8.1@lambda=0.3` vs `v8.1@lambda=0.0` split. `backfill.py` amended in the same spirit (`--era=`, defaults to `unstamped-backfill`, never the running model). **NEW FINDING, and it strengthens this item's own argument: 28 of the 47 rows have no `pt_novig` field at all** — the `model_prob == pt_novig` era test never classified 60% of the file, it swept those rows into "not v8.0" by absence rather than evidence. It got the right answer by luck. Standing rule updated. **An unstamped row is bucketed as `unstamped`, counted, and printed as `::error::` — never absorbed into the current era**, and `grade.py` stamps `'unresolved'` + `::error::` rather than aborting if it cannot read the era: a mislabelled row is unrecoverable, a loud one is not, and a dead grade job loses the morning's shadow rows on top. **No workflow change needed** — `daily.yml` already stages `grades_archive.jsonl` and `docs/stats.json` explicitly, and `*.bak` is now gitignored and not on the staging list, so the shadow-file class of silent discard does not apply. **Key-name contract with Item 4e recorded in `CHANGELOG.md` Open items:** `sample_closed`, `model_version`, `lambda`, `era_key`, `era_*`, `eras[]`, `unstamped_n`. **Second open item filed:** `shadow_archive.jsonl` carries no era stamp either — harmless while λ=0 and the archive is one era, but `fit_lambda.py` would pool two models without noticing the moment λ moves. NEXT: **operator upload + re-clone + diff, then Item 4a** (pin the λ units while the tool and the authorizing fit are both at n=35 — cheapest it will ever be), then **4d**, then **Item 3**, then the **Item 6 gate ~08-03.** |
 | 2026-07-26 | 1 (box 1d) | none (operator) | Verified by execution against HEAD `b44d493` ("run 2026-07-26 09:05 EDT [grade]", committed 13:05 UTC). Zero credits. **1d PASS — `grades_archive.jsonl` held at 47 rows; `stats.json` held at 47 / 21-26 / z −3.64 / ROI −28.6% / CLV n=21 avg +0.08 beat 61.9%.** 07-25 graded zero picks: `docs/archive/2026-07-25_picks.json` has 15 rows, **0 at units ≥ 1**, max `edge_pct` **−1.11**, `model_prob == novig` on every row. Shadow grew **+30 rows / 15 games / 28 with CLV** → **130 rows / 65 games / 5 dates**. `docs/archive/2026-07-25_grade.txt` committed, empty PICK table. | **ITEM 1 IS NOW FULLY CLOSED.** 07-25 was the first day both builds were v8.0, so this is the first grade with no deploy-timing confound — the λ=0 freeze is confirmed in production. **Y-D held a second consecutive day** (no `exit 1` on zero pick growth; the λ dataset was not starved). **07-25 is the first date carrying the full v8.0 signature: 30 of 30 shadow rows have `model_prob == pt_novig`.** Composite is alive and varied — **sd 12.16, 30 distinct values** across 15 real games (07-24 sd was also 12.16 to 2dp; checked the multisets, they are **not** identical — coincidence, not a stale snapshot). 1c therefore holds a second day: the real FG + Savant path keeps executing correctly from GitHub Actions. **Supply line was the best-run part of the day:** 15/15 closers on **5 snap calls / 11 credits**, closer age median **29.7 min**, max **40.7** — every one inside the 45-min guard. Ledger **376 remaining** with 5 days left in July (spend 07-20..25: 4/15/19/12/9/11), so Item 3's credit rationale stays dissolved and Item 2 stays ahead of it. **4d IS NO LONGER A PREDICTION.** `2026-07-25_grade.txt` prints a daily bucket table whose `model` column **is** the nine-book novig — and it reads as well-calibrated (42.9 vs 46.0, 57.1 vs 54.0), which is the worst failure mode for a glanced-at number. Cumulative Brier now **model 0.2816 \| market 0.2468 (n=130)**, diluted by 30 tied rows and drifting toward a fake tie daily. Item 4d write-up updated in place; **it is now the only sub-item actively degrading a committed artifact once per day.** **4c confirmed a fifth time** — shadow CLV is exactly 0.00 avg / exactly 50.0% beat on all five dates including 07-25. **One real loss, and it was invisible:** gamePk `822948` was snapped **0.3 min AFTER first pitch** → `closer_age_min −0.3` → the O-C fail-closed guard correctly rejected it → no `close_novig`, no CLV, 2 rows lost. **The guard worked; the timing didn't** — an 18-second miss. That is live data for **SN-E** (`LEAD_MIN` 50 > `MAX_CLOSER_AGE_MIN` 45) and it is exactly the failure shape Item 2 exists to surface: nothing on the card, the panel, or any published artifact showed it. **`fit_lambda.py` now reads 35 games — the same n as the −0.76 ± 0.61 authorizing figure**, on different dates, still **~51× apart in scale**. Item 4a updated: the reconciliation window is open now and will not get cleaner before August. **Trap recorded:** 07-25 is the **first positive per-date λ (+0.003, n=15)**; pooled λ = **−0.0148 ± 0.0197**, CI [−0.0534, +0.0239], P(λ>0) = **24%**, LR **0.55** vs the 3.84 bar, mkt-stripped −0.0151. Noise. Logged so the next positive date is read against a note, not as a discovery. **No code, no version, no changelog entry** — operator check only. NEXT: **Item 2 (v8.1 — watchdog asserts grade + shadow heartbeat + snap, add `timeout-minutes`), deadline ~07-27.** |
 | 2026-07-25 | 1 | none (operator) | Verified by execution against HEAD `adb6695` ("run 2026-07-25 09:05 EDT [grade]", committed 13:05 UTC). Zero credits. **1a PASS** — grade job did not exit 1 on zero pick growth; `docs/archive/2026-07-24_grade.txt` committed; `shadow_archive.jsonl` +30 rows / 15 games / 28 with CLV → 100 rows / 50 games / 4 dates. **1b PASS** — `docs/index.html` renders the zero-pick state ("Passing is a position", `0 picks`), CSS head intact. **1c PASS** — 17:35 v8.0 `model_output.json`: 14 games all `FULL`, composite sd 11.12, 28 distinct SP scores, **zero** `38.0`/`40.0` constants, no `no FG`/`DEGRADED` flags. **1d FAILED as written** — `stats.json` 46→47, z −3.38→**−3.64**, record 21-26; `grades_archive.jsonl` +1 row. | **1c closes the standing FanGraphs/datacenter-IP question** — the real FG + Savant path executed correctly under v8.0 from GitHub Actions in sustained production. That question has been open since the project's early days. **1d is deploy timing, not a v8.0 defect** — established from the 17:35 build's own committed `picks.json`: v8.0 landed 14:22 ET so the 11:05 build was still v7.8 and staked Milwaukee at 1U (model 87.9% vs 71.4% close — the widest dispersion gap on the board); the game started before 17:35 so the first v8.0 build excluded it under v6.3 underway-exclusion (that build: 14 games, **all 0U, all `model_prob == novig`** — v8.0 working exactly as designed); `archive_picks.py` correctly carried the v7.8 row forward as the pick of record; `grade.py` graded it and **it lost, −1.00U**. Fitting that the last v7.8 pick ever published was also its most over-dispersed one. **07-25 is the first day both builds are v8.0, so the 07-26 09:05 grade is the first genuinely frozen one — that is the real 1d test and it jumps the queue if `grades_archive` grows.** **TWO NEW FINDINGS, both folded into Item 4 as 4c/4d — neither is in any prior document.** (4c) Shadow's aggregate CLV is **zero by construction**: exactly 0.00 avg and exactly 50.0% beat rate on *every* date, because shadow stores both sides and the two CLVs are exact negatives. It is an identity being printed as a statistic. Real CLV is in `grades_archive`: n=21, avg **+0.08**, beat **61.9%** — above coin-flip, nowhere near significant. (4d) **At λ=0 the grade artifact's calibration table and Brier go degenerate starting today.** They read `model_prob`, which now *is* the market novig, so the table compares the market to itself. 07-24 only looked real because `shadow_2026-07-24.json` froze at `15:05Z` = the 11:05 **v7.8** build (0 of 30 rows have `model_prob == novig`) and freeze-first-write discarded the 17:35 v8.0 snapshot. **The λ fit is unaffected** — it reads `composite`, which is live and varied (07-24 sd 11.95) — but every future `grade.txt` headline is structurally a tie. Makes audit **S-C** concrete; flagged as a Benjamin decision, not changed. **Third finding, on the instrument itself:** `fit_lambda.py` at HEAD no longer self-refuses — 20 games, λ = **−0.0247 ± 0.0248**, CI [−0.0734, +0.0240], P(λ>0)=**16%**, LR 1.00, every per-date fit negative, mkt-stripped variant identical. Conclusion unchanged and consistent with the v8.0 authorization — **but the authorizing figure was −0.76 ± 0.61, a ~30× scale difference, not a sampling difference.** Two numbers ~30× apart both labeled "λ" in committed docs. Item 4a rewritten: pinning the parameterization is now the harder half, and it must be resolved **before** Item 6, not during it. **Item 3 deadline dissolved:** ledger shows 385 credits with 7 days left in July against 9–19/day burn (07-24: **9 credits, 7 snap calls, 15/15 closers**). Item 2 stays ahead of Item 3. **No code, no version, no changelog entry** — operator check, and the 1d failure was transitional. **SECOND PASS SAME DAY, from a screenshot of the live scorecard panel:** Benjamin read the panel as metrics deteriorating. Verified the whole 46→47 delta is the single Milwaukee row — record 21-25→21-26, z −3.38→**−3.64**, P/L −5.57→−6.57U, ROI −25.3%→−28.6% — while **CLV avg improved +0.03→+0.08 and beat rate 60.0%→61.9%**, i.e. the two figures that matter under the locked "CLV is primary" rule both got better and nothing systemic moved. **`0 of 47` rows carry the v8.0 signature** (`model_prob == pt_novig`, checked across the whole file), and `grep -n "LAMBDA\|lambda" stats.py render.py` returns **no hits** — so the panel is a frozen post-mortem of a retired model under a hardcoded "RUNNING SCORECARD" header, and it will read that way forever. **Filed as 4e** (reporting; relabel, keep every number) **and Item 7** (structural). **Item 7 is the sharp one and it was not in any prior document:** the `model_prob == novig` test used to establish "0 of 47" **only works while λ is exactly 0** — at λ=0.3 a v8.x row is indistinguishable from a v7.8 row by that test, and grade rows carry no `model_version`, no `lambda`, no era field of any kind. So the first λ>0 stake would append to a 47-row archive of a model that went 21-26 / ROI −28.6% / z −3.64, blend every headline across two structurally different models, and be **unrecoverable after the fact** — with the fix forced into the same session that turns stakes on. Fix is a direct clone of the working v6.8 pattern (`grade.py:475` writes `provenance`; `stats.py:49-50` segments and emits `live_*` alongside the headline): add `MODEL_VERSION` beside `LAMBDA` in `model.py`, stamp `model_version`+`lambda` in `grade.py`, backfill the 47 rows by changelog date (auditable, not guessed), segment in `stats.py`. Rejected alternative recorded in-item so it is not re-proposed: a fresh `grades_archive_v8.jsonl` — fragments history, `stats.py` must read both anyway, does not generalize. **Item 7 has no calendar deadline but is a hard prerequisite for Item 6 turning λ off zero, and is cheapest now while nothing writes to the file.** Cross-referenced from Item 6. NEXT: **Item 2 (v8.1, watchdog sees grade + snap, add `timeout-minutes`), by ~07-27**, with the 1d deferred box checked after 09:05 ET 07-26. |
 | 2026-07-24 | — | — | Deploy of v8.0 confirmed at HEAD `fb8e4a4` (14:22 ET): `LAMBDA = 0.0` `model.py:316`, market-prior form `:365`, K absent, both-sides EV `picks.py:161`, `fit_lambda.py` present and self-refusing, `daily.yml` in `.github/workflows/`, no `(1)` files. Data state matches handoff: grades 46 (`21-25`), shadow 70 rows, CLV n=20 / beat 60%. | Queue created. Previous queue closed — **it had five items and no item 6**; its progress log was stale at Item 2 and entries for items 3–5 were reconstructed from `CHANGELOG.md`. Sweep of the 07-21 audit against HEAD found Tier 0 almost fully closed (see table above) — the audit's fix order is now substantially stale and should not be worked top-down. Priorities re-derived from what the system now is: an instrument protecting the λ dataset. **Open and confirmed by execution:** Y-C (watchdog card-only), `timeout-minutes` absent (`grep -c` = 0), SN-C (`at_risk` printed, never gates), CL-A (`grep` returns nothing, 15 rows), S-B (carried from v7.7, never picked up). **New finding not in any prior document:** `fit_lambda.py` refuses at 5 games while 30 more are recoverable from committed `shadow_*.json` snapshots — so the tool's n will not match the 35-game fit that authorized λ=0 (Item 4a). **Second new finding:** v8.0 was verified with the FG/Savant scorers stubbed, so the composite path has never run under v8.0 against real stats data, and at λ=0 a broken composite is invisible in every published number while silently corrupting the λ regressor (Item 1c). |
