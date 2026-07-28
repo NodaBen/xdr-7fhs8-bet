@@ -1,76 +1,15 @@
 [
  {
   "game": "Cleveland Guardians @ Cincinnati Reds",
-  "gamePk": 824490,
-  "venue": "Great American Ball Park",
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
-   "total": 9.0,
-   "books_used": 9,
-   "book_spread": 0.0186
-  },
-  "sides": {
-   "away": {
-    "team": "Cleveland Guardians",
-    "sp": "Slade Cecconi",
-    "sp_id": 677944,
-    "sp_resolved": true,
-    "cats": {
-     "sp": 30.6,
-     "off": 22.1,
-     "pen": 80.7,
-     "mkt": 40.7,
-     "sit": 44.0,
-     "mu": 33.4
-    },
-    "composite": 38.01,
-    "flags": [],
-    "data_quality": "FULL",
-    "model_prob": 0.4066,
-    "fair_ML": 146,
-    "implied": 0.4255,
-    "novig": 0.4066,
-    "edge_pct": -1.89
-   },
-   "home": {
-    "team": "Cincinnati Reds",
-    "sp": "Chase Burns",
-    "sp_id": 695505,
-    "sp_resolved": true,
-    "cats": {
-     "sp": 56.1,
-     "off": 33.7,
-     "pen": 27.8,
-     "mkt": 59.3,
-     "sit": 56.0,
-     "mu": 42.6
-    },
-    "composite": 46.17,
-    "flags": [],
-    "data_quality": "FULL",
-    "model_prob": 0.5934,
-    "fair_ML": -146,
-    "implied": 0.6198,
-    "novig": 0.5934,
-    "edge_pct": -2.64
-   }
-  },
-  "flags": [],
-  "data_quality": "FULL"
- },
- {
-  "game": "Cleveland Guardians @ Cincinnati Reds",
   "gamePk": 824489,
   "venue": "Great American Ball Park",
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
    "total": 9.0,
    "books_used": 9,
-   "book_spread": 0.0106
+   "book_spread": 0.0136
   },
   "sides": {
    "away": {
@@ -79,21 +18,26 @@
     "sp_id": 668909,
     "sp_resolved": true,
     "cats": {
-     "sp": 90.9,
-     "off": 22.1,
-     "pen": 80.7,
-     "mkt": 53.8,
-     "sit": 44.0,
+     "sp": 85.8,
+     "off": 20.6,
+     "pen": 75.2,
+     "mkt": 56.7,
+     "sit": 37.0,
      "mu": 45.9
     },
-    "composite": 63.83,
+    "sit_inputs": {
+     "hours_rest": 5.5,
+     "km_7d": 2800.4,
+     "games_7d": 6
+    },
+    "composite": 60.8,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.5384,
-    "fair_ML": -117,
-    "implied": 0.5575,
-    "novig": 0.5384,
-    "edge_pct": -1.91
+    "model_prob": 0.5669,
+    "fair_ML": -131,
+    "implied": 0.5918,
+    "novig": 0.5669,
+    "edge_pct": -2.49
    },
    "home": {
     "team": "Cincinnati Reds",
@@ -101,23 +45,28 @@
     "sp_id": null,
     "sp_resolved": false,
     "cats": {
-     "sp": 38.0,
-     "off": 33.7,
-     "pen": 27.8,
-     "mkt": 46.2,
-     "sit": 56.0,
+     "sp": 43.3,
+     "off": 33.9,
+     "pen": 22.4,
+     "mkt": 43.3,
+     "sit": 35.5,
      "mu": 50.0
     },
-    "composite": 37.83,
+    "sit_inputs": {
+     "hours_rest": 5.5,
+     "km_7d": 3264.1,
+     "games_7d": 6
+    },
+    "composite": 36.82,
     "flags": [
      "DEGRADED|SP TBD \u2014 replacement-level assumed"
     ],
     "data_quality": "DEGRADED",
-    "model_prob": 0.4616,
-    "fair_ML": 117,
-    "implied": 0.4902,
-    "novig": 0.4616,
-    "edge_pct": -2.86
+    "model_prob": 0.4331,
+    "fair_ML": 131,
+    "implied": 0.4545,
+    "novig": 0.4331,
+    "edge_pct": -2.14
    }
   },
   "flags": [
@@ -132,10 +81,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
    "total": 9.0,
    "books_used": 9,
-   "book_spread": 0.0093
+   "book_spread": 0.0199
   },
   "sides": {
    "away": {
@@ -144,21 +93,26 @@
     "sp_id": 665152,
     "sp_resolved": true,
     "cats": {
-     "sp": 64.1,
+     "sp": 58.7,
      "off": 64.9,
-     "pen": 53.8,
-     "mkt": 43.3,
-     "sit": 44.0,
+     "pen": 56.3,
+     "mkt": 43.2,
+     "sit": 50.1,
      "mu": 59.2
     },
-    "composite": 59.13,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 1214.5,
+     "games_7d": 6
+    },
+    "composite": 59.39,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.4334,
+    "model_prob": 0.4322,
     "fair_ML": 131,
     "implied": 0.4566,
-    "novig": 0.4334,
-    "edge_pct": -2.32
+    "novig": 0.4322,
+    "edge_pct": -2.44
    },
    "home": {
     "team": "Detroit Tigers",
@@ -166,21 +120,26 @@
     "sp_id": 675512,
     "sp_resolved": true,
     "cats": {
-     "sp": 75.2,
-     "off": 47.1,
-     "pen": 37.2,
-     "mkt": 56.7,
-     "sit": 56.0,
+     "sp": 67.2,
+     "off": 47.7,
+     "pen": 40.8,
+     "mkt": 56.8,
+     "sit": 52.8,
      "mu": 38.2
     },
-    "composite": 58.16,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 382.2,
+     "games_7d": 7
+    },
+    "composite": 55.29,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.5666,
+    "model_prob": 0.5678,
     "fair_ML": -131,
     "implied": 0.5902,
-    "novig": 0.5666,
-    "edge_pct": -2.36
+    "novig": 0.5678,
+    "edge_pct": -2.24
    }
   },
   "flags": [],
@@ -193,10 +152,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
    "total": 9.0,
    "books_used": 9,
-   "book_spread": 0.0046
+   "book_spread": 0.0099
   },
   "sides": {
    "away": {
@@ -205,21 +164,26 @@
     "sp_id": 694297,
     "sp_resolved": true,
     "cats": {
-     "sp": 39.9,
-     "off": 55.1,
-     "pen": 46.2,
-     "mkt": 48.7,
-     "sit": 44.0,
+     "sp": 44.4,
+     "off": 58.6,
+     "pen": 48.8,
+     "mkt": 48.6,
+     "sit": 42.5,
      "mu": 34.8
     },
-    "composite": 45.68,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 3497.2,
+     "games_7d": 7
+    },
+    "composite": 48.6,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.487,
-    "fair_ML": 105,
+    "model_prob": 0.4857,
+    "fair_ML": 106,
     "implied": 0.5074,
-    "novig": 0.487,
-    "edge_pct": -2.04
+    "novig": 0.4857,
+    "edge_pct": -2.17
    },
    "home": {
     "team": "Pittsburgh Pirates",
@@ -227,23 +191,28 @@
     "sp_id": 696149,
     "sp_resolved": true,
     "cats": {
-     "sp": 29.0,
-     "off": 55.0,
-     "pen": 47.5,
-     "mkt": 51.3,
-     "sit": 56.0,
+     "sp": 37.3,
+     "off": 55.8,
+     "pen": 51.6,
+     "mkt": 51.4,
+     "sit": 52.4,
      "mu": 50.0
     },
-    "composite": 43.02,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 514.6,
+     "games_7d": 6
+    },
+    "composite": 46.42,
     "flags": [
      "INFO|Arizona Diamondbacks: no Savant batter-vs-pitch data \u2014 matchup neutral"
     ],
     "data_quality": "FULL",
-    "model_prob": 0.513,
-    "fair_ML": -105,
+    "model_prob": 0.5143,
+    "fair_ML": -106,
     "implied": 0.5392,
-    "novig": 0.513,
-    "edge_pct": -2.62
+    "novig": 0.5143,
+    "edge_pct": -2.49
    }
   },
   "flags": [
@@ -258,35 +227,40 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
-   "total": 8.0,
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
+   "total": 8.5,
    "books_used": 9,
-   "book_spread": 0.0047
+   "book_spread": 0.0118
   },
   "sides": {
    "away": {
     "team": "Texas Rangers",
-    "sp": null,
-    "sp_id": null,
-    "sp_resolved": false,
+    "sp": "Cal Quantrill",
+    "sp_id": 615698,
+    "sp_resolved": true,
     "cats": {
-     "sp": 38.0,
-     "off": 69.4,
-     "pen": 37.0,
-     "mkt": 38.4,
-     "sit": 44.0,
+     "sp": 20.5,
+     "off": 73.3,
+     "pen": 42.5,
+     "mkt": 38.8,
+     "sit": 50.9,
      "mu": 50.0
     },
-    "composite": 46.51,
+    "sit_inputs": {
+     "hours_rest": 28.08,
+     "km_7d": 1490.7,
+     "games_7d": 6
+    },
+    "composite": 42.18,
     "flags": [
-     "DEGRADED|SP TBD \u2014 replacement-level assumed"
+     "INFO|Tampa Bay Rays: no Savant batter-vs-pitch data \u2014 matchup neutral"
     ],
-    "data_quality": "DEGRADED",
-    "model_prob": 0.3837,
-    "fair_ML": 161,
-    "implied": 0.4032,
-    "novig": 0.3837,
-    "edge_pct": -1.95
+    "data_quality": "FULL",
+    "model_prob": 0.3883,
+    "fair_ML": 158,
+    "implied": 0.4098,
+    "novig": 0.3883,
+    "edge_pct": -2.15
    },
    "home": {
     "team": "Tampa Bay Rays",
@@ -294,27 +268,32 @@
     "sp_id": 643377,
     "sp_resolved": true,
     "cats": {
-     "sp": 70.9,
-     "off": 60.7,
-     "pen": 65.3,
-     "mkt": 61.6,
-     "sit": 56.0,
+     "sp": 64.0,
+     "off": 56.0,
+     "pen": 64.3,
+     "mkt": 61.2,
+     "sit": 60.6,
      "mu": 45.6
     },
-    "composite": 64.77,
+    "sit_inputs": {
+     "hours_rest": 54.42,
+     "km_7d": 1789.1,
+     "games_7d": 6
+    },
+    "composite": 60.95,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.6163,
-    "fair_ML": -161,
-    "implied": 0.6429,
-    "novig": 0.6163,
-    "edge_pct": -2.66
+    "model_prob": 0.6117,
+    "fair_ML": -158,
+    "implied": 0.6364,
+    "novig": 0.6117,
+    "edge_pct": -2.47
    }
   },
   "flags": [
-   "DEGRADED|SP TBD \u2014 replacement-level assumed"
+   "INFO|Tampa Bay Rays: no Savant batter-vs-pitch data \u2014 matchup neutral"
   ],
-  "data_quality": "DEGRADED"
+  "data_quality": "FULL"
  },
  {
   "game": "Philadelphia Phillies @ Miami Marlins",
@@ -323,10 +302,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
    "total": 8.0,
    "books_used": 9,
-   "book_spread": 0.0072
+   "book_spread": 0.0146
   },
   "sides": {
    "away": {
@@ -335,21 +314,26 @@
     "sp_id": 605400,
     "sp_resolved": true,
     "cats": {
-     "sp": 65.3,
-     "off": 34.2,
-     "pen": 84.2,
-     "mkt": 49.2,
-     "sit": 44.0,
+     "sp": 60.0,
+     "off": 35.1,
+     "pen": 81.8,
+     "mkt": 45.3,
+     "sit": 48.7,
      "mu": 41.8
     },
-    "composite": 56.56,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 1639.5,
+     "games_7d": 5
+    },
+    "composite": 55.22,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.4918,
-    "fair_ML": 103,
-    "implied": 0.5169,
-    "novig": 0.4918,
-    "edge_pct": -2.51
+    "model_prob": 0.4532,
+    "fair_ML": 121,
+    "implied": 0.4695,
+    "novig": 0.4532,
+    "edge_pct": -1.63
    },
    "home": {
     "team": "Miami Marlins",
@@ -357,21 +341,26 @@
     "sp_id": 645261,
     "sp_resolved": true,
     "cats": {
-     "sp": 49.7,
-     "off": 53.2,
-     "pen": 59.2,
-     "mkt": 50.8,
-     "sit": 56.0,
+     "sp": 49.8,
+     "off": 52.3,
+     "pen": 57.7,
+     "mkt": 54.7,
+     "sit": 48.9,
      "mu": 44.4
     },
-    "composite": 52.39,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 1552.1,
+     "games_7d": 6
+    },
+    "composite": 51.57,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.5082,
-    "fair_ML": -103,
-    "implied": 0.5283,
-    "novig": 0.5082,
-    "edge_pct": -2.01
+    "model_prob": 0.5468,
+    "fair_ML": -121,
+    "implied": 0.5763,
+    "novig": 0.5468,
+    "edge_pct": -2.95
    }
   },
   "flags": [],
@@ -384,10 +373,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
-   "total": 8.5,
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
+   "total": 9.0,
    "books_used": 9,
-   "book_spread": 0.0071
+   "book_spread": 0.008
   },
   "sides": {
    "away": {
@@ -396,23 +385,28 @@
     "sp_id": 669456,
     "sp_resolved": true,
     "cats": {
-     "sp": 29.8,
-     "off": 16.9,
-     "pen": 75.0,
-     "mkt": 43.9,
-     "sit": 44.0,
+     "sp": 35.8,
+     "off": 12.6,
+     "pen": 74.7,
+     "mkt": 43.6,
+     "sit": 49.7,
      "mu": 50.0
     },
-    "composite": 36.36,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 1319.9,
+     "games_7d": 7
+    },
+    "composite": 37.39,
     "flags": [
      "INFO|Washington Nationals: no Savant batter-vs-pitch data \u2014 matchup neutral"
     ],
     "data_quality": "FULL",
-    "model_prob": 0.4386,
-    "fair_ML": 128,
+    "model_prob": 0.4359,
+    "fair_ML": 129,
     "implied": 0.4566,
-    "novig": 0.4386,
-    "edge_pct": -1.8
+    "novig": 0.4359,
+    "edge_pct": -2.07
    },
    "home": {
     "team": "Washington Nationals",
@@ -420,87 +414,31 @@
     "sp_id": 676917,
     "sp_resolved": true,
     "cats": {
-     "sp": 84.3,
-     "off": 90.2,
-     "pen": 7.0,
-     "mkt": 56.1,
-     "sit": 56.0,
+     "sp": 77.3,
+     "off": 100.0,
+     "pen": 6.5,
+     "mkt": 56.4,
+     "sit": 46.1,
      "mu": 52.6
     },
-    "composite": 68.43,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 2399.9,
+     "games_7d": 6
+    },
+    "composite": 68.58,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.5614,
-    "fair_ML": -128,
-    "implied": 0.5885,
-    "novig": 0.5614,
-    "edge_pct": -2.71
+    "model_prob": 0.5641,
+    "fair_ML": -129,
+    "implied": 0.5902,
+    "novig": 0.5641,
+    "edge_pct": -2.61
    }
   },
   "flags": [
    "INFO|Washington Nationals: no Savant batter-vs-pitch data \u2014 matchup neutral"
   ],
-  "data_quality": "FULL"
- },
- {
-  "game": "Atlanta Braves @ New York Mets",
-  "gamePk": 823598,
-  "venue": "Citi Field",
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
-   "total": 7.5,
-   "books_used": 9,
-   "book_spread": 0.009
-  },
-  "sides": {
-   "away": {
-    "team": "Atlanta Braves",
-    "sp": "Chris Sale",
-    "sp_id": 519242,
-    "sp_resolved": true,
-    "cats": {
-     "sp": 93.3,
-     "off": 59.5,
-     "pen": 67.5,
-     "mkt": 59.4,
-     "sit": 44.0,
-     "mu": 48.2
-    },
-    "composite": 72.77,
-    "flags": [],
-    "data_quality": "FULL",
-    "model_prob": 0.5942,
-    "fair_ML": -146,
-    "implied": 0.6198,
-    "novig": 0.5942,
-    "edge_pct": -2.56
-   },
-   "home": {
-    "team": "New York Mets",
-    "sp": "Christian Scott",
-    "sp_id": 681035,
-    "sp_resolved": true,
-    "cats": {
-     "sp": 74.4,
-     "off": 52.3,
-     "pen": 68.3,
-     "mkt": 40.6,
-     "sit": 56.0,
-     "mu": 40.0
-    },
-    "composite": 62.25,
-    "flags": [],
-    "data_quality": "FULL",
-    "model_prob": 0.4058,
-    "fair_ML": 146,
-    "implied": 0.4255,
-    "novig": 0.4058,
-    "edge_pct": -1.97
-   }
-  },
-  "flags": [],
   "data_quality": "FULL"
  },
  {
@@ -510,10 +448,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
    "total": 9.0,
    "books_used": 9,
-   "book_spread": 0.0079
+   "book_spread": 0.0107
   },
   "sides": {
    "away": {
@@ -522,21 +460,26 @@
     "sp_id": 607625,
     "sp_resolved": true,
     "cats": {
-     "sp": 40.7,
-     "off": 44.9,
-     "pen": 18.2,
-     "mkt": 40.6,
-     "sit": 44.0,
+     "sp": 44.5,
+     "off": 44.1,
+     "pen": 17.6,
+     "mkt": 38.4,
+     "sit": 60.3,
      "mu": 36.4
     },
-    "composite": 38.45,
+    "sit_inputs": {
+     "hours_rest": 54.0,
+     "km_7d": 1902.8,
+     "games_7d": 5
+    },
+    "composite": 40.86,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.4063,
-    "fair_ML": 146,
-    "implied": 0.4255,
-    "novig": 0.4063,
-    "edge_pct": -1.92
+    "model_prob": 0.3843,
+    "fair_ML": 160,
+    "implied": 0.4016,
+    "novig": 0.3843,
+    "edge_pct": -1.73
    },
    "home": {
     "team": "Minnesota Twins",
@@ -544,23 +487,28 @@
     "sp_id": 671737,
     "sp_resolved": true,
     "cats": {
-     "sp": 70.0,
-     "off": 42.6,
-     "pen": 16.2,
-     "mkt": 59.4,
-     "sit": 56.0,
+     "sp": 62.9,
+     "off": 44.5,
+     "pen": 15.2,
+     "mkt": 61.6,
+     "sit": 63.1,
      "mu": 50.0
     },
-    "composite": 52.44,
+    "sit_inputs": {
+     "hours_rest": 53.5,
+     "km_7d": 1014.7,
+     "games_7d": 5
+    },
+    "composite": 49.41,
     "flags": [
      "INFO|Kansas City Royals: no Savant batter-vs-pitch data \u2014 matchup neutral"
     ],
     "data_quality": "FULL",
-    "model_prob": 0.5937,
-    "fair_ML": -146,
-    "implied": 0.6198,
-    "novig": 0.5937,
-    "edge_pct": -2.61
+    "model_prob": 0.6157,
+    "fair_ML": -160,
+    "implied": 0.6441,
+    "novig": 0.6157,
+    "edge_pct": -2.84
    }
   },
   "flags": [
@@ -575,10 +523,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
    "total": 8.0,
    "books_used": 9,
-   "book_spread": 0.0151
+   "book_spread": 0.0214
   },
   "sides": {
    "away": {
@@ -587,23 +535,28 @@
     "sp_id": 543037,
     "sp_resolved": true,
     "cats": {
-     "sp": 82.4,
-     "off": 38.1,
-     "pen": 62.3,
-     "mkt": 54.1,
-     "sit": 44.0,
+     "sp": 74.8,
+     "off": 38.6,
+     "pen": 59.2,
+     "mkt": 52.5,
+     "sit": 50.1,
      "mu": 50.0
     },
-    "composite": 61.83,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 1215.9,
+     "games_7d": 6
+    },
+    "composite": 59.37,
     "flags": [
      "INFO|Chicago White Sox: no Savant batter-vs-pitch data \u2014 matchup neutral"
     ],
     "data_quality": "FULL",
-    "model_prob": 0.5411,
-    "fair_ML": -118,
-    "implied": 0.5671,
-    "novig": 0.5411,
-    "edge_pct": -2.6
+    "model_prob": 0.525,
+    "fair_ML": -111,
+    "implied": 0.5455,
+    "novig": 0.525,
+    "edge_pct": -2.05
    },
    "home": {
     "team": "Chicago White Sox",
@@ -611,21 +564,26 @@
     "sp_id": 641743,
     "sp_resolved": true,
     "cats": {
-     "sp": 25.3,
-     "off": 47.2,
-     "pen": 32.8,
-     "mkt": 45.9,
-     "sit": 56.0,
+     "sp": 36.0,
+     "off": 48.6,
+     "pen": 36.8,
+     "mkt": 47.5,
+     "sit": 49.7,
      "mu": 44.2
     },
-    "composite": 36.67,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 1309.2,
+     "games_7d": 6
+    },
+    "composite": 41.0,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.4589,
-    "fair_ML": 118,
-    "implied": 0.4785,
-    "novig": 0.4589,
-    "edge_pct": -1.96
+    "model_prob": 0.475,
+    "fair_ML": 111,
+    "implied": 0.5025,
+    "novig": 0.475,
+    "edge_pct": -2.75
    }
   },
   "flags": [
@@ -640,10 +598,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
    "total": 9.0,
    "books_used": 9,
-   "book_spread": 0.0085
+   "book_spread": 0.005
   },
   "sides": {
    "away": {
@@ -652,51 +610,57 @@
     "sp_id": 607067,
     "sp_resolved": true,
     "cats": {
-     "sp": 29.6,
-     "off": 74.2,
-     "pen": 47.8,
-     "mkt": 51.1,
-     "sit": 44.0,
+     "sp": 37.8,
+     "off": 81.0,
+     "pen": 50.6,
+     "mkt": 51.2,
+     "sit": 48.9,
      "mu": 48.2
     },
-    "composite": 47.19,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 1557.5,
+     "games_7d": 6
+    },
+    "composite": 53.15,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.5113,
+    "model_prob": 0.5121,
     "fair_ML": -105,
-    "implied": 0.5327,
-    "novig": 0.5113,
-    "edge_pct": -2.14
+    "implied": 0.5349,
+    "novig": 0.5121,
+    "edge_pct": -2.28
    },
    "home": {
     "team": "St. Louis Cardinals",
-    "sp": null,
-    "sp_id": null,
-    "sp_resolved": false,
+    "sp": "Michael McGreevy",
+    "sp_id": 700241,
+    "sp_resolved": true,
     "cats": {
-     "sp": 38.0,
-     "off": 27.4,
-     "pen": 26.5,
-     "mkt": 48.9,
-     "sit": 56.0,
-     "mu": 50.0
+     "sp": 42.5,
+     "off": 25.4,
+     "pen": 30.0,
+     "mkt": 48.8,
+     "sit": 45.7,
+     "mu": 38.2
     },
-    "composite": 36.34,
-    "flags": [
-     "DEGRADED|SP TBD \u2014 replacement-level assumed"
-    ],
-    "data_quality": "DEGRADED",
-    "model_prob": 0.4887,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 2531.2,
+     "games_7d": 7
+    },
+    "composite": 35.77,
+    "flags": [],
+    "data_quality": "FULL",
+    "model_prob": 0.4879,
     "fair_ML": 105,
     "implied": 0.5122,
-    "novig": 0.4887,
-    "edge_pct": -2.35
+    "novig": 0.4879,
+    "edge_pct": -2.43
    }
   },
-  "flags": [
-   "DEGRADED|SP TBD \u2014 replacement-level assumed"
-  ],
-  "data_quality": "DEGRADED"
+  "flags": [],
+  "data_quality": "FULL"
  },
  {
   "game": "Houston Astros @ Los Angeles Angels",
@@ -705,10 +669,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
    "total": 8.5,
    "books_used": 9,
-   "book_spread": 0.0077
+   "book_spread": 0.0045
   },
   "sides": {
    "away": {
@@ -717,21 +681,26 @@
     "sp_id": 663567,
     "sp_resolved": true,
     "cats": {
-     "sp": 53.3,
-     "off": 58.3,
-     "pen": 38.2,
-     "mkt": 50.0,
-     "sit": 44.0,
+     "sp": 51.8,
+     "off": 58.2,
+     "pen": 41.8,
+     "mkt": 50.2,
+     "sit": 39.9,
      "mu": 48.8
     },
-    "composite": 51.15,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 4296.8,
+     "games_7d": 5
+    },
+    "composite": 50.91,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.4999,
-    "fair_ML": 100,
+    "model_prob": 0.5022,
+    "fair_ML": -101,
     "implied": 0.5261,
-    "novig": 0.4999,
-    "edge_pct": -2.62
+    "novig": 0.5022,
+    "edge_pct": -2.39
    },
    "home": {
     "team": "Los Angeles Angels",
@@ -739,21 +708,26 @@
     "sp_id": 672282,
     "sp_resolved": true,
     "cats": {
-     "sp": 73.6,
+     "sp": 65.1,
      "off": 30.2,
-     "pen": 49.0,
-     "mkt": 50.0,
-     "sit": 56.0,
+     "pen": 52.3,
+     "mkt": 49.8,
+     "sit": 50.1,
      "mu": 45.3
     },
-    "composite": 54.63,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 1201.2,
+     "games_7d": 5
+    },
+    "composite": 51.46,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.5001,
-    "fair_ML": -100,
+    "model_prob": 0.4978,
+    "fair_ML": 101,
     "implied": 0.5192,
-    "novig": 0.5001,
-    "edge_pct": -1.91
+    "novig": 0.4978,
+    "edge_pct": -2.14
    }
   },
   "flags": [],
@@ -766,10 +740,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
-   "total": 9.5,
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
+   "total": 10.0,
    "books_used": 9,
-   "book_spread": 0.0159
+   "book_spread": 0.015
   },
   "sides": {
    "away": {
@@ -778,21 +752,26 @@
     "sp_id": 687562,
     "sp_resolved": true,
     "cats": {
-     "sp": 64.0,
-     "off": 36.8,
-     "pen": 64.7,
-     "mkt": 57.6,
-     "sit": 44.0,
+     "sp": 58.2,
+     "off": 36.0,
+     "pen": 59.0,
+     "mkt": 57.7,
+     "sit": 40.1,
      "mu": 44.0
     },
-    "composite": 54.66,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 4223.1,
+     "games_7d": 6
+    },
+    "composite": 50.29,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.5764,
+    "model_prob": 0.5767,
     "fair_ML": -136,
-    "implied": 0.6,
-    "novig": 0.5764,
-    "edge_pct": -2.36
+    "implied": 0.6094,
+    "novig": 0.5767,
+    "edge_pct": -3.27
    },
    "home": {
     "team": "Athletics",
@@ -800,21 +779,26 @@
     "sp_id": 695611,
     "sp_resolved": true,
     "cats": {
-     "sp": 57.0,
-     "off": 42.6,
-     "pen": 26.3,
-     "mkt": 42.4,
-     "sit": 56.0,
+     "sp": 53.4,
+     "off": 42.5,
+     "pen": 31.7,
+     "mkt": 42.3,
+     "sit": 39.2,
      "mu": 47.4
     },
-    "composite": 47.0,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 4489.5,
+     "games_7d": 5
+    },
+    "composite": 45.43,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.4236,
+    "model_prob": 0.4233,
     "fair_ML": 136,
-    "implied": 0.4464,
-    "novig": 0.4236,
-    "edge_pct": -2.28
+    "implied": 0.4367,
+    "novig": 0.4233,
+    "edge_pct": -1.34
    }
   },
   "flags": [],
@@ -827,10 +811,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
-   "total": 8.5,
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
+   "total": 8.0,
    "books_used": 9,
-   "book_spread": 0.0162
+   "book_spread": 0.0179
   },
   "sides": {
    "away": {
@@ -839,23 +823,28 @@
     "sp_id": 547179,
     "sp_resolved": true,
     "cats": {
-     "sp": 16.0,
-     "off": 23.1,
-     "pen": 39.3,
-     "mkt": 35.5,
-     "sit": 44.0,
+     "sp": 26.3,
+     "off": 23.9,
+     "pen": 39.1,
+     "mkt": 33.1,
+     "sit": 52.5,
      "mu": 50.0
     },
-    "composite": 26.21,
+    "sit_inputs": {
+     "hours_rest": 55.5,
+     "km_7d": 4251.7,
+     "games_7d": 4
+    },
+    "composite": 30.6,
     "flags": [
      "INFO|San Diego Padres: no Savant batter-vs-pitch data \u2014 matchup neutral"
     ],
     "data_quality": "FULL",
-    "model_prob": 0.3549,
-    "fair_ML": 182,
-    "implied": 0.3745,
-    "novig": 0.3549,
-    "edge_pct": -1.96
+    "model_prob": 0.3308,
+    "fair_ML": 202,
+    "implied": 0.3484,
+    "novig": 0.3308,
+    "edge_pct": -1.76
    },
    "home": {
     "team": "San Diego Padres",
@@ -863,21 +852,26 @@
     "sp_id": 650633,
     "sp_resolved": true,
     "cats": {
-     "sp": 41.7,
-     "off": 65.4,
-     "pen": 66.2,
-     "mkt": 64.5,
-     "sit": 56.0,
+     "sp": 46.2,
+     "off": 67.4,
+     "pen": 62.0,
+     "mkt": 66.9,
+     "sit": 51.2,
      "mu": 47.4
     },
-    "composite": 54.75,
+    "sit_inputs": {
+     "hours_rest": 56.0,
+     "km_7d": 4637.1,
+     "games_7d": 5
+    },
+    "composite": 55.18,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.6451,
-    "fair_ML": -182,
-    "implied": 0.6721,
-    "novig": 0.6451,
-    "edge_pct": -2.7
+    "model_prob": 0.6692,
+    "fair_ML": -202,
+    "implied": 0.6979,
+    "novig": 0.6692,
+    "edge_pct": -2.87
    }
   },
   "flags": [
@@ -892,10 +886,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
    "total": 7.5,
    "books_used": 9,
-   "book_spread": 0.021
+   "book_spread": 0.0085
   },
   "sides": {
    "away": {
@@ -904,23 +898,28 @@
     "sp_id": 701656,
     "sp_resolved": true,
     "cats": {
-     "sp": 87.7,
-     "off": 66.8,
-     "pen": 75.8,
-     "mkt": 58.0,
-     "sit": 44.0,
+     "sp": 81.0,
+     "off": 65.8,
+     "pen": 69.0,
+     "mkt": 57.9,
+     "sit": 44.3,
      "mu": 50.0
     },
-    "composite": 73.55,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 2950.7,
+     "games_7d": 5
+    },
+    "composite": 70.91,
     "flags": [
      "INFO|San Francisco Giants: no Savant batter-vs-pitch data \u2014 matchup neutral"
     ],
     "data_quality": "FULL",
-    "model_prob": 0.5797,
+    "model_prob": 0.5792,
     "fair_ML": -138,
     "implied": 0.6094,
-    "novig": 0.5797,
-    "edge_pct": -2.97
+    "novig": 0.5792,
+    "edge_pct": -3.02
    },
    "home": {
     "team": "San Francisco Giants",
@@ -928,21 +927,26 @@
     "sp_id": 694738,
     "sp_resolved": true,
     "cats": {
-     "sp": 53.0,
-     "off": 44.1,
-     "pen": 28.7,
-     "mkt": 42.0,
-     "sit": 56.0,
+     "sp": 51.1,
+     "off": 45.0,
+     "pen": 27.8,
+     "mkt": 42.1,
+     "sit": 46.1,
      "mu": 33.2
     },
-    "composite": 45.66,
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 2426.1,
+     "games_7d": 5
+    },
+    "composite": 44.52,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.4203,
+    "model_prob": 0.4208,
     "fair_ML": 138,
     "implied": 0.4367,
-    "novig": 0.4203,
-    "edge_pct": -1.64
+    "novig": 0.4208,
+    "edge_pct": -1.59
    }
   },
   "flags": [
@@ -957,10 +961,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-28T15:05:37.156570+00:00",
+   "fetched_at": "2026-07-28T20:37:19.498634+00:00",
    "total": 9.5,
    "books_used": 9,
-   "book_spread": 0.0093
+   "book_spread": 0.0211
   },
   "sides": {
    "away": {
@@ -969,49 +973,126 @@
     "sp_id": 622491,
     "sp_resolved": true,
     "cats": {
-     "sp": 34.6,
-     "off": 34.8,
-     "pen": 76.3,
-     "mkt": 37.0,
-     "sit": 44.0,
+     "sp": 41.4,
+     "off": 38.6,
+     "pen": 70.9,
+     "mkt": 36.8,
+     "sit": 41.9,
      "mu": 37.4
     },
-    "composite": 41.87,
+    "sit_inputs": {
+     "hours_rest": 31.58,
+     "km_7d": 4652.1,
+     "games_7d": 5
+    },
+    "composite": 45.44,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.3698,
-    "fair_ML": 170,
-    "implied": 0.3876,
-    "novig": 0.3698,
-    "edge_pct": -1.78
+    "model_prob": 0.3678,
+    "fair_ML": 172,
+    "implied": 0.3831,
+    "novig": 0.3678,
+    "edge_pct": -1.53
    },
    "home": {
     "team": "Los Angeles Dodgers",
-    "sp": null,
-    "sp_id": null,
-    "sp_resolved": false,
+    "sp": "Justin Wrobleski",
+    "sp_id": 680736,
+    "sp_resolved": true,
     "cats": {
-     "sp": 38.0,
-     "off": 67.0,
-     "pen": 90.0,
-     "mkt": 63.0,
-     "sit": 56.0,
-     "mu": 50.0
+     "sp": 65.5,
+     "off": 72.8,
+     "pen": 85.9,
+     "mkt": 63.2,
+     "sit": 53.0,
+     "mu": 51.1
     },
-    "composite": 57.16,
+    "sit_inputs": {
+     "hours_rest": 56.5,
+     "km_7d": 4094.4,
+     "games_7d": 4
+    },
+    "composite": 69.5,
+    "flags": [],
+    "data_quality": "FULL",
+    "model_prob": 0.6322,
+    "fair_ML": -172,
+    "implied": 0.6633,
+    "novig": 0.6322,
+    "edge_pct": -3.11
+   }
+  },
+  "flags": [],
+  "data_quality": "FULL"
+ },
+ {
+  "game": "Atlanta Braves @ New York Mets",
+  "gamePk": 823598,
+  "venue": "Citi Field",
+  "odds_meta": null,
+  "sides": {
+   "away": {
+    "team": "Atlanta Braves",
+    "sp": "Chris Sale",
+    "sp_id": 519242,
+    "sp_resolved": true,
+    "cats": {
+     "sp": 85.4,
+     "off": 58.4,
+     "pen": 62.8,
+     "mkt": 50.0,
+     "sit": 50.1,
+     "mu": 48.2
+    },
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 1209.1,
+     "games_7d": 7
+    },
+    "composite": 70.14,
     "flags": [
-     "DEGRADED|SP TBD \u2014 replacement-level assumed"
+     "DEGRADED|no odds posted \u2014 market neutral, no edge measurable"
     ],
     "data_quality": "DEGRADED",
-    "model_prob": 0.6302,
-    "fair_ML": -170,
-    "implied": 0.6587,
-    "novig": 0.6302,
-    "edge_pct": -2.85
+    "model_prob": 0.5,
+    "fair_ML": -100,
+    "implied": null,
+    "novig": null,
+    "edge_pct": null
+   },
+   "home": {
+    "team": "New York Mets",
+    "sp": "Christian Scott",
+    "sp_id": 681035,
+    "sp_resolved": true,
+    "cats": {
+     "sp": 65.4,
+     "off": 56.1,
+     "pen": 65.6,
+     "mkt": 50.0,
+     "sit": 50.1,
+     "mu": 40.0
+    },
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 1194.6,
+     "games_7d": 6
+    },
+    "composite": 60.85,
+    "flags": [
+     "DEGRADED|no odds posted \u2014 market neutral, no edge measurable"
+    ],
+    "data_quality": "DEGRADED",
+    "model_prob": 0.5,
+    "fair_ML": -100,
+    "implied": null,
+    "novig": null,
+    "edge_pct": null
    }
   },
   "flags": [
-   "DEGRADED|SP TBD \u2014 replacement-level assumed"
+   "DEGRADED|no odds posted \u2014 market neutral, no edge measurable",
+   "DEGRADED|no odds posted \u2014 market neutral, no edge measurable"
   ],
   "data_quality": "DEGRADED"
  }

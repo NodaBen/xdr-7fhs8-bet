@@ -8,7 +8,8 @@
   "awaySP_id": 677944,
   "homeSP_id": 695505,
   "venue": "Great American Ball Park",
-  "gameDate": "2026-07-28T17:40:00Z"
+  "gameDate": "2026-07-28T17:40:00Z",
+  "started": true
  },
  {
   "gamePk": 824489,
@@ -19,7 +20,8 @@
   "awaySP_id": 668909,
   "homeSP_id": null,
   "venue": "Great American Ball Park",
-  "gameDate": "2026-07-28T23:10:00Z"
+  "gameDate": "2026-07-28T23:10:00Z",
+  "started": false
  },
  {
   "gamePk": 824243,
@@ -30,7 +32,8 @@
   "awaySP_id": 665152,
   "homeSP_id": 675512,
   "venue": "Comerica Park",
-  "gameDate": "2026-07-28T22:40:00Z"
+  "gameDate": "2026-07-28T22:40:00Z",
+  "started": false
  },
  {
   "gamePk": 823350,
@@ -41,18 +44,20 @@
   "awaySP_id": 694297,
   "homeSP_id": 696149,
   "venue": "PNC Park",
-  "gameDate": "2026-07-28T22:40:00Z"
+  "gameDate": "2026-07-28T22:40:00Z",
+  "started": false
  },
  {
   "gamePk": 822949,
   "away": "Texas Rangers",
   "home": "Tampa Bay Rays",
-  "awaySP": null,
+  "awaySP": "Cal Quantrill",
   "homeSP": "Griffin Jax",
-  "awaySP_id": null,
+  "awaySP_id": 615698,
   "homeSP_id": 643377,
   "venue": "Tropicana Field",
-  "gameDate": "2026-07-28T22:40:00Z"
+  "gameDate": "2026-07-28T22:40:00Z",
+  "started": false
  },
  {
   "gamePk": 823838,
@@ -63,7 +68,8 @@
   "awaySP_id": 605400,
   "homeSP_id": 645261,
   "venue": "loanDepot park",
-  "gameDate": "2026-07-28T22:40:00Z"
+  "gameDate": "2026-07-28T22:40:00Z",
+  "started": false
  },
  {
   "gamePk": 822703,
@@ -74,18 +80,8 @@
   "awaySP_id": 669456,
   "homeSP_id": 676917,
   "venue": "Nationals Park",
-  "gameDate": "2026-07-28T22:45:00Z"
- },
- {
-  "gamePk": 823598,
-  "away": "Atlanta Braves",
-  "home": "New York Mets",
-  "awaySP": "Chris Sale",
-  "homeSP": "Christian Scott",
-  "awaySP_id": 519242,
-  "homeSP_id": 681035,
-  "venue": "Citi Field",
-  "gameDate": "2026-07-28T23:10:00Z"
+  "gameDate": "2026-07-28T22:45:00Z",
+  "started": false
  },
  {
   "gamePk": 823676,
@@ -96,7 +92,8 @@
   "awaySP_id": 607625,
   "homeSP_id": 671737,
   "venue": "Target Field",
-  "gameDate": "2026-07-28T23:40:00Z"
+  "gameDate": "2026-07-28T23:40:00Z",
+  "started": false
  },
  {
   "gamePk": 824569,
@@ -107,18 +104,20 @@
   "awaySP_id": 543037,
   "homeSP_id": 641743,
   "venue": "Rate Field",
-  "gameDate": "2026-07-28T23:40:00Z"
+  "gameDate": "2026-07-28T23:40:00Z",
+  "started": false
  },
  {
   "gamePk": 823026,
   "away": "Chicago Cubs",
   "home": "St. Louis Cardinals",
   "awaySP": "Colin Rea",
-  "homeSP": null,
+  "homeSP": "Michael McGreevy",
   "awaySP_id": 607067,
-  "homeSP_id": null,
+  "homeSP_id": 700241,
   "venue": "Busch Stadium",
-  "gameDate": "2026-07-28T23:45:00Z"
+  "gameDate": "2026-07-28T23:45:00Z",
+  "started": false
  },
  {
   "gamePk": 824003,
@@ -129,7 +128,8 @@
   "awaySP_id": 663567,
   "homeSP_id": 672282,
   "venue": "Angel Stadium",
-  "gameDate": "2026-07-29T01:38:00Z"
+  "gameDate": "2026-07-29T01:38:00Z",
+  "started": false
  },
  {
   "gamePk": 824976,
@@ -140,7 +140,8 @@
   "awaySP_id": 687562,
   "homeSP_id": 695611,
   "venue": "Sutter Health Park",
-  "gameDate": "2026-07-29T01:40:00Z"
+  "gameDate": "2026-07-29T01:40:00Z",
+  "started": false
  },
  {
   "gamePk": 823275,
@@ -151,7 +152,8 @@
   "awaySP_id": 547179,
   "homeSP_id": 650633,
   "venue": "Petco Park",
-  "gameDate": "2026-07-29T01:40:00Z"
+  "gameDate": "2026-07-29T01:40:00Z",
+  "started": false
  },
  {
   "gamePk": 823193,
@@ -162,17 +164,31 @@
   "awaySP_id": 701656,
   "homeSP_id": 694738,
   "venue": "Oracle Park",
-  "gameDate": "2026-07-29T01:45:00Z"
+  "gameDate": "2026-07-29T01:45:00Z",
+  "started": false
  },
  {
   "gamePk": 823923,
   "away": "Seattle Mariners",
   "home": "Los Angeles Dodgers",
   "awaySP": "Luis Castillo",
-  "homeSP": null,
+  "homeSP": "Justin Wrobleski",
   "awaySP_id": 622491,
-  "homeSP_id": null,
+  "homeSP_id": 680736,
   "venue": "UNIQLO Field at Dodger Stadium",
-  "gameDate": "2026-07-29T02:10:00Z"
+  "gameDate": "2026-07-29T02:10:00Z",
+  "started": false
+ },
+ {
+  "gamePk": 823598,
+  "away": "Atlanta Braves",
+  "home": "New York Mets",
+  "awaySP": "Chris Sale",
+  "homeSP": "Christian Scott",
+  "awaySP_id": 519242,
+  "homeSP_id": 681035,
+  "venue": "Citi Field",
+  "gameDate": "2026-07-28T23:10:00Z",
+  "started": false
  }
 ]

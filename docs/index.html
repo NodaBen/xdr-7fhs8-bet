@@ -261,32 +261,223 @@
       <h1>The Daily Diamond</h1>
       <span class="sub">MLB Value Card</span>
     </div>
-    <div class="datebox">Tuesday, July 28 <span>· Full Slate · 16 Games</span></div>
+    <div class="datebox">Tuesday, July 28 <span>· Full Slate · 16 Games · 1 underway</span></div>
     <div class="top-chips">
-      <span class="chip gold">Model v1 · FG + Savant + MLB API</span>
-      <span class="chip green">Snapshot: Jul 28, 11:05 AM ET</span>
-      <span class="chip green">Lines: draftkings · 16/16</span>
+      <span class="chip gold">Model v8.10 · λ 0 · FG + Savant + MLB API</span>
+      <span class="chip green">Snapshot: Jul 28, 4:37 PM ET</span>
+      <span class="chip green">Lines: draftkings · 14/15</span>
     </div>
   </div>
   <div class="stitchline" aria-hidden="true"></div>
 
-  <div class="zone-label rise d2"><svg class="icn" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 20 L18 4"/><path d="M20 20 L6 4"/><circle cx="4" cy="20" r="1.6" fill="currentColor" stroke="none"/><circle cx="20" cy="20" r="1.6" fill="currentColor" stroke="none"/></svg><b>Best Bets</b> ranked by Edge Score · bet only at target or better</div>
+
+  <div class="rule-strip rise d2" style="border-color:var(--gold)">
+    <div style="font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px">◆ Unvalidated — Not A Recommendation</div>
+    <div style="font-size:11px;line-height:1.5">
+      Every game on the board is shown at <b>0 units</b>. Nothing here is a bet, a tip, or a
+      ranking of bets, and no pick on this page is being staked, tracked, or graded.
+      <br><br>
+      <b>Whose number is the probability?</b> The percentage on each line is the
+      <b>market&rsquo;s</b> nine-book no-vig consensus, not the model&rsquo;s. The model&rsquo;s blending
+      weight (LAMBDA) is set to <b>0.0</b>, which means the model&rsquo;s own scoring contributes
+      exactly nothing to it. Said plainly: at this setting the published probability
+      <i>is</i> the market price with the bookmaker&rsquo;s margin removed. It is labelled that way
+      on every line rather than presented as our estimate.
+      <br><br>
+      <b>What is ours is the LEAN</b> — the composite score gap between the two sides, in
+      composite points. That is the model&rsquo;s own opinion and it is the reason a side is shown.
+      It is <b>unvalidated</b>: it has never been demonstrated to predict anything. The
+      pre-registered test of whether it carries an edge was suspended on 2026-07-28 because
+      the composite contained the market&rsquo;s own answer as one of its inputs; that input was
+      removed in this release and a replacement test will be pre-registered before its data
+      is seen. Until one clears, treat the lean as a research readout.
+      <br><br>
+      Target prices are shown because a pick without a price is not a pick — the discipline
+      stays in force even when nothing is being recommended.
+    </div>
+  </div>
+
+  <div class="zone-label rise d2"><svg class="icn" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 20 L18 4"/><path d="M20 20 L6 4"/><circle cx="4" cy="20" r="1.6" fill="currentColor" stroke="none"/><circle cx="20" cy="20" r="1.6" fill="currentColor" stroke="none"/></svg><b>Full Board</b> · every game · ordered by composite lean · <b>0U — not a bet ranking</b></div>
 
   <div class="picks rise d2">
-    <div class="pick"><div class="pick-head"><span class="nm">No qualified edges today — 0 picks. Passing is a position.</span></div></div>
+    <div class="pick">
+      <div class="num">1</div>
+      <div class="pick-head">
+        <span class="nm">Nationals Moneyline</span>
+        <div class="gm">TOR @ WSH · 6:45 ET · Bieber vs Cavalli</div>
+      </div>
+      <div class="ev"><span class="up">SP score 77/100</span><span class="dn">opp SP weak 36/100</span><span class="up">off edge +87</span><span class="dn">opp bats cold 13/100</span></div>
+      <div class="edge-meta"><span class="n">+31.2<em>lean</em></span><div class="bar"><i style="width:78%"></i></div><span class="prob"><b>56.4%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">−160<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">2</div>
+      <div class="pick-head">
+        <span class="nm">Brewers Moneyline</span>
+        <div class="gm">MIL @ SF · 9:45 ET · Henderson vs Roupp</div>
+      </div>
+      <div class="ev"><span class="up">SP score 81/100</span><span class="up">pen edge +41</span><span class="up">off edge +21</span></div>
+      <div class="edge-meta"><span class="n">+26.4<em>lean</em></span><div class="bar"><i style="width:66%"></i></div><span class="prob"><b>57.9%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">−173<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">3</div>
+      <div class="pick-head">
+        <span class="nm">Padres Moneyline</span>
+        <div class="gm">COL @ SD · 9:40 ET · Lorenzen vs King</div>
+      </div>
+      <div class="ev"><span class="dn">opp SP weak 26/100</span><span class="up">pen edge +23</span><span class="up">off edge +44</span><span class="dn">opp bats cold 24/100</span></div>
+      <div class="edge-meta"><span class="n">+24.6<em>lean</em></span><div class="bar"><i style="width:61%"></i></div><span class="prob"><b>66.9%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">−261<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">4</div>
+      <div class="pick-head">
+        <span class="nm">Dodgers Moneyline</span>
+        <div class="gm">SEA @ LAD · 10:10 ET · Castillo vs Wrobleski</div>
+      </div>
+      <div class="ev"><span class="up">SP score 66/100</span><span class="dn">opp SP weak 41/100</span><span class="up">pen edge +15</span><span class="up">off edge +34</span></div>
+      <div class="edge-meta"><span class="n">+24.1<em>lean</em></span><div class="bar"><i style="width:60%"></i></div><span class="prob"><b>63.2%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">−220<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">5</div>
+      <div class="pick-head">
+        <span class="nm">Guardians Moneyline</span>
+        <div class="gm">CLE @ CIN · 7:10 ET · Williams vs TBD</div>
+      </div>
+      <div class="ev"><span class="up">SP score 86/100</span><span>opp SP TBD unannounced</span><span class="up">pen edge +53</span><span class="dn">opp bats cold 34/100</span></div>
+      <div class="edge-meta"><span class="n">+24.0<em>lean</em></span><div class="bar"><i style="width:60%"></i></div><span class="prob"><b>56.7%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">−161<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">6</div>
+      <div class="pick-head">
+        <span class="nm">Rays Moneyline</span>
+        <div class="gm">TEX @ TB · 6:40 ET · Quantrill vs Jax</div>
+      </div>
+      <div class="ev"><span class="up">SP score 64/100</span><span class="dn">opp SP weak 20/100</span><span class="up">pen edge +22</span></div>
+      <div class="edge-meta"><span class="n">+18.8<em>lean</em></span><div class="bar"><i style="width:47%"></i></div><span class="prob"><b>61.2%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">−195<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">7</div>
+      <div class="pick-head">
+        <span class="nm">Yankees Moneyline</span>
+        <div class="gm">NYY @ CWS · 7:40 ET · Cole vs Kay</div>
+      </div>
+      <div class="ev"><span class="up">SP score 75/100</span><span class="dn">opp SP weak 36/100</span><span class="up">pen edge +22</span></div>
+      <div class="edge-meta"><span class="n">+18.4<em>lean</em></span><div class="bar"><i style="width:46%"></i></div><span class="prob"><b>52.5%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">−133<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">8</div>
+      <div class="pick-head">
+        <span class="nm">Cubs Moneyline</span>
+        <div class="gm">CHC @ STL · 7:45 ET · Rea vs McGreevy</div>
+      </div>
+      <div class="ev"><span class="dn">opp SP weak 42/100</span><span class="up">pen edge +21</span><span class="up">off edge +56</span><span class="dn">opp bats cold 25/100</span></div>
+      <div class="edge-meta"><span class="n">+17.4<em>lean</em></span><div class="bar"><i style="width:43%"></i></div><span class="prob"><b>51.2%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">−127<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">9</div>
+      <div class="pick-head">
+        <span class="nm">Braves Moneyline</span>
+        <div class="gm">ATL @ NYM · 7:10 ET · Sale vs Scott</div>
+      </div>
+      <div class="ev"><span class="up">SP score 85/100</span><span>data DEGRADED</span></div>
+      <div class="edge-meta"><span class="n">+9.3<em>lean</em></span><div class="bar"><i style="width:23%"></i></div><span class="prob"><b>50.0%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">+117<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">10</div>
+      <div class="pick-head">
+        <span class="nm">Twins Moneyline</span>
+        <div class="gm">KC @ MIN · 7:40 ET · Lugo vs Bradley</div>
+      </div>
+      <div class="ev"><span class="up">SP score 63/100</span><span class="dn">opp SP weak 44/100</span></div>
+      <div class="edge-meta"><span class="n">+8.6<em>lean</em></span><div class="bar"><i style="width:21%"></i></div><span class="prob"><b>61.6%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">−202<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">11</div>
+      <div class="pick-head">
+        <span class="nm">Sox Moneyline</span>
+        <div class="gm">BOS @ ATH · 9:40 ET · Bennett vs Jump</div>
+      </div>
+      <div class="ev"><span class="up">SP score 58/100</span><span class="up">pen edge +27</span></div>
+      <div class="edge-meta"><span class="n">+4.9<em>lean</em></span><div class="bar"><i style="width:12%"></i></div><span class="prob"><b>57.7%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">−172<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">12</div>
+      <div class="pick-head">
+        <span class="nm">Orioles Moneyline</span>
+        <div class="gm">BAL @ DET · 6:40 ET · Kremer vs Melton</div>
+      </div>
+      <div class="ev"><span class="up">SP score 59/100</span><span class="up">pen edge +16</span><span class="up">off edge +17</span></div>
+      <div class="edge-meta"><span class="n">+4.1<em>lean</em></span><div class="bar"><i style="width:10%"></i></div><span class="prob"><b>43.2%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">+108<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">13</div>
+      <div class="pick-head">
+        <span class="nm">Phillies Moneyline</span>
+        <div class="gm">PHI @ MIA · 6:40 ET · Nola vs Alcantara</div>
+      </div>
+      <div class="ev"><span class="up">SP score 60/100</span><span class="up">pen edge +24</span></div>
+      <div class="edge-meta"><span class="n">+3.6<em>lean</em></span><div class="bar"><i style="width:9%"></i></div><span class="prob"><b>45.3%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">+102<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">14</div>
+      <div class="pick-head">
+        <span class="nm">Diamondbacks Moneyline</span>
+        <div class="gm">ARI @ PIT · 6:40 ET · Pfaadt vs Chandler</div>
+      </div>
+      <div class="ev"><span class="dn">opp SP weak 37/100</span></div>
+      <div class="edge-meta"><span class="n">+2.2<em>lean</em></span><div class="bar"><i style="width:5%"></i></div><span class="prob"><b>48.6%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">−114<small>or better</small></div>
+    </div>
+    <div class="pick">
+      <div class="num">15</div>
+      <div class="pick-head">
+        <span class="nm">Angels Moneyline</span>
+        <div class="gm">HOU @ LAA · 9:38 ET · Lambert vs Detmers</div>
+      </div>
+      <div class="ev"><span class="up">SP score 65/100</span></div>
+      <div class="edge-meta"><span class="n">+0.6<em>lean</em></span><div class="bar"><i style="width:1%"></i></div><span class="prob"><b>49.8%</b> market no-vig</span></div>
+      <div class="units" style="color:var(--muted);font-size:12px">OFF</div>
+      <div class="price">−119<small>or better</small></div>
+    </div>
   </div>
-  <div class="unit-key rise d3"><b>Units</b> — 1U standard · 2U extra confidence · 3U lock of the day · 4U–5U rare: 7%+ edge AND sharp confirmation · none qualify pre-line</div>
+  <div class="unit-key rise d3"><b>Units</b> — every line on this card is <b>0U</b>. The ladder below is documented, not in use: 1U standard · 2U extra confidence · 3U lock of the day · 4U–5U rare (7%+ edge AND sharp confirmation). Units key to <b>edge</b> — the gap between our probability and the price — never to how likely a team is to win. No unit is published as a recommendation until a pre-registered test clears and the exposure cap and Edge Score ceiling ship.</div>
 
   <div class="marquee rise d3">
     <div>
-      <div class="k"><svg class="icn" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3 H21 V12 L12 22 L3 12 Z"/></svg>Passing Is A Position</div>
-      <div class="p">No qualified edges</div>
+      <div class="k"><svg class="icn" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3 H21 V12 L12 22 L3 12 Z"/></svg>Research Output · Not A Card To Bet</div>
+      <div class="p">Unvalidated — no recommendation on this card</div>
     </div>
     <div class="stats">
-      <div class="stat"><div class="v">—</div><div class="l">Edge Score</div></div>
-      <div class="stat"><div class="v">OFF · await price</div><div class="l">Stake</div></div>
-      <div class="stat"><div class="v">—</div><div class="l">Target</div></div>
-      <div class="stat"><div class="v">—</div><div class="l">Model Win</div></div>
+      <div class="stat"><div class="v">15</div><div class="l">Games Published</div></div>
+      <div class="stat"><div class="v">0U · all games</div><div class="l">Stake</div></div>
+      <div class="stat"><div class="v">31</div><div class="l">Widest Lean</div></div>
+      <div class="stat"><div class="v">0.0</div><div class="l">LAMBDA</div></div>
     </div>
   </div>
 
@@ -301,13 +492,15 @@
     </div>
     <div class="panel pass">
       <h3><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="M9 7.5 V16.5 M15 7.5 L9.5 12 L15 16.5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Pass / Pivot</h3>
-      <div class="pi"><div class="pi-t"><span>16 other games analyzed</span><span class="pi-odds">no angle</span></div><div class="pi-d">Full slate reviewed. Games without a qualified edge are not shown — no pick is a position.</div></div>
+      <div class="pi"><div class="pi-t"><span>Nothing qualifies — by design</span><span class="pi-odds">0U</span></div><div class="pi-d">No game on this board clears the stake floor, and none can while LAMBDA is 0: the published probability equals the market, so the measured edge is just the bookmaker’s margin and is negative on every side of every game. That is the expected output, not a quiet day.</div></div>
+      <div class="pi"><div class="pi-t"><span>1 game(s) underway</span><span class="pi-odds">locked out</span></div><div class="pi-d">First pitch has passed. In-play prices are not a valid basis for a pregame edge, so these games are excluded from the board until they are graded.</div></div>
     </div>
   </div>
 
 
   <div class="rule-strip rise d5">
-    <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.55;margin-bottom:8px">Running Scorecard — Paper Only</div>
+    <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.55;margin-bottom:8px">Closed Archive — Retired Model (&lt;=v7.8) — Paper Only</div>
+    <div style="font-size:10.5px;line-height:1.45;opacity:.72;margin-bottom:9px">These 47 graded picks were staked by a model era that has been retired. The archive is <b>closed, not running</b> — no pick has been added since 2026-07-24 and none will be while the model publishes at 0U. Read it as a record of what a previous version did, not as current form.</div>
     <div style="margin-bottom:4px"><span style="display:inline-block;min-width:112px;margin:0 18px 6px 0;vertical-align:top"><span style="font-size:19px;font-weight:700;line-height:1.15">+0.08 pts</span><br><span style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;opacity:.62">CLV avg</span></span><span style="display:inline-block;min-width:112px;margin:0 18px 6px 0;vertical-align:top"><span style="font-size:19px;font-weight:700;line-height:1.15">61.9%</span><br><span style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;opacity:.62">CLV beat rate</span></span><span style="display:inline-block;min-width:112px;margin:0 18px 6px 0;vertical-align:top"><span style="font-size:19px;font-weight:700;line-height:1.15">21</span><br><span style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;opacity:.62">CLV sample</span></span></div>
     <div style="margin-bottom:4px"><span style="display:inline-block;min-width:112px;margin:0 18px 6px 0;vertical-align:top"><span style="font-size:19px;font-weight:700;line-height:1.15">-6.57U</span><br><span style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;opacity:.62">Paper P/L</span></span><span style="display:inline-block;min-width:112px;margin:0 18px 6px 0;vertical-align:top"><span style="font-size:19px;font-weight:700;line-height:1.15">-28.6%</span><br><span style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;opacity:.62">ROI</span></span><span style="display:inline-block;min-width:112px;margin:0 18px 6px 0;vertical-align:top"><span style="font-size:19px;font-weight:700;line-height:1.15">21</span><br><span style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;opacity:.62">Bets fired</span></span></div>
     <div><span style="display:inline-block;min-width:112px;margin:0 18px 6px 0;vertical-align:top"><span style="font-size:19px;font-weight:700;line-height:1.15">21-26</span><br><span style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;opacity:.62">Record</span></span><span style="display:inline-block;min-width:112px;margin:0 18px 6px 0;vertical-align:top"><span style="font-size:19px;font-weight:700;line-height:1.15">44.7%</span><br><span style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;opacity:.62">Actual win</span></span><span style="display:inline-block;min-width:112px;margin:0 18px 6px 0;vertical-align:top"><span style="font-size:19px;font-weight:700;line-height:1.15">68.7%</span><br><span style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;opacity:.62">Model win</span></span><span style="display:inline-block;min-width:112px;margin:0 18px 6px 0;vertical-align:top"><span style="font-size:19px;font-weight:700;line-height:1.15">-24 pts</span><br><span style="font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;opacity:.62">Gap</span></span></div>
@@ -318,12 +511,12 @@
   </div>
 
   <div class="rule-strip rise d5">
-    <b>HOUSE RULES —</b> Every pick is conditional on its target price. If the book opens worse than the number, the play is OFF. 4 of 16 games carry degraded data (unannounced starters); edges re-run at the 11 AM game-day snapshot.
+    <b>HOUSE RULES —</b> Every line is conditional on its target price; if the book is worse than the number, it is OFF. 2 of 15 games carry degraded data (unannounced starters); the board re-runs at the 11 AM and 5:35 PM ET game-day snapshots. No line on this card is a recommendation and none is being staked or graded — see the unvalidated notice above.
   </div>
 
   <div class="foot rise d5">
     <div class="src">
-      <b>Sources:</b> statsapi.mlb.com · fangraphs.com · baseballsavant.mlb.com · odds via draftkings (fetched Jul 28, 11:05 AM ET). Odds move — confirm price and starters before betting. Model outputs are expected value, not predictions; no outcome is guaranteed. Bet responsibly, within your bankroll. If gambling stops being fun: 1-800-GAMBLER.
+      <b>Sources:</b> statsapi.mlb.com · fangraphs.com · baseballsavant.mlb.com · odds via draftkings (fetched Jul 28, 4:37 PM ET). Odds move — confirm price and starters before betting. Model outputs are expected value, not predictions; no outcome is guaranteed. Bet responsibly, within your bankroll. If gambling stops being fun: 1-800-GAMBLER.
     </div>
     <button class="btn" onclick="window.print()">Save as PDF</button>
   </div>
