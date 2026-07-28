@@ -385,6 +385,47 @@
   "rank": 9
  },
  {
+  "pick": "Texas Rangers ML",
+  "game": "Seattle Mariners @ Texas Rangers",
+  "gamePk": 822868,
+  "venue": "Globe Life Field",
+  "model_prob": 0.4496,
+  "fair_ML": 122,
+  "implied": 0.4717,
+  "edge_pct": -2.21,
+  "edge_score": 73.1,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": 101,
+  "target_anchor": "slip",
+  "condition": "OFF unless 101 or better at DK",
+  "chips": [
+   {
+    "stat": "off edge",
+    "value": "+27",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-27T15:05:17.502466+00:00",
+   "total": 8.0,
+   "books_used": 9,
+   "book_spread": 0.0126
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 10
+ },
+ {
   "pick": "Washington Nationals ML",
   "game": "Toronto Blue Jays @ Washington Nationals",
   "gamePk": 822705,
@@ -440,7 +481,7 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 10
+  "rank": 11
  },
  {
   "pick": "Chicago White Sox ML",
@@ -476,6 +517,6 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 11
+  "rank": 12
  }
 ]
