@@ -12,6 +12,151 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v8.9 — 2026-07-28 — `sit_score` stops being a constant (queue Item C)
+
+Three files: `situational.py` (new), `model.py`, `run_daily.py`. `LAMBDA` is
+still `0.0`. Paper-only. **Zero Odds API credits** — the two new calls are free
+MLB StatsAPI endpoints. `grades_archive.jsonl` unchanged at 47 rows. The v5 HTML
+template is untouched; `picks.py`, `render.py`, `shadow.py` and `grade.py` are
+byte-identical.
+
+### 1. What was wrong
+
+`sit_score()` returned `56.0 if is_home else 44.0` from v1 through v8.8. Measured
+across 106 games (07-21 → 07-28) its home-minus-away difference took **exactly
+one value: +12.00, sd 0.00, one distinct value**. `composite_diff` is the only
+quantity `LAMBDA` multiplies, so a term that is constant in the diff cannot rank,
+separate, or discriminate anything. It consumed 7% of nominal weight for **0.0%
+of effective weight**, and at `LAMBDA > 0` it would have been a correctness bug
+rather than dead weight — a fixed home bonus stacked on a market prior that
+already prices home field.
+
+Stripping `mkt` in v8.8 had raised the constant's dead-weight contribution from
++0.84 to **+0.933** composite points of home bias on every game, so this got
+worse before it got fixed.
+
+### 2. What replaced it
+
+A rest-and-travel score from two free StatsAPI calls, cached-snapshot pattern —
+one whole-league schedule range and one venue table serve the entire slate:
+
+| input | definition | measured diff spread |
+|---|---|---|
+| `hours_rest` | elapsed hours between consecutive first pitches | nonzero 27/106, 76 distinct per-side |
+| `km_7d` | cumulative trailing-7-day travel, great-circle | **nonzero 106/106**, 47 distinct diffs |
+
+Blended 50/50 on fixed z-scores, ±2.5σ clamped, 9 points per σ.
+
+```
+                    per-side sd   distinct    DIFF sd   distinct   nonzero
+56/44 constant          6.00          2         0.00        1      106/106
+rest + travel           5.69        178         5.41       68      106/106
+```
+
+Live 07-28 board, 16 games: per-side sd 6.41 over 25 distinct values in
+[35.5, 63.1]; diff mean +2.20, sd 4.96, nonzero on 15/16. **It is not a second
+constant.** The one zero-diff game is Braves @ Mets — both clubs on 24.0 hours
+with 1194.6 km vs 1209.1 km of trailing travel, which is a real tie, not a
+default.
+
+Effective weights move `sp/off/pen/sit/mu` from 56.2/26.3/16.3/**0.0**/1.2 to
+55.2/25.8/16.0/**1.8**/1.2. Real, and small. **Nominal weights are unchanged at
+40/25/15/10/7/3 with `mkt` excluded** — there is no non-outcome basis for moving
+them, and locked rule 6 binds.
+
+### 3. Three scope decisions, measured before they were taken
+
+**Park factor is out, moved to queue Item G.** Both teams play in the same park,
+so its home-minus-away diff is **identically 0.000 on every game**. Adding it
+would not have fixed the constant, it would have added a second and strictly
+worse one — 56/44 at least contributed a fixed +0.933; park contributes
+literally nothing. Park bears on who wins only through a park × team-batted-ball
+interaction, which is a different input with new degrees of freedom on a
+composite whose signal has never been demonstrated; its first-order effect is on
+the total, which is Item G's market.
+
+**Calendar rest → elapsed hours.** Calendar rest differed on 8 of 106 games
+(7.5%) across 3 distinct values — very nearly a second constant. Elapsed hours
+sees the night-to-day getaway turnaround that a date subtraction discards.
+
+**Last-leg travel → trailing-7-day travel.** Last-leg km is zero for both clubs
+on 75 of 106 games, because mid-series nobody moved.
+
+### 4. Two candidates tested and rejected — recorded so they are not re-proposed
+
+**Consecutive road games.** Measured 0 for the home side in **90 of 106 games**.
+It is a re-encoding of home/away with variance bolted on: the same double-count
+this entry removes, in disguise.
+
+**Time-zone shift.** Collinear with travel (fires on the same 31 games) and the
+most market-correlated candidate tested.
+
+### 5. The circularity check — the test that disqualified `mkt_score`
+
+`corr(candidate diff, logit(market_novig_home))`, n=91 joined shadow games:
+
+```
+km_7d -0.016 | road_run +0.015 | games_7d +0.093 | cal_rest -0.088
+km    +0.142 | hours_rest -0.153 | tz_signed -0.328 | park -0.067
+```
+
+`mkt_score` was **+0.999**. Nothing shipped here is the market re-entered as a
+feature.
+
+### 6. Scaling is deliberately NOT `pct()`
+
+Fixed absolute z-scores against stated league constants, not percentile rank and
+not slate-relative. A slate-relative score would make a club's situational read
+depend on who else happens to play that night — the `pct()` defect queue Item D
+exists to remove. There is no sense building a brand-new input on the thing we
+are about to rip out, and Item D can now leave this category alone.
+
+`REST_MU/SD` and `KM7_MU/SD` describe the measured population (n=212 sides). They
+were **not** fitted to, selected on, or evaluated against λ, win rate, or ROI —
+decision record §6, locked rule 6. Re-measure on a materially larger sample; do
+not tune.
+
+### 7. Failure posture
+
+`run_daily.py` wraps the situational pull. A transient StatsAPI failure degrades
+the category, it does not take down the card — the C-A / S-A lesson. On failure
+every side takes a **symmetric** neutral 50.0, which contributes exactly 0.000 to
+`composite_diff`: an honest "no situational opinion" rather than a fabricated one.
+
+`run_slate()` enforces the same symmetry per game: **if either side lacks usable
+history, both sides are neutralled.** Scoring one club off real rest while the
+other takes a default would fabricate a situational diff out of a data gap — the
+M-D failure shape, where a one-sided miss silently becomes signal. Verified by
+execution: a hand-built one-sided map produces 50.0/50.0 and a 0.000 diff.
+
+The missing-history flag is `INFO`, not `DEGRADED`. A symmetric neutral worth
+7.8% of the composite is an absence of opinion, not corrupted data, and marking
+a whole slate DEGRADED over a free schedule call would misreport data quality
+and distort the λ-fit sample (Item 4f).
+
+### 8. `MODEL_VERSION` → `v8.9`
+
+`composite` is again computed by a different function, which is exactly what the
+era stamp exists to record. **This is the second era boundary in two days.** Item
+C took the FIX branch rather than delete-then-rebuild specifically to avoid a
+third: the constant survived v8.8 so it could be replaced once, here, instead of
+removed and then re-added.
+
+### 9. Recorded against interest
+
+- The board-level effect is small: mean composite shift −0.75, max |shift| 1.21,
+  **zero sign flips of `composite_diff` on 15 matched games**. This is a
+  correctness fix, not a performance change, and nothing here should be expected
+  to move λ.
+- The new score still carries a residual home lean of **+1.16** (measured) — home
+  clubs travel less. It is down from an asserted +12.00 and is now measured
+  rather than assumed, but it is not zero.
+- A transient Savant 503 killed the first verification run. **C-A is live and
+  unfixed:** `savant_client.pull_csv` has no retry, and a single upstream blip
+  ends the whole build. Unrelated to this change; filed, not fixed here.
+
+---
+
 ## v8.8 — 2026-07-28 — Gate suspension recorded in code · `mkt` out of the composite · the unvalidated daily card
 
 Six files. `LAMBDA` is still `0.0`. Paper-only. Zero API credits — everything

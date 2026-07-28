@@ -5,6 +5,10 @@ Missing data never crashes: neutral defaults + data-quality flags (feeds Edge Sc
 
 v8.8 (queue Item B): `mkt` no longer contributes to `composite`. It is still
 SCORED and still RECORDED in `cats` -- see CAT_WEIGHTS / COMPOSITE_EXCLUDE.
+
+v8.9 (queue Item C): `sit` is no longer a constant. It is a measured rest and
+travel score built from two free MLB StatsAPI calls -- see situational.py.
+Weights are UNCHANGED; only the content of the category moved.
 """
 import json, math, re, statistics
 from fg_client import leaders, strip_html
@@ -301,9 +305,47 @@ def matchup_score(sp_name, sp_id, opp_team, snap, flags):
     return max(0, min(100, 50 - (opp_woba_vs_arsenal - league_woba) * 400))
 
 # ---------------- SITUATIONAL (7%) / MARKET (10%) ----------------
-def sit_score(is_home, flags):
-    # v1: home-field only. Weather/ump/park/travel = stubs (post-break: rest equal).
-    return 56.0 if is_home else 44.0
+# v8.9 (queue Item C). sit_score was `56.0 if is_home else 44.0` from v1 through
+# v8.8 -- a constant whose home-minus-away difference was +12.00 on all 106
+# measured games, sd 0.00, one distinct value. See situational.py's header for
+# what was measured in, what was measured out (park factor -> Item G), and what
+# was tested and rejected (consecutive road games, time-zone shift).
+#
+# SCALING: fixed absolute z-scores against the league constants below, NOT
+# pct() and NOT slate-relative. Two reasons. (1) A slate-relative score makes a
+# team's situational read depend on who else happens to play that night, which
+# is the pct() defect Item D exists to remove -- there is no sense in building a
+# brand-new input on top of the thing we are about to rip out. (2) Item D can
+# then leave this category alone.
+#
+# The constants are the MEASURED league distribution over 07-21..07-28, n=212
+# sides. They describe the population; they were not fitted to, selected on, or
+# evaluated against lambda, win rate, or ROI (decision record s6, locked rule 6).
+# Re-measure them when the sample is materially larger; do not tune them.
+REST_MU, REST_SD = 26.94, 10.68        # hours between consecutive first pitches
+KM7_MU, KM7_SD = 1607.3, 1363.2        # cumulative trailing-7d travel, km
+SIT_W_REST, SIT_W_TRAVEL = 0.5, 0.5    # blend; neither input is known to dominate
+SIT_SPREAD = 9.0                       # score points per sigma of the blend
+SIT_CLAMP = 2.5                        # sigma cap, so one outlier trip cannot pin 0/100
+
+
+def sit_score(feats, flags):
+    """0-100 situational score. Higher = better rested, less travelled.
+
+    `feats` is situational.features() output, or None. None -> symmetric neutral;
+    run_slate() guarantees that when one side is None the OTHER side is neutralled
+    too, because an asymmetric neutral fabricates a diff (the M-D failure shape).
+    """
+    if not feats:
+        flags.append(INFO + 'no situational history — rest/travel neutral')
+        return 50.0
+    z_rest = max(-SIT_CLAMP, min(SIT_CLAMP,
+                                 (feats['hours_rest'] - REST_MU) / REST_SD))
+    # less travel is better, hence the negation
+    z_trav = max(-SIT_CLAMP, min(SIT_CLAMP,
+                                 -(feats['km_7d'] - KM7_MU) / KM7_SD))
+    z = SIT_W_REST * z_rest + SIT_W_TRAVEL * z_trav
+    return max(0.0, min(100.0, 50.0 + SIT_SPREAD * z))
 
 def mkt_score(odds, side, flags):
     if not odds:
@@ -388,7 +430,13 @@ LAMBDA = 0.0
 # by two different functions; that is the whole reason the field exists.
 # The string matches the CHANGELOG release for traceability. The comment above
 # warns against conflating era with release; here they coincide, deliberately.
-MODEL_VERSION = 'v8.8'
+# v8.9 BUMPS IT AGAIN for the same reason: Item C replaced sit_score's constant
+# with a real rest/travel score, so `composite` is again computed by a different
+# function than the rows before it. This is the SECOND era boundary in as many
+# days. Item C deliberately took the FIX branch rather than delete-then-rebuild
+# precisely to avoid a THIRD -- the constant survived v8.8 so that it could be
+# replaced once, here, instead of removed and then re-added.
+MODEL_VERSION = 'v8.9'
 
 
 def _prior_logit(odds):
@@ -401,13 +449,21 @@ def _prior_logit(odds):
     nv = min(.999, max(.001, nv))
     return math.log(nv / (1.0 - nv))
 
-def run_slate(slate, snap, odds_map):
+def run_slate(slate, snap, odds_map, sit_map=None):
     pens = pen_scores(snap)
+    sit_map = sit_map or {}
     out = []
     for g in slate:
         flags = []
         okey = f"{g['away']} @ {g['home']}"
         odds = odds_map.get(str(g.get('gamePk'))) or odds_map.get(okey)
+        # v8.9 SYMMETRIC NEUTRAL. If either side lacks situational history, BOTH
+        # sides take the neutral. Scoring one side off real rest/travel while the
+        # other takes a default would fabricate a situational diff out of a data
+        # gap -- the M-D shape, where a one-sided failure silently becomes signal.
+        sf = sit_map.get(str(g.get('gamePk'))) or {}
+        if not (sf.get('home') and sf.get('away')):
+            sf = {'home': None, 'away': None}
         sides = {}
         for side, team, sp, sp_id, opp in [
                 ('away', g['away'], g['awaySP'], g.get('awaySP_id'), g['home']),
@@ -427,7 +483,7 @@ def run_slate(slate, snap, odds_map):
                 'off': off_score(team, snap, sflags),
                 'pen': pen,
                 'mkt': mkt_score(odds, side, sflags),
-                'sit': sit_score(side == 'home', sflags),
+                'sit': sit_score(sf.get(side), sflags),
                 'mu': matchup_score(sp, sp_id, opp, snap, sflags)}
             # v8.8: iterate WEIGHTS, not cats. `cats` records every observed
             # category (including the excluded ones); WEIGHTS holds only the
@@ -435,6 +491,10 @@ def run_slate(slate, snap, odds_map):
             comp = sum(cats[c] * WEIGHTS[c] for c in WEIGHTS)
             sides[side] = {'team': team, 'sp': sp, 'sp_id': sp_id, 'sp_resolved': sp_ok,
                            'cats': {k: round(v, 1) for k, v in cats.items()},
+                           # v8.9: the raw rest/travel inputs behind cats['sit'],
+                           # recorded so the category can be audited from the
+                           # archive without re-pulling the schedule.
+                           'sit_inputs': sf.get(side),
                            'composite': round(comp, 2),
                            'flags': sflags, 'data_quality': dq_of(sflags)}
             flags.extend(sflags)

@@ -5,6 +5,7 @@ from model import pull_snapshot, run_slate
 from picks import build_picks
 from odds import build_odds_map
 from slate_only import build as build_slate   # v7.5 (C-C): ONE slate builder.
+from situational import pull_situational, build_map as build_sit_map
 import odds as O
 
 date = sys.argv[1] if len(sys.argv) > 1 else datetime.date.today().isoformat()
@@ -97,7 +98,28 @@ print(f'[clv] baseline {bfn}: +{added} games this run, {len(baseline)} total fro
 
 print('[model] pulling stats snapshot...')
 snap = pull_snapshot()
-results = run_slate(live, snap, omap)
+
+# v8.9 (queue Item C): rest/travel inputs for sit_score. Two free MLB StatsAPI
+# calls, ZERO Odds API credits, cached-snapshot pattern -- one whole-league
+# schedule range and one venue table serve the entire slate.
+#
+# WRAPPED DELIBERATELY (the C-A / S-A lesson): sit is 7.8% of the composite and
+# this is a new external dependency on the build path. A transient StatsAPI
+# failure must degrade the situational category, not take down the card. On
+# failure every side takes a symmetric neutral 50.0, which contributes exactly
+# 0.0 to composite_diff -- an honest 'no situational opinion' rather than a
+# fabricated one.
+try:
+    sit_map = build_sit_map(pull_situational(date), live)
+    ok = sum(1 for v in sit_map.values() if v.get('home') and v.get('away'))
+    print(f'[sit] rest/travel resolved for {ok}/{len(sit_map)} games '
+          f'(2 free StatsAPI calls, 0 odds credits)')
+except Exception as e:
+    sit_map = {}
+    print(f'[sit] WARN: situational pull failed ({type(e).__name__}: {e}) — '
+          f'all sides take a symmetric neutral 50.0, composite_diff unaffected')
+
+results = run_slate(live, snap, omap, sit_map)
 json.dump(results, open('model_output.json', 'w'), indent=1)
 
 # v7.2 (S-A): shadow is a RESEARCH module and runs BEFORE build_picks. Called
