@@ -12,6 +12,132 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v8.7 — 2026-07-28 — Item 6 sample definition pinned in code (backfill + DEGRADED excluded)
+
+One file, `fit_lambda.py`. Read-only instrument — no pipeline dependents, no
+workflow reference, no model behaviour change. `LAMBDA` is still `0.0`. Zero API
+credits. Neither archive is written to (`md5sum` identical before and after).
+
+### Why — a pre-registration no code reads is not a pre-registration
+
+v8.6 backfilled 30 pre-v7.7 games from committed snapshots and asked Benjamin to
+rule on whether they count toward the Item 6 gate. **They do not.** But writing
+that in a document while `fit_lambda.py` keeps printing the n=80 figure as its
+headline is the same defect as Item 4e's frozen `RUNNING SCORECARD` header and
+Item 5's orphaned `calibration_log.jsonl`: the artifact says one thing and the
+instrument reports another. The sample definition is now enforced by the tool
+and printed in full on every run.
+
+### The finding that decided it — v7.5 sits inside the backfill window
+
+The 07-24 queue framed backfill as a provenance question (pre-game freeze, no
+lookahead). That question was answered correctly and is not disturbed. The
+question it did **not** ask was whether `composite` means the same thing on
+both sides of the boundary. It does not.
+
+**v7.5 (2026-07-22, "MLBAM ID join") changed `sp_score()` and
+`matchup_score()`.** Per its own entry, measured over 306 starter-games from
+07-08 to 07-21, the old display-name join failed **21 times (6.9%)**, and every
+failure was scored a fabricated `40.0/100`. Unresolvable starters now return a
+neutral `50.0` with a `BLOCK` flag instead.
+
+Established from the repo, not inferred:
+
+| | |
+|---|---|
+| `shadow_2026-07-21.json` frozen | `2026-07-21T16:20:54Z` |
+| `shadow_2026-07-22.json` frozen | `2026-07-22T15:05:28Z` (commit `9c506c5`, the 11:05 ET build) |
+| v7.5 landed | commits `a76b9b7` / `7725039`, **2026-07-22 16:30–16:33 ET** |
+
+**Both backfill snapshots froze before v7.5.** Neither date is post-fix — the
+era boundary falls exactly on the archive/backfill split. Sides carrying the
+fabricated `sp = 40.0` constant: **07-21: 6 · 07-22: 1 · 07-23 onward: 0.** Six
+of the 30 backfill games (20%) carry it on at least one side, against zero in
+the archive era. SP is ~40% of the composite by nominal weight and ~53% by
+measured effect (`MODEL_DIAGNOSTIC_2026-07-27.md`).
+
+Confirmed in the same pass: **no composite-scoring change from v7.6 forward.**
+The archive era is homogeneous.
+
+### The argument against the exclusion, recorded because it is real
+
+Classical measurement error in a regressor attenuates its coefficient **toward
+zero**. Backfill moves λ *away* from zero (−0.0069 → −0.0138), so contamination
+does **not** explain the movement — that looks like ordinary small-sample
+variation on two dates. The objection that stands is not bias: it is that one
+parameter would be fit to two definitions of the regressor, and the result
+could not be attributed afterward.
+
+Also recorded: **excluding is the choice that flatters the composite**
+(P(λ>0) 0.176 → 0.344). It was recommended before any of these figures were
+computed, and both samples are reported on every run — but it is named here
+rather than left for someone to notice later.
+
+### The change
+
+- **`PRIMARY` sample** = archive-composite games (v7.6 forward), excluding any
+  game with a `DEGRADED` side. The verdict rule reads this and nothing else.
+- **`GATE_N = 150` now counts PRIMARY games.** The tool prints gate progress and
+  states plainly when the gate has not been reached.
+- **DEGRADED excluded (queue Item 4f, closed).** A side flagged `DEGRADED`
+  carries replacement-level constants in place of measured stats, so its
+  regressor is partly fabricated. Impact is small today — which is the reason to
+  fix it now rather than at the gate.
+- **Three labeled SECONDARIES fitted and printed every run** (+backfill,
+  +DEGRADED, +both). Read by no rule, excluded from the gate count. Present so a
+  disagreement with the primary is visible, not so a better-looking number can
+  be adopted after the fact.
+- **`SAMPLE_BLOCK` printed in full on every run**, including the reasons for each
+  exclusion and the note that exclusion is the model-flattering choice.
+- `data_quality` is now carried per game from whichever source supplied
+  `composite`, so a snapshot-sourced game is judged on the snapshot's flag.
+
+### Result
+
+    PRIMARY   n= 46   lambda_pt = -0.0078  SE 0.0172  CI [-0.0416, +0.0260]
+                      LR 0.20   bootstrap [-0.0415, +0.0282]   P(>0) = 0.332
+                      mkt-stripped -0.0081
+                      per-date: 07-23 -0.006 | 07-24 -0.034 | 07-25 -0.006 | 07-26 +0.018
+
+    SECONDARY + backfill                 n= 70   -0.0128  SE 0.0151  LR 0.71
+    SECONDARY + DEGRADED                 n= 50   -0.0069  SE 0.0171  LR 0.16
+    SECONDARY + backfill + DEGRADED      n= 80   -0.0138  SE 0.0148  LR 0.86
+
+**No new information about λ.** Negative point estimate, CI straddling zero,
+every variant agreeing. Only the pre-registered Item 6 rule moves λ.
+
+### Consequence Benjamin must rule on — the gate moves out, not in
+
+v8.6 moved the gate in (~08-03 → ~08-01) and Benjamin declined it. This entry
+moves it **out**. At 46 primary games and ~13.7 primary games/day, 150 primary
+games lands around **2026-08-04 / 08-05** rather than ~08-03. The DEGRADED
+exclusion costs roughly 1.3 games/day.
+
+The alternative, if the date matters more than the definition: hold `GATE_N` at
+150 *composite-bearing archive* games (~08-03) and keep DEGRADED excluded from
+the fit only. **That is a coherent position but it triggers a decision on a
+count that includes rows the fit does not use**, which is the defect this entry
+exists to remove. Recorded so it is a choice and not an oversight.
+
+### Verification — by execution, zero API credits
+
+1. Compiles. Full run against a fresh clone at HEAD `96c9d0b`.
+2. `md5sum` on `shadow_archive.jsonl` identical before and after.
+3. **Secondaries reproduce the v8.6 headline figures exactly.** `+DEGRADED`
+   returns n=50, −0.0069 ± 0.0171, LR 0.16 — the v8.6 archive-only figure to
+   4 dp. `+backfill +DEGRADED` returns n=80, −0.0138 ± 0.0148, LR 0.86 — the
+   v8.6 headline to 4 dp. Nothing was lost in the restructure.
+4. **The Item 4a reconciliation regression test still PASSES**: n=35,
+   λ_blend −0.7570 ± 0.6112, LR 1.66, per-date −0.424 / −1.177 / −0.459,
+   Brier 0.2449 / 0.2917. This was the live risk in the change — the
+   authorizing window is 07-21..07-23 and is *mostly backfill dates*, so the
+   exclusion is applied at fit-selection, never at load.
+5. Self-refusal below 20 games and the degeneracy guard are untouched.
+6. No dependents: `grep -rn fit_lambda` across `*.py` and `.github/` returns
+   nothing outside `notes/`.
+
+---
+
 ## v8.6 — 2026-07-27 — λ parameterization pinned; snapshot backfill (queue Item 4a)
 
 One file, `fit_lambda.py`. Read-only instrument — no pipeline dependents, no

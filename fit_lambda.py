@@ -31,6 +31,16 @@ v8.6 (queue Item 4a) -- TWO CHANGES, both about not being fooled by this file:
    reconciliation block at the bottom, which reproduces the authorizing figure
    from committed data as a frozen regression test.
 
+v8.7 (queue Item 6 pre-registration, Item 4f) -- THE SAMPLE DEFINITION IS NOW
+   ENFORCED HERE, not only in a document. PRIMARY = archive-composite games
+   (v7.6 forward) with no DEGRADED side; that is the only sample the verdict
+   rule reads and the only one counted toward GATE_N. The 30 snapshot-backfilled
+   games are excluded because both snapshots froze BEFORE v7.5 (07-22 16:33 ET)
+   changed sp_score()'s join, so `composite` is not the same function on the two
+   sides of that boundary. Backfill and DEGRADED are still fitted and printed as
+   labeled SECONDARIES on every run. See SAMPLE_BLOCK below and the v8.7
+   CHANGELOG entry, which also records the argument AGAINST this exclusion.
+
 Usage:  python3 fit_lambda.py
 LAMBDA changes only with this interval in front of Benjamin (locked rule).
 """
@@ -130,7 +140,10 @@ def load_games():
                 continue
             ch, ca = sh['composite'], sa['composite']
             hc, ac = sh.get('cats'), sa.get('cats')
+            dq = (sh.get('data_quality'), sa.get('data_quality'))
             src = 'snapshot'
+        else:
+            dq = (h.get('data_quality'), a.get('data_quality'))
 
         # model_prob is NEVER the regressor for lambda_pt. It is carried only
         # to reconstruct lambda_blend, the authorizing estimand, for the
@@ -140,9 +153,67 @@ def load_games():
                        'y': 1.0 if h['won'] else 0.0,
                        'lm': logit(h['pt_novig']),
                        'diff': ch - ca,
-                       'mp': mp,
+                       'mp': mp, 'dq': dq,
+                       'degraded': 'DEGRADED' in dq,
                        'h_cats': hc, 'a_cats': ac})
     return usable, no_comp, no_mkt, mixed
+
+
+GATE_N = 150
+
+SAMPLE_BLOCK = """
+SAMPLE DEFINITION -- pre-registered 2026-07-28, BEFORE the Item 6 gate fired.
+Do not change this to reach a threshold. Do not change it because the answer
+is disappointing. Changing it at all requires Benjamin, in writing, with the
+reason recorded in CHANGELOG.md.
+
+  PRIMARY (the only sample the verdict rule reads, and the only one that
+  counts toward the ~150-game gate):
+      archive-composite games (v7.6 forward), EXCLUDING any game with a
+      DEGRADED side.
+
+  EXCLUDED from the primary, and why:
+    * snapshot-backfilled games (2026-07-21, 2026-07-22, 30 games).
+      Both snapshots froze BEFORE v7.5 landed (07-22 16:33 ET), so all 30
+      were scored by the pre-v7.5 sp_score(), which joined on display name
+      and fabricated a 40.0/100 replacement score on 6.9% of starter-games
+      -- 6 of these 30 games carry that constant, against 0 in the primary.
+      SP is ~40% of the composite by nominal weight and ~53% by measured
+      effect. The field is named `composite` in both eras; it is not the
+      same function. Note the direction: contamination alone does NOT
+      explain the movement (classical measurement error attenuates toward
+      zero; including these moves lambda AWAY from zero). The objection is
+      that one parameter would be fit to two definitions and the result
+      could not be attributed afterward -- not that the fit is biased.
+    * DEGRADED games. A side flagged DEGRADED carries replacement-level
+      constants in place of measured stats, so its regressor is partly
+      fabricated. Impact is small TODAY; that is exactly why it is being
+      fixed now rather than at the gate.
+
+  Every excluded variant is still fitted and printed below as a labeled
+  SECONDARY, every run. If primary and a secondary disagree at the gate,
+  the disagreement gets reported -- not resolved in favour of either.
+
+  KNOWN AND ACCEPTED: excluding is the choice that makes the composite look
+  BETTER (P(lambda>0) 0.176 -> 0.344 at the time of writing). That is why
+  it is written down here, before the gate, instead of decided at it.
+"""
+
+
+def select(games, backfill=False, degraded=False):
+    """Sub-select the fit sample. Defaults are the PRIMARY definition."""
+    out = games
+    if not backfill:
+        out = [g for g in out if g['src'] == 'archive']
+    if not degraded:
+        out = [g for g in out if not g['degraded']]
+    return out
+
+
+def arrays(games):
+    return (np.array([g['y'] for g in games]),
+            np.array([g['lm'] for g in games]),
+            np.array([g['diff'] for g in games]))
 
 
 def overlap_check(games):
@@ -334,27 +405,72 @@ def main():
           % (both, mism, '' if mism == 0 else ' ::error::'))
     if n == 0:
         return
-    if n < 20:
+    print(SAMPLE_BLOCK)
+
+    primary = select(games)
+    np_ = len(primary)
+    n_drop_bf = len(games) - len(select(games, degraded=True))
+    n_drop_dq = len(select(games, backfill=True, degraded=True)) \
+        - len(select(games, backfill=True))
+    print('  PRIMARY sample: %d games'
+          '   (dropped %d snapshot-backfilled, %d DEGRADED)'
+          % (np_, n_drop_bf, n_drop_dq))
+    print('  GATE PROGRESS: %d / %d primary games  (%.0f%%)'
+          % (np_, GATE_N, 100.0 * np_ / GATE_N))
+    if np_ < GATE_N:
+        print('  GATE NOT REACHED -- this run is informational only. The '
+              'pre-registered\n  Item 6 verdict rule does NOT apply below %d '
+              'primary games.' % GATE_N)
+
+    if np_ < 20:
         print('[fit_lambda] REFUSING a verdict below 20 games. Accumulate.')
+        primary_ok = False
+    else:
+        primary_ok = True
 
-    y = np.array([g['y'] for g in games])
-    lm = np.array([g['lm'] for g in games])
-    s = np.array([g['diff'] for g in games])
-    sd = s.std(ddof=1) if n > 1 else 0.0
-    print('\n  composite_diff: mean %+.2f  sd %.2f' % (s.mean(), sd))
-    report('lambda_pt', y, lm, s, games)
+    if primary_ok:
+        y, lm, s = arrays(primary)
+        print('\n  composite_diff: mean %+.2f  sd %.2f'
+              % (s.mean(), s.std(ddof=1)))
+        report('lambda_pt', y, lm, s, primary)
 
-    ss = np.array([strip_mkt_diff(g) or 0.0 for g in games])
-    if any(strip_mkt_diff(g) is not None for g in games):
-        lam2, se2, lr2, _ = fit(y, lm, ss)
-        print('\n  mkt-stripped variant: lambda_pt = %+.4f   SE %.4f   LR %.2f'
-              % (lam2, se2, lr2))
+        ss = np.array([strip_mkt_diff(g) or 0.0 for g in primary])
+        if any(strip_mkt_diff(g) is not None for g in primary):
+            lam2, se2, lr2, _ = fit(y, lm, ss)
+            print('\n  mkt-stripped variant: lambda_pt = %+.4f   SE %.4f   '
+                  'LR %.2f' % (lam2, se2, lr2))
+
+    print('\n' + '-' * 70)
+    print('SECONDARIES -- reported every run, read by NO rule. Excluded from '
+          'the gate\ncount. Present so that a disagreement with the primary is '
+          'visible, not so\nthat a better-looking number can be adopted after '
+          'the fact.')
+    print('-' * 70)
+    for label, kw in (('+ backfill (pre-v7.5 sp_score)', dict(backfill=True)),
+                      ('+ DEGRADED rows', dict(degraded=True)),
+                      ('+ backfill + DEGRADED (old headline)',
+                       dict(backfill=True, degraded=True))):
+        sub = select(games, **kw)
+        if len(sub) < 10:
+            print('  %-38s n=%3d  (too few to fit)' % (label, len(sub)))
+            continue
+        y2, lm2, s2 = arrays(sub)
+        lam, se, lr, _ = fit(y2, lm2, s2)
+        print('  %-38s n=%3d  lambda_pt=%+.4f  SE %.4f  '
+              'CI [%+.4f, %+.4f]  LR %.2f'
+              % (label, len(sub), lam, se, lam - 1.96 * se,
+                 lam + 1.96 * se, lr))
 
     reconcile(games)
 
-    print('\n  Verdict rule (pre-registered 2026-07-24): move LAMBDA off 0 only if')
-    print('  the 95% CI on LAMBDA_PT excludes 0 on the positive side at')
-    print('  n >= ~150 games, and only with this output in front of Benjamin.')
+    print('\n  Verdict rule (pre-registered 2026-07-24, sample definition '
+          'pinned 2026-07-28):')
+    print('  move LAMBDA off 0 only if the 95% CI on LAMBDA_PT excludes 0 on '
+          'the positive')
+    print('  side, on the PRIMARY sample, at n >= ~%d PRIMARY games, and only '
+          'with this' % GATE_N)
+    print('  output in front of Benjamin. A secondary crossing zero is not a '
+          'trigger.')
 
 
 if __name__ == '__main__':
