@@ -15,6 +15,46 @@ import json, math
 import model_meta
 
 # ---------------------------------------------------------------------------
+# CHIP THRESHOLDS (v8.10, queue Item D).
+#
+# chips() cuts on ABSOLUTE category values. Those cuts were set against pct(),
+# whose output is UNIFORM by construction. v8.10 replaced pct() with z-scoring,
+# which is normal-ish and concentrated, so carrying the old numbers across
+# unchanged would have silently changed what the card SAYS -- measured on the
+# live board, "opp SP weak" would have gone from 14 fires to 6.
+#
+# THE CUTS BELOW PRESERVE EACH CHIP'S HISTORICAL FIRING RATE. Measured against
+# the live league populations, 2026-07-28:
+#
+#   chip                  old cut   pct rate   new cut   = sigma
+#   SP score      (>=)         60      37.3%      56.6     +0.33
+#   opp SP weak   (<=)         42      39.0%      45.8     -0.21
+#   opp bats cold (<=)         38      36.7%      36.4     -0.68
+#
+# WHY RATE-PRESERVING AND NOT ROUND SIGMA. Round-sigma cuts (+/-1s) were the
+# alternative and they are arguably better chips -- a label that applies to 37%
+# of starters is weak evidence. But Item D's mandate is to replace rank with
+# magnitude IN THE SCORE. Re-deciding what counts as a notable starter is a
+# SECOND, unmandated decision, and smuggling it into this commit would make the
+# card change attributable to neither. Filed as a separate question.
+#
+# These are FIXED constants derived from a one-time measurement, deliberately
+# not recomputed nightly against the population -- recomputing would put slate
+# dependence back into the chips, which is the thing Item D removes.
+#
+# NOT restated: the two DIFF cuts below. Measured, a category diff is ~sqrt(2)x
+# the category sd, and the 30-team pct sd (off 21.18, pen 21.81) already sat
+# close to z's 20.0, so the diff scale barely moved (pen diff sd 28.9 -> 27.2,
+# off 27.8 -> 29.9) and firing went 3 -> 3 and 6 -> 7 on the live board.
+# Changing them would assert a difference the measurement does not support.
+# ---------------------------------------------------------------------------
+CHIP_SP_STRONG = 56.6      # +0.33 sigma
+CHIP_SP_WEAK = 45.8        # -0.21 sigma
+CHIP_OFF_COLD = 36.4       # -0.68 sigma
+CHIP_PEN_DIFF = 12         # unchanged, see above
+CHIP_OFF_DIFF = 10         # unchanged, see above
+
+# ---------------------------------------------------------------------------
 # v8.8 -- PUBLICATION STATE. Two independent switches, deliberately separate.
 #
 # UNVALIDATED is a POLICY claim: has anything here cleared a gate? It is True
@@ -158,26 +198,26 @@ def chips(side, opp, game):
     """Max 4 structured chips: strongest drivers. tone: green=strength, red=fading weakness, neutral=context."""
     c = []
     cats = side['cats']; ocats = opp['cats']
-    if side.get('sp') and cats['sp'] >= 60:
+    if side.get('sp') and cats['sp'] >= CHIP_SP_STRONG:
         c.append({'stat': 'SP score', 'value': f"{cats['sp']:.0f}/100", 'dir': '+', 'tone': 'green'})
     # v7.5: sp_score returns fixed constants when it has no data -- 38.0 for an
     # unannounced starter, 50.0 for one it could not resolve -- and this chip
-    # fires at <=42, so EVERY data failure was structurally guaranteed to
+    # fires below CHIP_SP_WEAK, so EVERY data failure was structurally guaranteed to
     # publish a weakness claim. A weakness chip now requires an actual read.
     # `.get(..., True)` not `.get(...)`: a PRE-v7.5 model_output.json has no
     # sp_resolved key at all, and the pipeline is designed to re-run picks from a
     # cached model_output. Defaulting to False there silently deleted EVERY
     # weakness chip on the board. Absent = legacy, explicit False = unresolved.
-    if ocats['sp'] <= 42 and opp.get('sp') and opp.get('sp_resolved', True):
+    if ocats['sp'] <= CHIP_SP_WEAK and opp.get('sp') and opp.get('sp_resolved', True):
         c.append({'stat': 'opp SP weak', 'value': f"{ocats['sp']:.0f}/100", 'dir': '-', 'tone': 'red'})
     elif not opp.get('sp'):
         # Honest context, not a scouting read: we are stating a prior, not a measurement.
         c.append({'stat': 'opp SP TBD', 'value': 'unannounced', 'dir': '~', 'tone': 'neutral'})
-    if cats['pen'] - ocats['pen'] >= 12:
+    if cats['pen'] - ocats['pen'] >= CHIP_PEN_DIFF:
         c.append({'stat': 'pen edge', 'value': f"+{cats['pen']-ocats['pen']:.0f}", 'dir': '+', 'tone': 'green'})
-    if cats['off'] - ocats['off'] >= 10:
+    if cats['off'] - ocats['off'] >= CHIP_OFF_DIFF:
         c.append({'stat': 'off edge', 'value': f"+{cats['off']-ocats['off']:.0f}", 'dir': '+', 'tone': 'green'})
-    if ocats['off'] <= 38:
+    if ocats['off'] <= CHIP_OFF_COLD:
         c.append({'stat': 'opp bats cold', 'value': f"{ocats['off']:.0f}/100", 'dir': '-', 'tone': 'red'})
     if game['data_quality'] == 'BLOCKED':
         # v7.5: distinct from DEGRADED. DEGRADED means we scored it with a gap;

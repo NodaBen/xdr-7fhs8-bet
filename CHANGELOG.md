@@ -12,6 +12,164 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v8.10 — 2026-07-28 — magnitude replaces rank (queue Item D)
+
+`pct()` is deleted. `sp`, `off` and `pen` are z-scored. `MODEL_VERSION` → `v8.10`
+(**third scale change in the project's history** — every λ figure measured before
+this commit is on a different scale afterwards). `LAMBDA` is still `0.0`.
+Paper-only. Zero Odds API credits — FanGraphs/Savant/StatsAPI only.
+`grades_archive.jsonl` unchanged at 47 rows.
+
+Files: `model.py`, `picks.py`.
+
+### 1. What was wrong
+
+`pct()` returned a league percentile, so it mapped **any** population onto 0–100
+at uniform density regardless of how tightly clustered that population was. Rank
+in, rank out; the size of the gap between adjacent entries was discarded.
+
+Measured on the live 30-team wRC+ ladder, 2026-07-28 (wRC+ carries 58% of `off`):
+
+| step | teams | raw gap | pct points | exchange rate |
+|---|---|---|---|---|
+| cheapest | BAL → MIL | **0.020** wRC+ | 3.33 | 165 pts per wRC+ |
+| middle | NYM → SDP | 0.161 wRC+ | 3.33 | 20.7 |
+| dearest | PIT → CHC | **2.932** wRC+ | 3.33 | 1.1 |
+
+A **147× swing in the exchange rate across one ladder.** Two teams that are
+indistinguishable were forced 3.33 points apart; two teams a mile apart got the
+same 3.33.
+
+**RETRACTED — do not re-cite.** `MODEL_DIAGNOSTIC_2026-07-27` §1.4 claimed *"two
+starters separated by 0.01 of xFIP can land 20 percentile points apart."*
+Measured on the live n=292 starter pool, the largest `pct()` move across any
+≤0.01 xFIP gap is **2.1 points**. The starter pool is far too dense for that
+failure. The defect is real but it lives on the 30-team pools, above. This joins
+the retired "+0.11 intercept" figure.
+
+### 2. What shipped
+
+Per-stat `z` against **the same league populations `pct()` already used**,
+blended with **the same stat weights**, then the *blend* re-standardized against
+its own measured sd. Score = `50 + SCORE_SPREAD·clamp(z, ±2.5σ)`.
+
+Re-standardizing the blend rather than the parts is what makes it honest: the
+per-stat z's are correlated (xFIP/SIERA r **+0.95**, SIERA/K-BB% r **−0.95**, and
+the three ERA-estimators carry 56% of SP weight), so their weighted mean does not
+have sd 1 — measured blend sd on the live starter pool is **0.8621**. Dividing by
+it absorbs whatever correlation structure the inputs have without asserting
+anything about them.
+
+`sit` was already built this way in v8.9 and `mu` never ranked (it returns an
+absolute wOBA-vs-arsenal run scale). **The composite now contains no rank-based
+term at all.** Nominal weights are UNCHANGED.
+
+`zindex()` builds every population statistic **once per snapshot** and caches it
+(rule 7). `pct()` re-sorted the whole population on every call — once per stat,
+per side, per game.
+
+### 3. The three decisions, and the grounds
+
+**z, not run values.** xFIP/SIERA/xERA are already runs-per-9 and wRC+ is already
+a runs index, so for the heaviest inputs a z **is** a linear transform of the run
+value — magnitude preserved exactly, further conversion buys nothing. The rate
+stats (K-BB%, SwStr%, C+SwStr%, HR/FB) have no clean runs mapping without
+*fitting* one, and a fitted mapping is new degrees of freedom on a composite
+whose signal has never been demonstrated.
+
+**`SCORE_SPREAD = 20` is a correctness constraint, not a preference.** There are
+two clamps — ±2.5σ and the 0–100 score range — and they must not disagree.
+`50 + 20×2.5 = 100.0` exactly, so they coincide and only one ever binds. The
+*scale-preserving* value (23.8, which would have held `composite_diff` sd at the
+deployed 18.48) lands at **109.5** and would make the 0–100 ceiling bind first,
+silently reintroducing a tail nonlinearity — the whole thing this item removes.
+`SCORE_SPREAD ≤ 20` is therefore required, not chosen.
+
+**SPREAD is units only.** It multiplies `composite_diff` and λ divides by it
+exactly, so it cannot change a prediction — only what a λ number reads as. It was
+not selected on λ, win rate, or ROI (locked rule 6, decision record §6).
+
+### 4. Three silent scale drifts caught and fixed
+
+Every hardcoded constant sitting on the old `pct()` scale would have quietly
+changed meaning. All three are re-expressed to reproduce prior behaviour exactly;
+none is a new opinion.
+
+| constant | was | drift if carried across | now |
+|---|---|---|---|
+| velocity trend modifier | ±3 literal points | 0.121σ → **0.153σ**, a 1.7× weight increase nobody voted for | `VELO_SIGMA_MAX` in σ |
+| TBD replacement level | `38.0` | 33.6th percentile → **26.4th**; a materially worse assumed pitcher, unstated | `SP_TBD_SCORE = 43.3` |
+| chip cuts (`picks.py`) | 60 / 42 / 38 | "opp SP weak" **14 → 6 fires** on the live board | 56.6 / 45.8 / 36.4 |
+
+The chip cuts preserve each chip's **historical firing rate** (37.3% / 39.0% /
+36.7%). Round-sigma cuts (±1σ) were the alternative and are arguably better chips
+— a label applying to 37% of starters is weak evidence — but **Item D's mandate is
+to replace rank with magnitude in the score.** Re-deciding what counts as a
+notable starter is a second, unmandated decision, and smuggling it into this
+commit would leave the card change attributable to neither. Filed separately.
+
+The two **diff** cuts (pen ≥12, off ≥10) are deliberately **not** restated: a
+category diff is ~√2× the category sd, and the 30-team `pct()` sds (off 21.18,
+pen 21.81) already sat close to z's 20.0, so the diff scale barely moved (pen
+28.9 → 27.2, off 27.8 → 29.9) and firing went 3 → 3 and 6 → 7. Changing them
+would assert a difference the measurement does not support.
+
+### 5. Measured effect
+
+Live 16-game board, deployed v8.9 `sit` on both arms:
+
+```
+pct (v8.9)   composite_diff  mean -0.95  sd 18.48  range [-29.81, +33.19]
+z   (v8.10)  composite_diff  mean -1.28  sd 15.67  range [-26.39, +31.19]
+Spearman rho pct-vs-z:  sp +0.9977 | off +0.9942 | pen +0.9884
+sign flips: 3/16, all in games where |pct diff| <= 7.9 -- the bottom of the range
+```
+
+**Ordering is essentially untouched; only spacing moves.** That is the correct
+signature for this fix — a rho of 0.90 would have meant something was wrong. All
+three sign flips were games where the composite had no real opinion; no
+large-lean game reversed.
+
+Population sd of each category score:
+
+| | pct (v8.9) | z (v8.10) |
+|---|---|---|
+| sp | 24.79 | 19.63 |
+| off | 21.18 | 18.84 |
+| pen | 21.81 | 20.00 |
+
+Equal **before** the clamp by construction; the clamp truncates each in
+proportion to how much it binds (sp 4/292, off 1/30, pen 0/30), leaving a 6%
+spread against `pct()`'s 17%. The contraction lands almost entirely on `sp`,
+which is exactly where the diagnostic said the inflated spread was. **Structural
+confirmation, not an outcome one.**
+
+### 6. Recorded against interest
+
+- **This is hygiene, not performance.** `MODEL_DIAGNOSTIC_2026-07-27` §3 stands:
+  nothing in Phase 1 plausibly turns r ≈ 0 into an edge. Benjamin delegated
+  D1–D4 asking for "the most accurate results"; that criterion is **not
+  available** here and reaching for it is what locked rule 6 forbids. All four
+  were taken on the only legal ground — defensible without reference to any
+  outcome.
+- **The effective-weight figures are n=16 and must not be quoted as stable.** On
+  today's board sp fell 52.7% → 41.7% (toward its 44.4% nominal) and off read
+  36.5% against a 27.8% nominal — but a 16-game board says more about how tonight
+  pairs teams than about the model. Only the population-sd table above is
+  sample-free.
+- **A team category can now read `100/100`.** `pct()` capped a 30-team pool at
+  96.7 (strict `<`); the +2.5σ rail is reachable. WSN hit it tonight. Honest —
+  it means "at the rail" — but it is card-visible and rare (1/30 teams).
+- **ERA-estimator redundancy is untouched.** xFIP/SIERA/xERA are near-collinear
+  and hold 56% of SP weight. Blend re-standardization absorbs the *scale* effect,
+  but cutting or down-weighting them is a **weight change with no non-outcome
+  basis** — out of scope. Flagged for Item H's degrees-of-freedom budget.
+- **`mu` gains slightly in relative influence** because `sp` contracted and `mu`'s
+  absolute scale did not. Rescaling it would be a weight change with no
+  non-outcome basis. Left alone, recorded here.
+
+---
+
 ## v8.9.1 — 2026-07-28 — Savant pulls retry (audit C-A)
 
 One file: `savant_client.py`. **`MODEL_VERSION` deliberately stays `v8.9`** — see

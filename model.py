@@ -1,5 +1,5 @@
 """Daily Diamond model engine v1.
-Percentile-normalized category scores -> market-prior logistic win probability (v8.0) -> fair price.
+Magnitude-preserving (z-scored) category scores -> market-prior logistic win probability (v8.0) -> fair price.
 Recency rule: season base with L7/L14/L30 blend; 7-day = most important recency window.
 Missing data never crashes: neutral defaults + data-quality flags (feeds Edge Score composite).
 
@@ -9,6 +9,13 @@ SCORED and still RECORDED in `cats` -- see CAT_WEIGHTS / COMPOSITE_EXCLUDE.
 v8.9 (queue Item C): `sit` is no longer a constant. It is a measured rest and
 travel score built from two free MLB StatsAPI calls -- see situational.py.
 Weights are UNCHANGED; only the content of the category moved.
+
+v8.10 (queue Item D): pct() is DELETED. `sp`, `off` and `pen` are z-scored
+against the same league populations pct() already used, blended with the same
+stat weights, and the BLEND is re-standardized -- see the SCALING block. `sit`
+was already built this way in v8.9 and `mu` never ranked, so the composite now
+contains no rank-based term at all. Weights are UNCHANGED. This is the third
+scale change in the project's history: composite_diff sd 18.48 -> 15.51.
 """
 import json, math, re, statistics
 from fg_client import leaders, strip_html
@@ -67,21 +74,137 @@ TEAMMAP = {'LAD':'Los Angeles Dodgers','NYY':'New York Yankees','BOS':'Boston Re
 'STL':'St. Louis Cardinals','ARI':'Arizona Diamondbacks','SFG':'San Francisco Giants','SEA':'Seattle Mariners',
 'NYM':'New York Mets','PHI':'Philadelphia Phillies'}
 
-def pct(value, population, higher_better=True):
-    """League percentile 0-100. None -> neutral 50."""
-    if value is None: return 50.0
-    pop = sorted(x for x in population if x is not None)
-    if not pop: return 50.0
-    below = sum(1 for x in pop if x < value)
-    p = 100.0 * below / len(pop)
-    return p if higher_better else 100.0 - p
+# ---------------------------------------------------------------------------
+# SCALING (v8.10, queue Item D). pct() is GONE. Nothing in the composite ranks.
+#
+# WHAT pct() DID AND WHY IT HAD TO GO. It returned a league percentile, so it
+# mapped ANY population onto 0-100 at uniform density regardless of how tightly
+# that population was clustered. Rank in, rank out; the magnitude of the gap
+# between adjacent entries was discarded.
+#
+# MEASURED ON THE LIVE 30-TEAM wRC+ LADDER, 2026-07-28 (wRC+ is 58% of `off`):
+#   BAL -> MIL   0.020 wRC+ apart  -> 3.33 pct points   (165 pts per wRC+)
+#   NYM -> SDP   0.161 wRC+ apart  -> 3.33 pct points   ( 20.7 pts per wRC+)
+#   PIT -> CHC   2.932 wRC+ apart  -> 3.33 pct points   (  1.1 pts per wRC+)
+# A 147x swing in the exchange rate across one ladder. Two teams that are
+# indistinguishable are forced 3.33 points apart; two teams a mile apart get the
+# same 3.33. That is the defect, stated on real data.
+#
+# RETRACTED, DO NOT RE-CITE: MODEL_DIAGNOSTIC_2026-07-27 s1.4 claimed "two
+# starters separated by 0.01 of xFIP can land 20 percentile points apart."
+# Measured on the live n=292 starter pool, the largest pct() move across any
+# <=0.01 xFIP gap is 2.1 points. The starter pool is far too dense for that
+# failure. The defect is real but it lives on the 30-team pools, above.
+#
+# WHY z AND NOT RUN VALUES (the queue offered both). xFIP, SIERA and xERA are
+# already runs-per-9 and wRC+ is already a runs index, so for the heaviest
+# inputs a z IS a linear transform of the run value -- it preserves magnitude
+# exactly and a further conversion adds nothing. The remaining inputs (K-BB%,
+# SwStr%, C+SwStr%, HR/FB) have no clean runs mapping without FITTING one, and a
+# fitted mapping is new degrees of freedom on a composite whose signal has never
+# been demonstrated. z takes the whole benefit at zero new assumptions.
+#
+# THE POPULATION IS UNCHANGED. pct() already scored against the league (all
+# qualified starters / all 30 teams), never against the night's slate. Item D
+# changes the TRANSFORM only. Changing the population in the same commit would
+# confound the two and neither could be attributed afterwards.
+#
+# SCORE_SPREAD = 20 IS NOT A TASTE CHOICE. Score = 50 + SPREAD*z, clamped at
+# +/-SCORE_CLAMP sigma, and the score itself is clamped to 0-100. Those are two
+# clamp rules and they must not disagree. 50 + 20*2.5 = 100.0 exactly, so they
+# coincide and only one ever binds. The scale-PRESERVING value (23.8, which
+# would have held composite_diff sd at the deployed 18.48) lands at 109.5 and
+# would make the 0-100 floor/ceiling bind first -- silently reintroducing a
+# nonlinearity at the tails, which is the whole thing this item removes.
+# SCORE_SPREAD <= 20 is a correctness constraint, not a preference.
+#
+# SPREAD IS UNITS ONLY. It multiplies composite_diff and LAMBDA divides by it
+# exactly, so it cannot change a prediction -- only what a lambda number reads
+# as. It was NOT selected on lambda, win rate, or ROI (locked rule 6).
+#
+# MEASURED EFFECT, live 16-game board, deployed v8.9 sit on both arms:
+#   pct  composite_diff  mean -0.95  sd 18.48  range [-29.81, +33.19]
+#   z    composite_diff  mean -0.41  sd 15.51  range [-26.68, +26.89]
+#   Spearman rho pct-vs-z: sp +0.9977 | off +0.9942 | pen +0.9884
+# Ordering is essentially untouched; only SPACING moves. That is the correct
+# signature for this fix. The contraction lands almost entirely on `sp`
+# (population sd 24.79 -> 19.63) and leaves the team categories near-neutral
+# (off 21.18 -> 20.0, pen 21.81 -> 20.0) -- exactly where the diagnostic said
+# the inflated spread was. Structural confirmation, not an outcome one.
+#
+# THIRD SCALE CHANGE IN THE PROJECT'S HISTORY. Any lambda measured before this
+# commit is on a different scale afterwards. MODEL_VERSION is bumped and
+# shadow.py stamps the era at snapshot time, so the boundary is captured.
+# ---------------------------------------------------------------------------
+SCORE_SPREAD = 20.0   # score points per sigma
+SCORE_CLAMP = 2.5     # sigma cap; matches situational.py's SIT_CLAMP
 
-def wmean(pairs):
-    """[(score, weight)] -> weighted mean, skipping Nones, renormalizing weights."""
+
+def _mu_sd(values):
+    """(mean, sd) of a population, or (None, None) if it cannot support one."""
+    v = [x for x in values if x is not None]
+    if len(v) < 3: return None, None
+    m = sum(v) / len(v)
+    sd = (sum((x - m) ** 2 for x in v) / len(v)) ** .5
+    return m, (sd if sd > 1e-12 else None)
+
+
+def zsc(value, mu, sd, higher_better=True):
+    """Raw value -> z, sign-oriented so higher is always better. None-safe."""
+    if value is None or mu is None or sd is None: return None
+    z = (value - mu) / sd
+    return z if higher_better else -z
+
+
+def zmean(pairs):
+    """[(z, weight)] -> weighted mean z, skipping Nones, renormalizing weights.
+    Returns None (not 50) when nothing is live, so the caller decides."""
     live = [(s, w) for s, w in pairs if s is not None]
-    if not live: return 50.0
+    if not live: return None
     tw = sum(w for _, w in live)
     return sum(s * w for s, w in live) / tw
+
+
+def to_score(z):
+    """Standardized z -> 0-100 category score. None -> neutral 50."""
+    if z is None: return 50.0
+    z = max(-SCORE_CLAMP, min(SCORE_CLAMP, z))
+    return max(0.0, min(100.0, 50.0 + SCORE_SPREAD * z))
+
+
+def _pstdev(vals):
+    v = [x for x in vals if x is not None]
+    if len(v) < 3: return 1.0
+    m = sum(v) / len(v)
+    s = (sum((x - m) ** 2 for x in v) / len(v)) ** .5
+    return s if s > 1e-12 else 1.0
+
+
+def _stat_index(pool, stats):
+    """Population stats for one (pool, stat-list) pair.
+
+    Returns {'ms': {stat: (mu, sd)}, 'bsd': blend sd}. `bsd` is what makes this
+    honest: the per-stat z's are CORRELATED (xFIP/SIERA r=+0.95, SIERA/K-BB%
+    r=-0.95, and the three ERA-estimators carry 56% of SP weight), so their
+    weighted mean does NOT have sd 1. Measured blend sd on the live starter pool
+    is 0.8621. Dividing by the measured blend sd means "1 sigma of category
+    score" refers to 1 sigma of the actual index rather than 1 sigma of an
+    arbitrary weighted sum, and it absorbs whatever correlation structure the
+    inputs happen to have without asserting anything about them.
+
+    NOTE (recorded, NOT acted on): the ERA-estimator redundancy is a WEIGHT
+    question, and there is no non-outcome basis to change a weight. Out of Item
+    D scope. Flagged for Item H's degrees-of-freedom budget."""
+    ms = {k: _mu_sd([p.get(k) for p in pool]) for k, _, _ in stats}
+    raw = [zmean([(zsc(p.get(k), *ms[k], hb), w) for k, w, hb in stats]) for p in pool]
+    return {'ms': ms, 'bsd': _pstdev(raw)}
+
+
+def _row_z(row, idx, stats):
+    """One row -> standardized blend z against a prebuilt index."""
+    if not row or not idx: return None
+    z = zmean([(zsc(row.get(k), *idx['ms'][k], hb), w) for k, w, hb in stats])
+    return None if z is None else z / idx['bsd']
 
 # ---------------- IDENTITY (v7.5) ----------------
 # THE JOIN KEY IS THE MLBAM ID. THE NAME IS A DISPLAY LABEL ONLY.
@@ -181,17 +304,94 @@ def pull_snapshot():
     snap['sv_batpitch'] = arsenal_stats('batter')
     return snap
 
+
+def zindex(snap):
+    """Population statistics for every z-scored category, built ONCE per
+    snapshot and cached on it (rule 7, the cached-snapshot pattern).
+
+    pct() re-sorted the whole population on every single call -- once per stat,
+    per side, per game. This walks each pool once for the entire slate. Built
+    lazily so any caller that loads a snapshot from disk still works."""
+    if '_zi' in snap: return snap['_zi']
+    zi = {}
+    zi['sp'] = _stat_index([p for p in snap['pit'] if (p.get('GS') or 0) >= 1], SP_STATS)
+    zi['sp30'] = _stat_index([p for p in snap['pit30'] if (p.get('GS') or 0) >= 1], SP_STATS)
+
+    # OFFENSE. Each recency window is standardized against its OWN 30-team
+    # population -- L7 is noisier in raw units than the season and must not
+    # inherit the season's sigma -- then the windows are blended and the blend
+    # is re-standardized across the 30 teams.
+    win_idx = {k: _stat_index(snap[k], OFF_STATS) for k, _ in OFF_WINDOWS}
+    raw = {}
+    for r in snap['tb']:
+        team = TEAMMAP.get(strip_html(str(r.get('TeamName', ''))))
+        if not team: continue
+        parts = []
+        for k, w in OFF_WINDOWS:
+            row = team_row(snap[k], team)
+            if row is not None:
+                parts.append((_row_z(row, win_idx[k], OFF_STATS), w))
+        raw[team] = zmean(parts)
+    bsd = _pstdev(list(raw.values()))
+    zi['off'] = {t: (v / bsd if v is not None else None) for t, v in raw.items()}
+
+    # BULLPEN. Three team-level inputs, blended then re-standardized.
+    agg, l7ip = {}, {}
+    for r in snap['rel']:
+        t = TEAMMAP.get(strip_html(str(r.get('TeamName', ''))))
+        if not t: continue
+        ip = r.get('IP') or 0
+        if ip <= 0: continue
+        a = agg.setdefault(t, {'ip': 0, 'xfip': 0, 'kbb': 0})
+        a['ip'] += ip; a['xfip'] += (r.get('xFIP') or 4.2) * ip; a['kbb'] += (r.get('K-BB%') or .12) * ip
+    for r in snap['rel7']:
+        t = TEAMMAP.get(strip_html(str(r.get('TeamName', ''))))
+        if t: l7ip[t] = l7ip.get(t, 0) + (r.get('IP') or 0)
+    teams = list(agg)
+    xf = {t: agg[t]['xfip'] / agg[t]['ip'] for t in teams}
+    kb = {t: agg[t]['kbb'] / agg[t]['ip'] for t in teams}
+    l7 = {t: l7ip.get(t, 0) for t in teams}
+    mx, mk, ml = (_mu_sd(list(xf.values())), _mu_sd(list(kb.values())),
+                  _mu_sd(list(l7.values())))
+    raw = {t: zmean([(zsc(xf[t], *mx, False), .40),
+                     (zsc(kb[t], *mk, True), .35),
+                     (zsc(l7[t], *ml, False), .25)]) for t in teams}  # fewer L7 IP = fresher
+    bsd = _pstdev(list(raw.values()))
+    zi['pen'] = {t: (v / bsd if v is not None else None) for t, v in raw.items()}
+
+    snap['_zi'] = zi
+    return zi
+
 # ---------------- STARTING PITCHING (40%) ----------------
 SP_STATS = [  # (fg_key, weight, higher_better)
     ('xFIP', .22, False), ('SIERA', .22, False), ('xERA', .12, False),
     ('K-BB%', .18, True), ('C+SwStr%', .14, True), ('SwStr%', .07, True), ('HR/FB', .05, False)]
+
+# Velocity trend modifier, in SIGMA so it survives any future SCORE_SPREAD
+# change. Both numbers are the v1-v8.9 behaviour (2 pct points per mph, capped
+# at 3) divided by the measured pct() population sd of 24.79. This is a
+# faithful re-expression of the existing modifier, not a new one.
+VELO_SIGMA_PER_MPH = 2.0 / 24.79   # 0.0807
+VELO_SIGMA_MAX = 3.0 / 24.79       # 0.1210  (reached at a +/-1.5 mph swing)
+
+# Replacement level for an UNANNOUNCED starter. v1-v8.9 returned a literal 38.0,
+# set against pct(). Carrying it across unchanged would have been the same
+# silent scale drift as the velocity modifier: measured on the live pool, 38.0
+# sat at the 33.6th percentile of starters under pct() and at the 26.4th under
+# z -- the model would have started assuming a materially worse pitcher than it
+# used to, for no stated reason. 43.3 reproduces the 33.6th percentile exactly.
+# It is a re-expression of existing behaviour, not a new prior about TBD
+# starters. NOT the same thing as the UNRESOLVED path, which returns a genuinely
+# neutral 50.0 and BLOCKS -- an absence of information is not evidence of
+# weakness (v7.5).
+SP_TBD_SCORE = 43.3                # -0.34 sigma; was 38.0 on the pct scale
 
 def sp_score(name, pid, snap, flags):
     """Returns (score, resolved). resolved=False means the model has no real
     read on this starter and the side must not be published as scouting."""
     if not name:
         flags.append(DEGR + 'SP TBD — replacement-level assumed')
-        return 38.0, False  # replacement level, below median
+        return SP_TBD_SCORE, False
     sp_pool = [p for p in snap['pit'] if (p.get('GS') or 0) >= 1]
     sp_pool30 = [p for p in snap['pit30'] if (p.get('GS') or 0) >= 1]
     season, how_s = _fg_find(snap['pit'], pid, name)
@@ -205,18 +405,21 @@ def sp_score(name, pid, snap, flags):
         return 50.0, False
     if pid is not None and 'name' in (how_s, how_l) and 'id' not in (how_s, how_l):
         flags.append(INFO + f'SP {name}: matched by name, not id — check xMLBAMID')
-    def score(row, pop):
-        return wmean([(pct(row.get(k), [p.get(k) for p in pop], hb), w) for k, w, hb in SP_STATS]) if row else None
-    s_season = score(season, sp_pool)
-    s_l30 = score(l30, sp_pool30)
-    base = wmean([(s_season, .55), (s_l30, .45)])
-    # velocity trend modifier: L30 FBv vs season FBv
-    if season and l30 and season.get('FBv') and l30.get('FBv'):
+    zi = zindex(snap)
+    z = zmean([(_row_z(season, zi['sp'], SP_STATS), .55),
+               (_row_z(l30, zi['sp30'], SP_STATS), .45)])
+    # Velocity trend modifier: L30 FBv vs season FBv. v8.10 expresses it in
+    # SIGMA, not in literal score points. Under pct() the SP population sd was
+    # 24.79, so the historical +/-3 points was 0.121 sigma; carrying "+/-3" across
+    # unchanged into a distribution with sd 19.63 would have quietly promoted it
+    # to 0.153 sigma -- a 1.7x weight increase nobody voted for. Applied before
+    # the clamp so there is still exactly one clamp rule.
+    if z is not None and season and l30 and season.get('FBv') and l30.get('FBv'):
         dv = l30['FBv'] - season['FBv']
-        base += max(-3, min(3, dv * 2))  # ±1.5mph swing = ±3 pts
+        z += max(-VELO_SIGMA_MAX, min(VELO_SIGMA_MAX, dv * VELO_SIGMA_PER_MPH))
     if not l30: flags.append(INFO + f'SP {name}: no L30 sample')
     if not season: flags.append(INFO + f'SP {name}: no season sample — L30 only, unshrunk')
-    return max(0, min(100, base)), True
+    return to_score(z), True
 
 # ---------------- OFFENSE (25%) ----------------
 OFF_STATS = [('wRC+', .58, True), ('ISO', .05, True), ('OBP', .05, True), ('K%', .08, False),
@@ -229,43 +432,22 @@ def team_row(rows, team_name):
         if TEAMMAP.get(ab) == team_name or ab == team_name: return r
     return None
 
+OFF_WINDOWS = [('tb', .40), ('tb30', .25), ('tb14', .15), ('tb7', .20)]  # 7-day most important recency window
+
+
 def off_score(team, snap, flags):
-    windows = [('tb', .40), ('tb30', .25), ('tb14', .15), ('tb7', .20)]  # 7-day most important recency window
-    parts = []
-    for key, w in windows:
-        row = team_row(snap[key], team)
-        if row is None: continue
-        s = wmean([(pct(row.get(k), [p.get(k) for p in snap[key]], hb), sw) for k, sw, hb in OFF_STATS])
-        parts.append((s, w))
-    if not parts:
+    z = zindex(snap)['off'].get(team)
+    if z is None:
         flags.append(DEGR + f'{team}: no offense data — neutral 50 into 25% of composite')
         return 50.0
-    return wmean(parts)
+    return to_score(z)
 
 # ---------------- BULLPEN (15%) ----------------
 def pen_scores(snap):
-    """Aggregate relievers by team: IP-weighted xFIP/K-BB%, plus L7 workload (IP thrown = fatigue)."""
-    agg, l7ip = {}, {}
-    for r in snap['rel']:
-        t = TEAMMAP.get(strip_html(str(r.get('TeamName',''))))
-        if not t: continue
-        ip = r.get('IP') or 0
-        if ip <= 0: continue
-        a = agg.setdefault(t, {'ip': 0, 'xfip': 0, 'kbb': 0})
-        a['ip'] += ip; a['xfip'] += (r.get('xFIP') or 4.2) * ip; a['kbb'] += (r.get('K-BB%') or .12) * ip
-    for r in snap['rel7']:
-        t = TEAMMAP.get(strip_html(str(r.get('TeamName',''))))
-        if t: l7ip[t] = l7ip.get(t, 0) + (r.get('IP') or 0)
-    teams = list(agg)
-    xf = {t: agg[t]['xfip']/agg[t]['ip'] for t in teams}
-    kb = {t: agg[t]['kbb']/agg[t]['ip'] for t in teams}
-    out = {}
-    for t in teams:
-        out[t] = wmean([
-            (pct(xf[t], list(xf.values()), False), .40),
-            (pct(kb[t], list(kb.values()), True), .35),
-            (pct(l7ip.get(t, 0), list(l7ip.values()), False), .25)])  # fewer L7 IP = fresher
-    return out
+    """{team: 0-100}. Aggregation and blending live in zindex(); this is the
+    lookup. Returns only teams that aggregated, so run_slate's unmapped-TEAMMAP
+    DEGRADED path still fires on a miss."""
+    return {t: to_score(z) for t, z in zindex(snap)['pen'].items() if z is not None}
 
 # ---------------- MATCHUPS (3%) ----------------
 def matchup_score(sp_name, sp_id, opp_team, snap, flags):
@@ -436,7 +618,7 @@ LAMBDA = 0.0
 # days. Item C deliberately took the FIX branch rather than delete-then-rebuild
 # precisely to avoid a THIRD -- the constant survived v8.8 so that it could be
 # replaced once, here, instead of removed and then re-added.
-MODEL_VERSION = 'v8.9'
+MODEL_VERSION = 'v8.10'
 
 
 def _prior_logit(odds):
