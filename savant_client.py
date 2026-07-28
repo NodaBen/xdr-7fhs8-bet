@@ -1,17 +1,69 @@
 """Baseball Savant client — MLBAM-hosted, no Cloudflare, plain requests OK.
-Cached-snapshot pattern: 5 CSV pulls cover the Savant layer."""
-import requests, csv, io
+Cached-snapshot pattern: 5 CSV pulls cover the Savant layer.
+
+v8.9.1 (audit C-A): pull_csv had NO retry. `fg_client` retried 3x3 while this
+path had nothing, so a single transient upstream blip ended the entire build --
+observed live on 2026-07-28, when a 503 on `pitch-arsenals` killed a run before
+picks.json was written. Five sequential pulls with no retry means the build's
+survival is the product of five independent coin flips against Savant's uptime.
+"""
+import requests, csv, io, time
 
 H = {'User-Agent': 'Mozilla/5.0'}
 BASE = 'https://baseballsavant.mlb.com/leaderboard'
 
-def pull_csv(url):
-    r = requests.get(url, timeout=30, headers=H)
-    r.raise_for_status()
-    txt = r.text.lstrip('\ufeff')
-    if txt.lstrip().startswith('<'):
-        raise RuntimeError(f'HTML returned (blocked/changed): {url[:100]}')
-    return list(csv.DictReader(io.StringIO(txt)))
+RETRIES = 3
+# Transient: worth trying again. 5xx = upstream trouble, 429 = slow down,
+# 408 = request timeout.
+_RETRY_STATUS = {408, 429, 500, 502, 503, 504}
+
+
+class _Transient(Exception):
+    """Internal control-flow marker for a retryable condition."""
+
+
+class SavantError(RuntimeError):
+    """Savant pull failed after exhausting retries. Carries the real cause in
+    its message -- NOT the fg_client C-B pattern, where `except Exception: pass`
+    made a 403, a socket error and a parse failure indistinguishable."""
+
+
+def pull_csv(url, retries=RETRIES):
+    """Fetch a Savant CSV, retrying transient failures with linear backoff.
+
+    Retries on: connection/timeout errors, 5xx, 429, 408, and an HTML body where
+    CSV was expected (a maintenance or WAF interstitial is usually temporary).
+
+    Does NOT retry on other 4xx. A 404 or 422 means the URL or a parameter
+    changed, and three more identical requests cannot fix that -- they only
+    delay the failure and blur the diagnosis. Fail fast and name the status.
+    """
+    last = None
+    for attempt in range(retries):
+        try:
+            r = requests.get(url, timeout=30, headers=H)
+            if r.status_code in _RETRY_STATUS:
+                last = f'HTTP {r.status_code}'
+                raise _Transient(last)
+            r.raise_for_status()          # other 4xx -> permanent, escapes below
+            txt = r.text.lstrip('\ufeff')
+            if txt.lstrip().startswith('<'):
+                last = 'HTML returned (blocked/changed)'
+                raise _Transient(last)
+            return list(csv.DictReader(io.StringIO(txt)))
+        except _Transient:
+            pass
+        except (requests.Timeout, requests.ConnectionError) as e:
+            last = f'{type(e).__name__}'
+        except requests.HTTPError as e:
+            # Permanent client error. Surface it immediately, undisguised.
+            raise SavantError(f'Savant permanent failure ({e.response.status_code}): '
+                              f'{url[:110]}') from e
+        if attempt < retries - 1:
+            time.sleep(1.5 * (attempt + 1))
+    raise SavantError(f'Savant fetch failed after {retries} attempts '
+                      f'({last}): {url[:110]}')
+
 
 def expected_stats(kind='pitcher', year=2026, min_pa=25):
     """xERA (pitchers), xwOBA/xBA/xSLG both. Cols: xera, est_woba, est_ba, est_slg"""

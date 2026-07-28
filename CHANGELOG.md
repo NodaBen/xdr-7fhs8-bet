@@ -12,6 +12,97 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v8.9.1 — 2026-07-28 — Savant pulls retry (audit C-A)
+
+One file: `savant_client.py`. **`MODEL_VERSION` deliberately stays `v8.9`** — see
+§4. `LAMBDA` is still `0.0`. Paper-only. Zero API credits of any kind.
+`grades_archive.jsonl` unchanged at 47 rows, `shadow_archive.jsonl` at 182.
+
+### 1. What was wrong
+
+`pull_csv()` had no retry at all. `fg_client.get_json()` retries 3 attempts
+across 3 impersonation profiles; the Savant path had nothing — one `requests.get`,
+one `raise_for_status()`, done.
+
+`pull_snapshot()` makes **five sequential Savant-and-FanGraphs pulls**, two of
+them through this client, and it runs *before* `picks.json` is written. So the
+build's survival was the product of five independent draws against upstream
+uptime, with no second chance on the two least-protected ones.
+
+This was filed as audit item C-A on 2026-07-21 and sat open for a week. **It
+fired live on 2026-07-28**, during Item C verification: a transient `503` on
+`pitch-arsenals` ended the run outright.
+
+That failure shape is worse here than it looks, for the reason recorded in the
+v8.8 notes: **at `LAMBDA = 0` a dead build and a live build produce visually
+identical cards.** A crashed run leaves GitHub Pages serving yesterday's file,
+and zero picks is not evidence the pipeline ran. The watchdog catches it, but
+only once a day.
+
+### 2. What changed
+
+Three attempts with linear backoff (1.5s, 3.0s), matching `fg_client`'s shape.
+
+**Retries** connection errors, timeouts, `5xx`, `429`, `408`, and an HTML body
+where CSV was expected — a maintenance or WAF interstitial is usually temporary.
+
+**Does not retry** other `4xx`. A `404` or `422` means the URL or a parameter
+changed, and three more identical requests cannot fix that — they only delay the
+failure by nine seconds and blur the diagnosis. Fail fast, name the status.
+
+### 3. The error stays diagnosable
+
+Failures raise `SavantError` carrying the actual cause: `Savant fetch failed
+after 3 attempts (HTTP 503)` or `Savant permanent failure (404)`.
+
+This is deliberately **not** the `fg_client` C-B pattern, where
+`except Exception: pass` renders a Cloudflare 403, a socket error and a JSON
+parse failure indistinguishable, then raises a generic message after nine
+attempts. Adding retries without preserving the cause would have traded a loud
+failure for a quiet one — C-A's fix should not import C-B's defect.
+
+`SavantError` subclasses `RuntimeError`, so any existing handler still catches it.
+
+### 4. Why `MODEL_VERSION` does NOT move
+
+The era stamp marks the era of the **probability path** — the functional form,
+`LAMBDA`, or the composite that feeds it. A retry loop on a data client changes
+none of those. A row scored before this patch and one scored after carry a
+`composite` computed by the identical function.
+
+Bumping the stamp here would fragment the shadow sample for nothing, on top of
+two genuine era boundaries already taken in two days (v8.8, v8.9). The changelog
+release and the model era are separate numbers and this is exactly the case
+where they should diverge.
+
+### 5. Verified by execution
+
+Six cases, `requests.get` mocked, plus one live run:
+
+```
+503, 503, 200        -> recovered, 3 attempts
+persistent 503       -> SavantError 'after 3 attempts (HTTP 503)', 3 attempts
+404                  -> SavantError 'permanent failure (404)', 1 attempt (no storm)
+HTML then CSV        -> recovered, 2 attempts
+ConnectionError, 200 -> recovered, 2 attempts
+live pull_snapshot() -> 10/10 datasets, 8.8s
+```
+
+Cases 1, 4 and 5 each ended the build on attempt 1 before this patch.
+
+### 6. Recorded against interest
+
+- This does not make the build robust, it makes it **less fragile on one of two
+  stats paths**. `fg_client` still swallows its own causes (C-B, open), and
+  `pull_snapshot()` is still unguarded at the call site in `run_daily.py` —
+  exhausted retries still end the run. What changed is that a blip no longer
+  does.
+- Backoff totals 4.5s worst case per failing pull. Against a build that has
+  `timeout-minutes: 20` and two scheduled attempts a day, that is not a
+  scheduling risk.
+
+---
+
 ## v8.9 — 2026-07-28 — `sit_score` stops being a constant (queue Item C)
 
 Three files: `situational.py` (new), `model.py`, `run_daily.py`. `LAMBDA` is
