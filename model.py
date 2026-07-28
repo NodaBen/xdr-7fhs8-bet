@@ -1,13 +1,57 @@
-"""Daily Diamond model engine v1 — locked weights 40/25/15/10/7/3.
+"""Daily Diamond model engine v1.
 Percentile-normalized category scores -> market-prior logistic win probability (v8.0) -> fair price.
 Recency rule: season base with L7/L14/L30 blend; 7-day = most important recency window.
 Missing data never crashes: neutral defaults + data-quality flags (feeds Edge Score composite).
+
+v8.8 (queue Item B): `mkt` no longer contributes to `composite`. It is still
+SCORED and still RECORDED in `cats` -- see CAT_WEIGHTS / COMPOSITE_EXCLUDE.
 """
 import json, math, re, statistics
 from fg_client import leaders, strip_html
 from savant_client import expected_stats, statcast_quality, pitch_arsenal_usage, arsenal_stats
 
-WEIGHTS = {'sp': .40, 'off': .25, 'pen': .15, 'mkt': .10, 'sit': .07, 'mu': .03}
+# ---------------------------------------------------------------------------
+# CATEGORY WEIGHTS -- two dicts, deliberately.
+#
+# CAT_WEIGHTS is the historical 40/25/15/10/7/3 allocation. Every category in it
+# is still computed, still flagged, and still written to `cats` on every side.
+# Nothing here stops being OBSERVED.
+#
+# COMPOSITE_EXCLUDE names the categories that are observed but do NOT enter
+# `composite`. v8.8 adds `mkt`.
+#
+# WHY mkt LEAVES (queue Item B, decision record 2026-07-28 s2):
+#   mkt_score() returns `novig * 100`. Measured over 50 games,
+#   corr(mkt_diff, logit(market_novig)) = +0.999. The composite's own output is
+#   then evaluated against `logit(market_novig)` as the offset. The market's
+#   answer was being re-entered as one of the model's six inputs and then
+#   scored against itself. This is a correctness defect provable by inspection;
+#   it is NOT justified by any effect on lambda, win rate, or ROI, and it was
+#   not selected on one (decision record s6).
+#
+# WHY mkt IS STILL SCORED: mkt_score() raises the DEGRADED flag on the unpriced
+# path, and _prior_logit() documents that dependency. Removing the call would
+# silently drop a data-quality signal. It also stays in `cats` so fit_lambda.py
+# can keep reconstructing both variants from the archive.
+#
+# TO CHANGE THE COMPOSITE: add or remove a name in COMPOSITE_EXCLUDE and bump
+# MODEL_VERSION. Do not hand-edit the normalized numbers -- they are derived.
+# Renormalization is strictly proportional: the surviving categories keep their
+# ratios to each other exactly. Any other split would assert new information
+# about which survivor deserves the freed weight, and we have none.
+# ---------------------------------------------------------------------------
+CAT_WEIGHTS = {'sp': .40, 'off': .25, 'pen': .15, 'mkt': .10, 'sit': .07, 'mu': .03}
+COMPOSITE_EXCLUDE = {'mkt'}
+
+
+def composite_weights():
+    """Proportionally renormalized weights for the contributing categories."""
+    w = {k: v for k, v in CAT_WEIGHTS.items() if k not in COMPOSITE_EXCLUDE}
+    tot = sum(w.values())
+    return {k: v / tot for k, v in w.items()}
+
+
+WEIGHTS = composite_weights()  # v8.8: sp .4444 off .2778 pen .1667 sit .0778 mu .0333
 
 # FG team abbr -> MLB API full name
 TEAMMAP = {'LAD':'Los Angeles Dodgers','NYY':'New York Yankees','BOS':'Boston Red Sox','TBR':'Tampa Bay Rays',
@@ -336,7 +380,15 @@ LAMBDA = 0.0
 # staked row after the Item 6 gate would have landed in a 47-row archive of a
 # retired model (21-26, ROI -28.6%, z -3.64) with no way to separate them
 # afterwards.
-MODEL_VERSION = 'v8.0'
+# v8.8 BUMPS THIS. Item B changed `composite`, which is exactly the trigger the
+# paragraph above names ("the composite that feeds it"). model_prob is numerically
+# UNCHANGED today because LAMBDA is 0 -- but the era string marks the era of the
+# probability PATH, not of the numbers it happened to emit while LAMBDA was 0.
+# A row scored before this bump and one scored after carry a `composite` computed
+# by two different functions; that is the whole reason the field exists.
+# The string matches the CHANGELOG release for traceability. The comment above
+# warns against conflating era with release; here they coincide, deliberately.
+MODEL_VERSION = 'v8.8'
 
 
 def _prior_logit(odds):
@@ -377,7 +429,10 @@ def run_slate(slate, snap, odds_map):
                 'mkt': mkt_score(odds, side, sflags),
                 'sit': sit_score(side == 'home', sflags),
                 'mu': matchup_score(sp, sp_id, opp, snap, sflags)}
-            comp = sum(cats[c] * WEIGHTS[c] for c in cats)
+            # v8.8: iterate WEIGHTS, not cats. `cats` records every observed
+            # category (including the excluded ones); WEIGHTS holds only the
+            # contributors. Iterating cats here would KeyError on 'mkt'.
+            comp = sum(cats[c] * WEIGHTS[c] for c in WEIGHTS)
             sides[side] = {'team': team, 'sp': sp, 'sp_id': sp_id, 'sp_resolved': sp_ok,
                            'cats': {k: round(v, 1) for k, v in cats.items()},
                            'composite': round(comp, 2),

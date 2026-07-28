@@ -12,7 +12,254 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v8.8 — 2026-07-28 — Gate suspension recorded in code · `mkt` out of the composite · the unvalidated daily card
+
+Six files. `LAMBDA` is still `0.0`. Paper-only. Zero API credits — everything
+below was verified against JSON already on disk. `grades_archive.jsonl` is
+`md5sum`-identical before and after and does not grow.
+
+This entry covers three things that belong together because they are one
+decision with three consequences: the Item 6 gate is suspended, the input that
+disqualified it is removed, and the card stops publishing nothing.
+
+### 0. Why this is v8.8 and not a revised v8.7
+
+`DECISION_2026-07-28_GATE_SUSPENSION.md` §8 said: do not upload the staged v8.7
+`fit_lambda.py` and `CHANGELOG.md`, because that changelog entry pins `GATE_N`
+to a gate the record suspends. **They were uploaded anyway, at 09:31 ET, commit
+`4d15d3e`** — before the instruction reached the person doing the uploading.
+
+So the contradiction the record was written to prevent is already in the
+permanent history. It cannot be un-shipped. The choice was to rewrite the v8.7
+entry in place or to supersede it, and rewriting a shipped entry is exactly what
+the append-only rule exists to stop — a version history that gets edited when it
+becomes inconvenient is not a version history. v8.7 keeps its text and gains a
+`SUPERSEDED` banner. This entry is the correction.
+
+**The v8.7 sample-definition work is not withdrawn.** PRIMARY = archive-composite
+games (v7.6+) with no DEGRADED side, backfill and DEGRADED fitted and printed as
+labeled secondaries. That is unchanged and still enforced in code. What is
+withdrawn is the gate it was counting toward.
+
+### 1. The Item 6 gate is SUSPENDED, and `fit_lambda.py` now says so
+
+`GATE_N` is **deleted**, not set to a larger number. There is no threshold
+constant in that file. The run prints a `SUSPENSION_BLOCK` — grounds, the
+suspended-not-cancelled status, and decision record §4's non-repeatability
+clause — and the closing verdict text now reads `NO VERDICT RULE IS IN FORCE.`
+
+This is the project's recurring failure class, not a cosmetic mismatch. Item 4e
+labelled a frozen archive `RUNNING SCORECARD`. Item 5 left `calibration_log.jsonl`
+orphaned. v8.7 left an instrument announcing progress toward a retired gate.
+"A pre-registration no code reads is not a pre-registration" has an exact
+converse: **an instrument that keeps reporting against a rule nobody honours is
+worse, because it manufactures the number that makes the retired rule look
+live.** When the Phase 3 gate is written (queue Item H) it lands in that file
+*with* its rule, not before it.
+
+### 2. `mkt` leaves the composite (queue Item B)
+
+`mkt_score()` returns `novig * 100`. Measured over 50 games,
+`corr(mkt_diff, logit(market_novig)) = +0.999`. The composite was then evaluated
+against `logit(market_novig)` as the offset — the market's own answer re-entered
+as one of the model's six inputs and scored against itself. That is the
+disqualifying defect behind the suspension and it is fixed here.
+
+**This change is justified by inspection alone.** A +0.999 correlation with the
+prior is circular on its face. It was not selected on, evaluated against, or
+defended by any effect on λ, win rate, or ROI — decision record §6, the rule the
+suspension puts under the most pressure, which does not move.
+
+Implementation: `CAT_WEIGHTS` keeps the historical 40/25/15/10/7/3 and every
+category in it is still **scored, still flagged, and still written to `cats`**.
+`COMPOSITE_EXCLUDE = {'mkt'}` names what is observed but does not contribute.
+`mkt_score()` is still *called* — it raises the DEGRADED flag on the unpriced
+path and `_prior_logit()` documents that dependency, so removing the call would
+silently drop a data-quality signal.
+
+Renormalization is **strictly proportional**, and the choice is stated rather
+than assumed: the five survivors keep their ratios to each other exactly
+(sp .4444 · off .2778 · pen .1667 · sit .0778 · mu .0333). Any other split would
+assert new information about which survivor deserves the freed 10 points, and
+there is none. To change the composite in future, add a name to
+`COMPOSITE_EXCLUDE` and bump `MODEL_VERSION`; the numbers are derived, never
+hand-edited.
+
+Measured effect on the regressor, 61 archive games:
+
+| | mean | sd | agrees with market favourite |
+|---|---|---|---|
+| v8.0 as built | +4.45 | 16.35 | 50/61 |
+| **v8.8 (mkt out)** | **+4.20** | **16.97** | 50/61 |
+
+`MODEL_VERSION` → **`v8.8`**. Required: the era string marks the era of the
+probability *path*, and "the composite that feeds it" is the documented trigger.
+`model_prob` is numerically unchanged today only because `LAMBDA` is 0.
+
+### 3. The shadow archive is era-stamped — before the boundary, not after
+
+Not one of the 182 rows carried an era marker. v8.8 creates a hard boundary:
+`composite` is not the same quantity across it, and `lambda_pt` is measured
+**per composite point**, so a fit that pools eras fits one parameter to two
+regressors. This is the v7.5 problem arriving at a new boundary, and the queue
+had already raised it in priority.
+
+- `shadow.py` stamps `model_version` and `lambda` **at snapshot time**, not at
+  grade time. `grade()` runs the next morning and may run against a `model.py`
+  that has since changed; the era must travel with the row that was scored under
+  it. `grade()` carries the snapshot's stamp forward and records an unstamped
+  snapshot as `pre-v8.8` rather than assuming it is current.
+- `stamp_shadow_era_once.py` stamps the rows already on disk: **100 `<=v7.8`,
+  82 `v8.0`**. Idempotent, writes a `.bak` (already gitignored), and refuses to
+  clobber an existing backup.
+
+**The era was checked against the data, not asserted from the calendar.**
+CHANGELOG puts v8.0 at 2026-07-24 14:22 ET, after that day's 11:05 build had
+frozen its snapshot, so 07-25 is the first v8.0 date. Independently verifiable in
+the file: v8.0 sets `LAMBDA = 0`, so every v8.0 row has `model_prob` exactly
+equal to `pt_novig`. Measured: **07-21..07-24 = 0/100 equal; 07-25..07-27 = 82/82
+equal.** Calendar and arithmetic agree. The script *refuses to write anything* if
+they ever disagree on a row.
+
+`fit_lambda.py` reports era composition on every run and prints per-era fits with
+an `::error::` flag when PRIMARY spans more than one:
+
+    ERA COMPOSITION: <=v7.8 n=18  v8.0 n=38
+    <=v7.8  n= 18  lambda_pt=-0.0219  SE 0.0249  CI [-0.0707, +0.0269]
+    v8.0    n= 38  lambda_pt=-0.0055  SE 0.0201  CI [-0.0450, +0.0339]
+
+**The pre-registered PRIMARY definition is NOT amended.** Amending a
+pre-registration because a new boundary appeared is the move this project spent
+a decision record refusing. The fact is reported; era-homogeneity becomes a
+required clause of Item H.
+
+Item 4a reconciliation **still PASSES** at HEAD (n=35, `lambda_blend` −0.7570 ±
+0.6112, LR 1.66, Brier 0.2449/0.2917). PRIMARY reproduces the handoff exactly
+(n=56, −0.0120 ± 0.0156).
+
+### 4. The unvalidated daily card — the zero-pick era ends
+
+The card published "No qualified edges today" every day, correctly and
+uselessly. At `LAMBDA = 0` a stale card and a fresh card were byte-identical, so
+the page carried no evidence the pipeline had run. The board now publishes
+**every game** — side, lean, price, target price — at **0U**, stamped
+`UNVALIDATED — NOT A RECOMMENDATION`.
+
+**Two switches, deliberately independent.** `UNVALIDATED` is a *policy* claim and
+stays `True` until a Phase 3 gate clears **and** both go-live blockers ship
+(exposure/Kelly cap, Edge Score ceiling); flipping it is a Benjamin decision
+recorded here, never a side effect. `prob_source` is a *mechanical* fact derived
+from `LAMBDA` — when λ moves off zero the card reverts to model probability, edge
+and Edge Score **with no code change**.
+
+#### 4.1 The card says whose number the probability is
+
+At `LAMBDA = 0` the deployed form reduces exactly to the market's nine-book
+no-vig consensus. Verified on the live board: `model_prob == novig` to 4dp on
+every side, and **every one of the 22 side edges is negative** (best −1.19%)
+because the only thing being measured is the vig.
+
+Printing that as "the model's probability" next to "vs implied %" stages a
+disagreement between the market and itself and attributes one half of it to us —
+the same circularity this release just removed from the composite. So each line
+is labelled `market no-vig`, and the banner states it in plain language.
+
+What *is* ours is the **composite lean**, the score gap between the two sides, in
+composite points. It occupies the numeric slot. It is labelled unvalidated
+because it has never been shown to predict anything.
+
+#### 4.2 A defect found while building this, not predicted
+
+The v8.0 (H11) rule publishes the side with the better priced edge. **At λ=0
+that rule selects on vig rounding.** Both sides carry the same probability, so
+`edge_pct` is nothing but each side's share of the bookmaker's margin. Measured
+on the live 11-game board, it published the side the composite **disliked in 6 of
+11 games**, including a −29.99 lean — a card whose stated purpose is to show the
+model's opinion would have shown the opposite of it, more than half the time, on
+the strength of rounding.
+
+While `prob_source == 'market'` the **composite** picks the side; ties and
+unscored games fall back to the priced-edge rule. When λ moves off zero the H11
+rule is correct again and resumes automatically. Ordering is by lean magnitude,
+not Edge Score — at λ=0 every Edge Score on the board sits in a 1.9-point band
+(73.0–74.9) because its dominant input is the non-existent edge, and ranking on
+it would manufacture a bet ordering out of noise and print it beside a 0U stake.
+
+#### 4.3 Locked rules held
+
+- **Every line carries a target price.** The rule applies to unvalidated output.
+- **v5 screen CSS byte-identical** — verified by md5 of the head with only the
+  sanctioned `<title>` substitution normalized (`44c2988d…` both sides). The
+  banner is a `.rule-strip` with inline styles; no class was added.
+- **Max 4 chips**, responsible-betting footer intact.
+- Rendered at **390 / 820 / 1440**: zero horizontal overflow, zero JS errors,
+  11 rows, target price visible at every breakpoint, `UNVALIDATED` present at
+  every breakpoint.
+- Shadow and grade paths untouched in behaviour; `grades_archive.jsonl` does not
+  grow. This is presentation plus one composite change, not a measurement change.
+
+**Known limitation, recorded not fixed:** `.edge-meta` and `.units` are
+`display:none` below 1080px (audit R-B). A phone reader sees the side, the chips
+and the target price, but **not** the lean, the `market no-vig` label, or the
+`0U`. The disclosure was deliberately placed in a `.rule-strip` above the picks
+because that block survives every breakpoint — but the per-line honesty labels do
+not reach mobile, and the screen layout is locked. This is now a higher-priority
+defect than it was when it was purely cosmetic.
+
+### 5. Item 4e closed — the scorecard stops calling a closed archive "running"
+
+The panel header read `RUNNING SCORECARD` unconditionally.
+`grades_archive.jsonl` has been frozen at 47 rows since 2026-07-24, and all 47
+were staked by a retired era (`<=v7.8`). "Running" told the reader those numbers
+were current and accruing; both halves were false, and it had already misled one
+reader. `stats.json` has carried `sample_closed` and `era_n` since v8.5 — the
+contract existed and nothing read it. The header now reads
+`Closed Archive — Retired Model (<=v7.8) — Paper Only` with a one-line
+explanation, and reverts automatically when `era_n` becomes non-zero.
+
+Also: the topbar advertised `Model v1` on every card ever rendered. It now reads
+the era from `model.py` through `model_meta`, so the card cannot claim a version
+it is not running.
+
+### 6. Files
+
+| File | Change |
+|---|---|
+| `model.py` | `CAT_WEIGHTS` / `COMPOSITE_EXCLUDE`; `mkt` out of `composite`; `MODEL_VERSION` → `v8.8` |
+| `picks.py` | `UNVALIDATED` / `PROB_SOURCE`; composite-side selection at λ=0; `composite_diff` on every pick; lean ordering |
+| `render.py` | Full board at 0U; UNVALIDATED banner; lean + `market no-vig` in `.edge-meta`; marquee, unit key, pass panel; Item 4e header; real model version in topbar |
+| `shadow.py` | Era stamp written at snapshot time, carried into the archive row |
+| `fit_lambda.py` | `GATE_N` deleted; suspension block; era composition + per-era fits; verdict text replaced |
+| `stamp_shadow_era_once.py` | **new** — one-shot, evidence-checked era stamp for the 182 existing rows |
+
+### 7. Open, and deliberately not done here
+
+- **Item C (`sit_score`)** is now more expensive to defer, and the number is
+  recorded so the next session does not re-derive it: stripping `mkt` raises the
+  constant's dead-weight contribution from a fixed **+0.84** to **+0.933**
+  composite points of home bias on every game. Doing C separately also creates a
+  **second** era boundary in an already-fragmented sample. Measured for B+C
+  together: `composite_diff` sd **18.40**, market-favourite agreement **48/61**.
+  Held back because "fix or delete" needs a decision on what it was meant to
+  measure, and that is Benjamin's.
+- Items D (run values) and E (SP shrinkage) unchanged, in order, after C.
+- Item 5 (`calibration_log.jsonl`) still orphaned.
+- Workflow concurrency fix and `LEAD_MIN` > `MAX_CLOSER_AGE_MIN` still undeployed.
+
+---
+
 ## v8.7 — 2026-07-28 — Item 6 sample definition pinned in code (backfill + DEGRADED excluded)
+
+> **SUPERSEDED BY v8.8, SAME DAY.** This entry is left intact and unedited — it
+> is what shipped at 09:31 ET and the version history is append-only. Two things
+> in it are no longer true. (1) It pins `GATE_N = 150` to the Item 6 gate, which
+> was **SUSPENDED** later the same day; the decision record had already said not
+> to upload this entry, and it went up before that instruction landed. See
+> `DECISION_2026-07-28_GATE_SUSPENSION.md` and the v8.8 entry above. (2) The
+> sample-definition work it describes is **sound and still in force** — it was
+> not the reason for the supersede. Read this entry for the sample definition;
+> read v8.8 for the gate's status.
+
 
 One file, `fit_lambda.py`. Read-only instrument — no pipeline dependents, no
 workflow reference, no model behaviour change. `LAMBDA` is still `0.0`. Zero API

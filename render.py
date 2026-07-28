@@ -9,6 +9,8 @@ Usage: python3 render.py 2026-07-17
 """
 import json, sys, datetime, html, re, os
 
+import model_meta  # AST-reads model.py; never imports it (curl_cffi off this path)
+
 ABBR = {'Los Angeles Dodgers':'LAD','New York Yankees':'NYY','Boston Red Sox':'BOS','Tampa Bay Rays':'TB',
 'Pittsburgh Pirates':'PIT','Cleveland Guardians':'CLE','Texas Rangers':'TEX','Atlanta Braves':'ATL',
 'Chicago White Sox':'CWS','Toronto Blue Jays':'TOR','Miami Marlins':'MIA','Milwaukee Brewers':'MIL',
@@ -67,6 +69,38 @@ def pick_row(p, slate_by_pk, is_lock):
                   else f'<div class="units">{u}U</div>' if u > 0
                   else '<div class="units" style="color:var(--muted);font-size:12px">OFF</div>')
     tgt = ml_fmt(p['target_price'])
+
+    # ---------------------------------------------------------------------
+    # v8.8. The .edge-meta block used to read:
+    #     <Edge Score>/100  [bar]  <model_prob>% vs <implied>%
+    # At LAMBDA=0 both of those numbers are dishonest on this card.
+    #  * model_prob IS the market's nine-book no-vig consensus, to 4dp. Printing
+    #    it in our own voice, next to "vs <implied>%", stages a disagreement
+    #    between the market and itself and attributes one half to the model.
+    #  * Edge Score's dominant input is that non-existent edge, so every game on
+    #    the live board scores 73.0-74.9 -- a 1.9-point spread presented on a
+    #    0-100 bar.
+    # What IS ours is the composite lean. So the same DOM, the same classes, no
+    # CSS change (the v5 screen layout is locked), different content: the lean
+    # in the numeric slot, the bar scaled to it, and the probability slot
+    # explicitly attributed to the market.
+    # When LAMBDA moves off zero this reverts to Edge Score and model
+    # probability automatically -- prob_source is derived, not configured.
+    # ---------------------------------------------------------------------
+    if p.get('prob_source') == 'market':
+        lean = p.get('composite_diff')
+        # Scaled against 40 composite points, comfortably beyond the widest lean
+        # observed on any board to date (+41.9). Purely a display scale.
+        bar_pct = min(100.0, abs(lean) / 40.0 * 100.0) if lean is not None else 0.0
+        n_html = (f'{lean:+.1f}<em>lean</em>' if lean is not None
+                  else '—<em>lean</em>')
+        nv = p.get('model_prob')
+        prob_html = (f'<b>{nv*100:.1f}%</b> market no-vig'
+                     if nv is not None else 'no price')
+    else:
+        bar_pct = min(100.0, es)
+        n_html = f'{es:.0f}<em>/100</em>'
+        prob_html = f'<b>{p["model_prob"]*100:.1f}%</b> {esc(mkt)}'
     return f'''    <div class="pick{lock_cls}">
       <div class="num">{p['rank']}</div>
       <div class="pick-head">
@@ -74,7 +108,7 @@ def pick_row(p, slate_by_pk, is_lock):
         <div class="gm">{esc(gameline(p, slate_by_pk))}</div>
       </div>
       <div class="ev">{chips}</div>
-      <div class="edge-meta"><span class="n">{es:.0f}<em>/100</em></span><div class="bar"><i style="width:{min(100,es):.0f}%"></i></div><span class="prob"><b>{p['model_prob']*100:.1f}%</b> {esc(mkt)}</span></div>
+      <div class="edge-meta"><span class="n">{n_html}</span><div class="bar"><i style="width:{bar_pct:.0f}%"></i></div><span class="prob">{prob_html}</span></div>
       {units_html}
       <div class="price">{tgt}<small>or better</small></div>
     </div>'''
@@ -218,9 +252,32 @@ def build_scorecard():
         buckets = (f'<div style="margin-top:7px;font-size:10px;opacity:.6">'
                    f'CALIBRATION BY BUCKET — {parts}</div>')
 
+    # v8.8 (queue Item 4e). The header read "RUNNING SCORECARD" unconditionally.
+    # grades_archive.jsonl has been FROZEN at 47 rows since 2026-07-24: at
+    # LAMBDA=0 nothing clears the stake floor, so nothing has been added and
+    # nothing will be until a gate clears. Worse, all 47 rows were produced by a
+    # model era (<=v7.8) that no longer exists. "Running" told a reader those
+    # numbers were current and accruing; both halves of that were false, and it
+    # has already misled one. stats.json has carried `sample_closed` and `era_n`
+    # since v8.5 -- the contract existed, nothing read it. Now it does.
+    closed = s.get('sample_closed') and not s.get('era_n')
+    if closed:
+        head_lbl = 'Closed Archive — Retired Model (&lt;=v7.8) — Paper Only'
+        head_note = (
+            '<div style="font-size:10.5px;line-height:1.45;opacity:.72;'
+            'margin-bottom:9px">These 47 graded picks were staked by a model '
+            'era that has been retired. The archive is <b>closed, not '
+            'running</b> — no pick has been added since 2026-07-24 and none '
+            'will be while the model publishes at 0U. Read it as a record of '
+            'what a previous version did, not as current form.</div>')
+    else:
+        head_lbl = 'Running Scorecard — Paper Only'
+        head_note = ''
+
     return f'''
   <div class="rule-strip rise d5">
-    <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.55;margin-bottom:8px">Running Scorecard — Paper Only</div>
+    <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.55;margin-bottom:8px">{head_lbl}</div>
+    {head_note}
     <div style="margin-bottom:4px">{t1}</div>
     <div style="margin-bottom:4px">{t2}</div>
     <div>{t3}</div>
@@ -245,11 +302,23 @@ def render(date_str):
     nice = dt.strftime('%A, %B %-d, %Y')
     head = re.sub(r'<title>.*?</title>', f'<title>The Daily Diamond — {nice}</title>', head)
 
-    # Full-board policy: every sized pick shows; zero-edge days show zero picks.
-    best = [p for p in picks if p['units'] >= 1]
+    # v8.8 PHASE 0 -- the zero-pick card ends.
+    # The old policy showed only sized picks, so at LAMBDA=0 the card said
+    # "No qualified edges today" every single day. That is technically true and
+    # operationally useless: a stale card and a fresh card were byte-identical,
+    # so the page carried no evidence the pipeline had run at all (handoff s9).
+    # The board now publishes EVERY game -- side, lean, price, target price --
+    # at 0U, stamped UNVALIDATED. Nothing here is a recommendation and nothing
+    # stakes: units() still returns 0 and grades_archive.jsonl does not grow.
+    unvalidated = bool(picks) and picks[0].get('unvalidated')
+    market_prob = bool(picks) and picks[0].get('prob_source') == 'market'
+    show_all = unvalidated or market_prob
+
+    best = list(picks) if show_all else [p for p in picks if p['units'] >= 1]
     passes = sorted([p for p in picks if p['units'] == 0], key=lambda p: p['edge_score'])[:4]
     sized = [p for p in best if p['units'] > 0]
-    lock = best[0] if best and best[0]['units'] >= 3 else None
+    # No Lock while nothing is validated. The Lock is a recommendation.
+    lock = None if show_all else (best[0] if best and best[0]['units'] >= 3 else None)
     odds_matched = sum(1 for p in picks if p.get('implied') is not None)
     now = datetime.datetime.now(ET).strftime('%b %-d, %-I:%M %p ET')
     dq_bad = sum(1 for p in picks if p['data_quality'] != 'FULL')
@@ -264,10 +333,18 @@ def render(date_str):
             'No qualified edges today — 0 picks. Passing is a position.</span></div></div>')
 
     m = lock or (best[0] if best else None)
-    m_name = m['pick'].replace(' ML', ' Moneyline') if m else 'No qualified edges'
-    m_stake = f"{m['units']} Units" if m and m['units'] > 0 else 'OFF · await price'
-    marquee_k = ('The Diamond Lock' if lock
-                 else 'Top Board · Pending Lines' if m else 'Passing Is A Position')
+    if show_all:
+        # The marquee is the loudest element on the card. While nothing is
+        # validated it must not name a team -- a team name in that slot reads as
+        # the play of the day no matter what the caption says.
+        m_name = 'Unvalidated — no recommendation on this card'
+        m_stake = '0U · all games'
+        marquee_k = 'Research Output · Not A Card To Bet'
+    else:
+        m_name = m['pick'].replace(' ML', ' Moneyline') if m else 'No qualified edges'
+        m_stake = f"{m['units']} Units" if m and m['units'] > 0 else 'OFF · await price'
+        marquee_k = ('The Diamond Lock' if lock
+                     else 'Top Board · Pending Lines' if m else 'Passing Is A Position')
     # v7.2 (C6): the marquee STAT cells were unguarded while m_name/m_stake were
     # guarded, so a legitimate zero-pick day raised
     #   TypeError: 'NoneType' object is not subscriptable
@@ -276,9 +353,74 @@ def render(date_str):
     # PREVIOUS day's picks until the 12:43 watchdog noticed. Proven by forcing
     # every pick to 0U on the real 07-21 board. A zero-pick day is a locked,
     # valid output; it must render, not crash.
-    m_es = f"{m['edge_score']:.0f}/100" if m else '—'
-    m_tgt = f"{ml_fmt(m['target_price'])}↑" if m else '—'
-    m_prob = f"{m['model_prob']*100:.0f}%" if m else '—'
+    if show_all:
+        leans = [abs(p['composite_diff']) for p in best
+                 if p.get('composite_diff') is not None]
+        m_es = f"{len(best)}" if best else '—'
+        m_tgt = f"{max(leans):.0f}" if leans else '—'
+        m_prob = '0.0'
+    else:
+        m_es = f"{m['edge_score']:.0f}/100" if m else '—'
+        m_tgt = f"{ml_fmt(m['target_price'])}↑" if m else '—'
+        m_prob = f"{m['model_prob']*100:.0f}%" if m else '—'
+
+    l_es, l_tgt, l_prob = (('Games Published', 'Widest Lean', 'LAMBDA')
+                           if show_all
+                           else ('Edge Score', 'Target', 'Model Win'))
+
+    if show_all:
+        zone_txt = ('Full Board</b> · every game · ordered by composite lean · '
+                    '<b>0U — not a bet ranking')
+        unit_key_txt = (
+            '<b>Units</b> — every line on this card is <b>0U</b>. The ladder below is '
+            'documented, not in use: 1U standard · 2U extra confidence · 3U lock of the '
+            'day · 4U–5U rare (7%+ edge AND sharp confirmation). Units key to <b>edge</b> '
+            '— the gap between our probability and the price — never to how likely a team '
+            'is to win. No unit is published as a recommendation until a pre-registered '
+            'test clears and the exposure cap and Edge Score ceiling ship.')
+    else:
+        zone_txt = ('Best Bets</b> ranked by Edge Score · bet only at target or '
+                    'better')
+        unit_key_txt = (
+            '<b>Units</b> — 1U standard · 2U extra confidence · 3U lock of the day · '
+            '4U–5U rare: 7%+ edge AND sharp confirmation'
+            + (' · none qualify pre-line' if not sized else ''))
+
+    # The UNVALIDATED banner. Inline styles on a locked class -- the v5 <style>
+    # block is byte-lifted and nothing here may require new CSS. It sits ABOVE
+    # the picks, not below, and .rule-strip is one of the few blocks that stays
+    # visible at every breakpoint (.edge-meta and .units are display:none under
+    # 1080px, so a phone reader never sees the lean, the stake, or the 0U).
+    # That is precisely why the disclosure cannot live in those elements.
+    unval_banner = ''
+    if show_all:
+        unval_banner = f'''
+  <div class="rule-strip rise d2" style="border-color:var(--gold)">
+    <div style="font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px">◆ Unvalidated — Not A Recommendation</div>
+    <div style="font-size:11px;line-height:1.5">
+      Every game on the board is shown at <b>0 units</b>. Nothing here is a bet, a tip, or a
+      ranking of bets, and no pick on this page is being staked, tracked, or graded.
+      <br><br>
+      <b>Whose number is the probability?</b> The percentage on each line is the
+      <b>market&rsquo;s</b> nine-book no-vig consensus, not the model&rsquo;s. The model&rsquo;s blending
+      weight (LAMBDA) is set to <b>0.0</b>, which means the model&rsquo;s own scoring contributes
+      exactly nothing to it. Said plainly: at this setting the published probability
+      <i>is</i> the market price with the bookmaker&rsquo;s margin removed. It is labelled that way
+      on every line rather than presented as our estimate.
+      <br><br>
+      <b>What is ours is the LEAN</b> — the composite score gap between the two sides, in
+      composite points. That is the model&rsquo;s own opinion and it is the reason a side is shown.
+      It is <b>unvalidated</b>: it has never been demonstrated to predict anything. The
+      pre-registered test of whether it carries an edge was suspended on 2026-07-28 because
+      the composite contained the market&rsquo;s own answer as one of its inputs; that input was
+      removed in this release and a replacement test will be pre-registered before its data
+      is seen. Until one clears, treat the lean as a research readout.
+      <br><br>
+      Target prices are shown because a pick without a price is not a pick — the discipline
+      stays in force even when nothing is being recommended.
+    </div>
+  </div>
+'''
 
     props_panel = '\n      '.join([
         pi('Props Watchlist', 'awaiting lines',
@@ -287,10 +429,20 @@ def render(date_str):
 
     no_edge_ct = len(picks) - len(best)
     underway = sum(1 for g in slate if g.get('started'))
-    pass_items = pi(f'{no_edge_ct} other games analyzed', 'no angle',
-                    'Full slate reviewed. Games without a qualified edge are not shown — '
-                    'no pick is a position.') if no_edge_ct else pi(
-                    'Full board qualified', '—', 'Every analyzed game produced an angle today.')
+    if show_all:
+        pass_items = pi(
+            'Nothing qualifies — by design', '0U',
+            'No game on this board clears the stake floor, and none can while LAMBDA is 0: '
+            'the published probability equals the market, so the measured edge is just the '
+            'bookmaker\u2019s margin and is negative on every side of every game. That is '
+            'the expected output, not a quiet day.')
+    elif no_edge_ct:
+        pass_items = pi(f'{no_edge_ct} other games analyzed', 'no angle',
+                        'Full slate reviewed. Games without a qualified edge are not shown \u2014 '
+                        'no pick is a position.')
+    else:
+        pass_items = pi('Full board qualified', '\u2014',
+                        'Every analyzed game produced an angle today.')
     if underway:
         pass_items += '\n      ' + pi(
             f'{underway} game(s) underway', 'locked out',
@@ -298,6 +450,16 @@ def render(date_str):
             'so these games are excluded from the board until they are graded.')
 
     underway_tag = f' · {underway} underway' if underway else ''
+    # v8.8: the topbar advertised "Model v1" on every card ever rendered. The
+    # era string is now read from model.py so the card cannot claim a version it
+    # is not running. Same source grade.py and stats.py stamp archive rows from.
+    model_ver = model_meta.model_version()
+    _l = model_meta.lam()
+    lam_txt = '?' if _l is None else f'{_l:g}'
+    house_extra = (
+        'No line on this card is a recommendation and none is being staked or '
+        'graded — see the unvalidated notice above.'
+        if show_all else '')
     body = f'''<body>
 <div class="sheet">
   <div class="topbar rise d1">
@@ -308,19 +470,20 @@ def render(date_str):
     </div>
     <div class="datebox">{dt.strftime('%A, %B %-d')} <span>· Full Slate · {len(slate)} Games{underway_tag}</span></div>
     <div class="top-chips">
-      <span class="chip gold">Model v1 · FG + Savant + MLB API</span>
+      <span class="chip gold">Model {esc(model_ver)} · λ {lam_txt} · FG + Savant + MLB API</span>
       <span class="chip green">Snapshot: {now}</span>
       {odds_chip}
     </div>
   </div>
   <div class="stitchline" aria-hidden="true"></div>
 
-  <div class="zone-label rise d2"><svg class="icn" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 20 L18 4"/><path d="M20 20 L6 4"/><circle cx="4" cy="20" r="1.6" fill="currentColor" stroke="none"/><circle cx="20" cy="20" r="1.6" fill="currentColor" stroke="none"/></svg><b>Best Bets</b> ranked by Edge Score · bet only at target or better</div>
+{unval_banner}
+  <div class="zone-label rise d2"><svg class="icn" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 20 L18 4"/><path d="M20 20 L6 4"/><circle cx="4" cy="20" r="1.6" fill="currentColor" stroke="none"/><circle cx="20" cy="20" r="1.6" fill="currentColor" stroke="none"/></svg><b>{zone_txt}</b></div>
 
   <div class="picks rise d2">
 {rows}
   </div>
-  <div class="unit-key rise d3"><b>Units</b> — 1U standard · 2U extra confidence · 3U lock of the day · 4U–5U rare: 7%+ edge AND sharp confirmation{' · none qualify pre-line' if not sized else ''}</div>
+  <div class="unit-key rise d3">{unit_key_txt}</div>
 
   <div class="marquee rise d3">
     <div>
@@ -328,10 +491,10 @@ def render(date_str):
       <div class="p">{esc(m_name)}</div>
     </div>
     <div class="stats">
-      <div class="stat"><div class="v">{m_es}</div><div class="l">Edge Score</div></div>
+      <div class="stat"><div class="v">{m_es}</div><div class="l">{l_es}</div></div>
       <div class="stat"><div class="v">{esc(m_stake)}</div><div class="l">Stake</div></div>
-      <div class="stat"><div class="v">{m_tgt}</div><div class="l">Target</div></div>
-      <div class="stat"><div class="v">{m_prob}</div><div class="l">Model Win</div></div>
+      <div class="stat"><div class="v">{m_tgt}</div><div class="l">{l_tgt}</div></div>
+      <div class="stat"><div class="v">{m_prob}</div><div class="l">{l_prob}</div></div>
     </div>
   </div>
 
@@ -352,7 +515,7 @@ def render(date_str):
 
 {build_scorecard()}
   <div class="rule-strip rise d5">
-    <b>HOUSE RULES —</b> Every pick is conditional on its target price. If the book opens worse than the number, the play is OFF. {dq_bad} of {len(picks)} games carry degraded data (unannounced starters); edges re-run at the 11 AM game-day snapshot.
+    <b>HOUSE RULES —</b> Every line is conditional on its target price; if the book is worse than the number, it is OFF. {dq_bad} of {len(picks)} games carry degraded data (unannounced starters); the board re-runs at the 11 AM and 5:35 PM ET game-day snapshots. {house_extra}
   </div>
 
   <div class="foot rise d5">

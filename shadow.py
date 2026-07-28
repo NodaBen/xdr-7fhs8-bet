@@ -34,6 +34,10 @@ import json
 import os
 import datetime
 
+# v8.8: model_meta AST-parses model.py rather than importing it, so the grade
+# job never pulls curl_cffi onto its critical path. Same reason grade.py uses it.
+import model_meta
+
 SNAP = 'shadow_{}.json'
 ARCHIVE = 'shadow_archive.jsonl'
 
@@ -73,6 +77,15 @@ def snapshot(date, model_output):
                 'implied': s.get('implied'), 'novig': s.get('novig'),
                 'edge_pct': s.get('edge_pct'),
                 'data_quality': g.get('data_quality'),
+                # v8.8 ERA STAMP. Read HERE, at snapshot time, not at grade
+                # time: grade() runs the next morning and may run against a
+                # model.py that has since changed. The era must travel with the
+                # row that was scored under it. `composite` is not comparable
+                # across eras -- v8.8 removed `mkt` from it -- and lambda_pt is
+                # per composite point, so a fit that pools eras is fitting one
+                # parameter to two different regressors.
+                'model_version': model_meta.model_version(),
+                'lambda': model_meta.lam(),
                 'frozen_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
             }
             added += 1
@@ -154,6 +167,13 @@ def grade(date, finals, closers, max_age_min=45, starts=None):
             # so calibration and per-category analysis run off one file instead
             # of a manual join against shadow_<date>.json.
             'composite': s.get('composite'), 'cats': s.get('cats'),
+            # v8.8: the era comes from the SNAPSHOT, which was written when the
+            # composite was computed. Falling back to model_meta here would
+            # stamp this morning's model onto yesterday's numbers, which is the
+            # exact mislabelling the stamp exists to prevent -- so an old
+            # snapshot with no stamp is recorded as 'pre-v8.8', not as current.
+            'model_version': s.get('model_version') or 'pre-v8.8',
+            'lambda': s.get('lambda', None),
         })
 
     with open(ARCHIVE, 'a') as fh:

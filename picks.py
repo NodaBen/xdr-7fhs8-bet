@@ -9,6 +9,40 @@ Locked rules enforced in code:
 """
 import json, math
 
+# model_meta AST-parses model.py instead of importing it -- picks.py must not
+# drag fg_client -> curl_cffi onto the build's critical path. Same reason
+# grade.py and shadow.py use it.
+import model_meta
+
+# ---------------------------------------------------------------------------
+# v8.8 -- PUBLICATION STATE. Two independent switches, deliberately separate.
+#
+# UNVALIDATED is a POLICY claim: has anything here cleared a gate? It is True
+# and stays True until the Phase 3 gate clears AND both go-live blockers ship
+# (exposure/Kelly cap, Edge Score ceiling). Flipping it is a Benjamin decision
+# recorded in CHANGELOG.md, never a side effect of some other change.
+#
+# prob_source is a MECHANICAL fact: whose number is the published probability?
+# At LAMBDA = 0 the deployed form is
+#     p_home = logistic( logit(market_novig) + LAMBDA * composite_diff )
+# which reduces EXACTLY to the market's nine-book no-vig consensus. Verified on
+# the live board: model_prob == novig to 4dp on every side, and every one of the
+# 22 side edges is negative because the only thing being measured is the vig.
+# Publishing that as "the model's probability" would put the market's own answer
+# on the card under our wordmark -- the same circularity that got mkt_score
+# removed from the composite in this very release. So the card names the source.
+#
+# WHEN LAMBDA MOVES OFF ZERO THIS FLIPS ITSELF. prob_source becomes 'model',
+# and render.py starts showing model probability and edge with no code change.
+# That is the intended future step: change one number in model.py, not the card.
+# ---------------------------------------------------------------------------
+UNVALIDATED = True
+
+_LAM = model_meta.lam()
+# None means model.py could not be read. That is NOT 'model' -- an unreadable
+# lambda is not evidence that the composite is contributing.
+PROB_SOURCE = 'model' if (_LAM is not None and _LAM != 0.0) else 'market'
+
 # Edge Score composite weights (tunable; the composite itself is locked)
 ES_W = {'edge': .35, 'reliability': .10, 'dq': .25, 'mkt_conf': .20, 'stability': .10}
 
@@ -168,7 +202,34 @@ def build_picks(model_output, sharp_signals=None):
         def _e(s):
             e = s.get('edge_pct')
             return e if e is not None else -999.0
-        fav, dog = (h, a) if (_e(h), h['model_prob']) >= (_e(a), a['model_prob']) else (a, h)
+
+        if PROB_SOURCE == 'market':
+            # v8.8. THE PRICED-EDGE RULE DEGENERATES AT LAMBDA=0 AND MUST NOT
+            # DRIVE THE CARD THERE.
+            #
+            # At LAMBDA=0, model_prob == market no-vig on BOTH sides, so
+            # edge_pct is nothing but each side's share of the vig. Selecting
+            # the "better priced edge" therefore selects whichever side the book
+            # happened to vig less -- typically a few hundredths of a point.
+            # Measured on the live 11-game board: that rule published the side
+            # the composite DISLIKED in 6 of 11 games, including a -29.99 lean.
+            # A card whose stated purpose is to show the model's opinion would
+            # have shown the opposite of it, more than half the time, on the
+            # strength of rounding in the book's margin.
+            #
+            # While the probability is the market's, the composite is the only
+            # opinion the system owns, so it picks the side. Ties and unscored
+            # games fall back to the priced-edge rule.
+            cdh = h.get('composite')
+            cda = a.get('composite')
+            if cdh is not None and cda is not None and cdh != cda:
+                fav, dog = (h, a) if cdh > cda else (a, h)
+            else:
+                fav, dog = (h, a) if (_e(h), h['model_prob']) >= (_e(a), a['model_prob']) else (a, h)
+        else:
+            # LAMBDA != 0: model_prob carries real information, edge_pct is a
+            # real edge, and the v8.0 (H11) both-sides EV rule is correct again.
+            fav, dog = (h, a) if (_e(h), h['model_prob']) >= (_e(a), a['model_prob']) else (a, h)
         has_odds = fav.get('implied') is not None
         es = edge_score(fav, g, has_odds)
         sharp = sharp_signals.get(fav['team'], False)
@@ -179,7 +240,18 @@ def build_picks(model_output, sharp_signals=None):
         if u > 1 and div is not None and div > DIVERGENCE_CAP and not sharp:
             u, gated = 1, True  # divergence gate: extraordinary claim, ordinary stake
         tp, tp_anchor = target_price(fav, max(u, 1))
+        # v8.8: the composite LEAN is the one number on this card that the model
+        # actually produced. At LAMBDA=0 it contributes nothing to model_prob --
+        # it is carried so the card can show the model's own opinion instead of
+        # showing the market's and calling it the model's. Sign is relative to
+        # the published side: positive = the composite prefers this side too.
+        cd = None
+        if fav.get('composite') is not None and dog.get('composite') is not None:
+            cd = round(fav['composite'] - dog['composite'], 2)
         picks.append({
+            'composite_diff': cd,
+            'prob_source': PROB_SOURCE,
+            'unvalidated': UNVALIDATED,
             'pick': f"{fav['team']} ML",
             'game': g['game'], 'gamePk': g.get('gamePk'), 'venue': g['venue'],
             'model_prob': fav['model_prob'], 'fair_ML': fav['fair_ML'],
@@ -192,7 +264,18 @@ def build_picks(model_output, sharp_signals=None):
             'flags': g['flags'], 'data_quality': g['data_quality'],
             'blocked': g['data_quality'] == 'BLOCKED',
             'side_quality': {s: g['sides'][s].get('data_quality') for s in ('home', 'away')}})
-    picks.sort(key=lambda p: (-p['edge_score'], -(p['edge_pct'] or 0), -p['model_prob']))
+    if PROB_SOURCE == 'market':
+        # v8.8: at LAMBDA=0 every Edge Score sits in a ~2-point band (74.9..73.6
+        # on the live board) because its dominant term is an edge that is just
+        # the vig. Ranking on it would manufacture a bet ordering out of noise
+        # and print it next to a 0U stake. Order by the model's own signal
+        # instead -- strength of composite lean -- which is what this board is
+        # for while it is a research artifact. This is NOT a bet ranking and
+        # render.py labels it so.
+        picks.sort(key=lambda p: (-abs(p['composite_diff'] or 0),
+                                  -(p['edge_pct'] or -999)))
+    else:
+        picks.sort(key=lambda p: (-p['edge_score'], -(p['edge_pct'] or 0), -p['model_prob']))
     for i, p in enumerate(picks, 1): p['rank'] = i
     return picks
 

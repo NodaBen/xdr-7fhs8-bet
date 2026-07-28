@@ -34,7 +34,7 @@ v8.6 (queue Item 4a) -- TWO CHANGES, both about not being fooled by this file:
 v8.7 (queue Item 6 pre-registration, Item 4f) -- THE SAMPLE DEFINITION IS NOW
    ENFORCED HERE, not only in a document. PRIMARY = archive-composite games
    (v7.6 forward) with no DEGRADED side; that is the only sample the verdict
-   rule reads and the only one counted toward GATE_N. The 30 snapshot-backfilled
+   rule read. The 30 snapshot-backfilled
    games are excluded because both snapshots froze BEFORE v7.5 (07-22 16:33 ET)
    changed sp_score()'s join, so `composite` is not the same function on the two
    sides of that boundary. Backfill and DEGRADED are still fitted and printed as
@@ -149,7 +149,12 @@ def load_games():
         # to reconstruct lambda_blend, the authorizing estimand, for the
         # reconciliation block -- and it is degenerate on v8.0-era rows.
         mp = h.get('model_prob')
-        usable.append({'date': date, 'pk': pk, 'src': src,
+        # v8.8 ERA. `composite` is not one quantity across eras: v8.8 removed
+        # `mkt` from it, and lambda_pt is per composite POINT. Pooling eras
+        # fits one parameter to two regressors. Unstamped rows predate the
+        # stamp and are labelled as such rather than assumed current.
+        era = h.get('model_version') or 'pre-v8.8'
+        usable.append({'date': date, 'pk': pk, 'src': src, 'era': era,
                        'y': 1.0 if h['won'] else 0.0,
                        'lm': logit(h['pt_novig']),
                        'diff': ch - ca,
@@ -159,7 +164,44 @@ def load_games():
     return usable, no_comp, no_mkt, mixed
 
 
-GATE_N = 150
+# ---------------------------------------------------------------------------
+# THE ITEM 6 GATE IS SUSPENDED. GATE_N IS GONE, DELIBERATELY.
+#
+# v8.7 shipped at 09:31 ET on 2026-07-28 carrying GATE_N = 150 and a printed
+# verdict rule. The gate was suspended later the same day
+# (DECISION_2026-07-28_GATE_SUSPENSION.md), which left this tool announcing
+# progress toward, and a decision rule for, a gate that no longer exists.
+#
+# That is the project's recurring failure class, not a cosmetic mismatch: Item
+# 4e's frozen RUNNING SCORECARD header, Item 5's orphaned calibration_log.jsonl,
+# and this. "A pre-registration no code reads is not a pre-registration" has an
+# exact converse -- an instrument that reads a pre-registration nobody honours
+# is worse, because it keeps producing the number that makes the retired rule
+# look live. There is no threshold constant in this file now. When the Phase 3
+# gate is pre-registered (queue Item H) it lands here WITH its rule, not before.
+# ---------------------------------------------------------------------------
+SUSPENSION_BLOCK = """
+!! ITEM 6 GATE SUSPENDED -- 2026-07-28, by Benjamin, in writing.
+   See DECISION_2026-07-28_GATE_SUSPENSION.md. SUSPENDED, NOT CANCELLED:
+   accumulation continues, LAMBDA stays 0.0, no verdict rule applies to any
+   number printed below, and there is no n at which one starts applying.
+
+   GROUNDS (instrument validity, not result direction): the composite being
+   fitted contained mkt_score, correlated +0.999 with logit(market_novig) --
+   the market's own answer re-entered as one of the model's six inputs and then
+   scored against itself. v8.8 removes it (queue Item B). A new gate is
+   pre-registered after Phase 1 repair, across moneyline AND F5, in writing,
+   before its data is seen.
+
+   THE SUSPENSION IS NON-REPEATABLE. Decision record s4: a second suspension of
+   a pre-registered gate, on any grounds, is failure of the pre-registration
+   mechanism itself -- at which point no lambda estimate this project has
+   produced should be treated as evidence, and the correct response is to stop.
+   Any session proposing to move, soften, delay or re-scope a pre-registered
+   gate must surface that section to Benjamin verbatim first.
+
+   Everything below is DESCRIPTIVE. It authorizes nothing.
+"""
 
 SAMPLE_BLOCK = """
 SAMPLE DEFINITION -- pre-registered 2026-07-28, BEFORE the Item 6 gate fired.
@@ -167,8 +209,8 @@ Do not change this to reach a threshold. Do not change it because the answer
 is disappointing. Changing it at all requires Benjamin, in writing, with the
 reason recorded in CHANGELOG.md.
 
-  PRIMARY (the only sample the verdict rule reads, and the only one that
-  counts toward the ~150-game gate):
+  PRIMARY (the sample any verdict rule would read; NO rule is in force --
+  the Item 6 gate was suspended 2026-07-28, see the block above):
       archive-composite games (v7.6 forward), EXCLUDING any game with a
       DEGRADED side.
 
@@ -405,6 +447,7 @@ def main():
           % (both, mism, '' if mism == 0 else ' ::error::'))
     if n == 0:
         return
+    print(SUSPENSION_BLOCK)
     print(SAMPLE_BLOCK)
 
     primary = select(games)
@@ -415,12 +458,24 @@ def main():
     print('  PRIMARY sample: %d games'
           '   (dropped %d snapshot-backfilled, %d DEGRADED)'
           % (np_, n_drop_bf, n_drop_dq))
-    print('  GATE PROGRESS: %d / %d primary games  (%.0f%%)'
-          % (np_, GATE_N, 100.0 * np_ / GATE_N))
-    if np_ < GATE_N:
-        print('  GATE NOT REACHED -- this run is informational only. The '
-              'pre-registered\n  Item 6 verdict rule does NOT apply below %d '
-              'primary games.' % GATE_N)
+
+    # v8.8 ERA COMPOSITION. The pre-registered PRIMARY definition is NOT amended
+    # here -- amending a pre-registration because a new boundary appeared is the
+    # move this project has already spent a decision record refusing. It is
+    # REPORTED instead, and the pooled headline is flagged when it spans eras.
+    eras = defaultdict(int)
+    for g in primary:
+        eras[g['era']] += 1
+    print('  ERA COMPOSITION: %s'
+          % ('  '.join('%s n=%d' % (k, v) for k, v in sorted(eras.items()))
+             or 'none'))
+    if len(eras) > 1:
+        print('  !! PRIMARY SPANS %d MODEL ERAS. `composite` is not the same '
+              'quantity across\n     them (v8.8 removed mkt) and lambda_pt is '
+              'per composite POINT, so the pooled\n     figure below fits one '
+              'parameter to two regressors. Per-era fits follow.\n'
+              '     Era-homogeneity must be pre-registered as part of queue '
+              'Item H. ::error::' % len(eras))
 
     if np_ < 20:
         print('[fit_lambda] REFUSING a verdict below 20 games. Accumulate.')
@@ -439,12 +494,29 @@ def main():
             lam2, se2, lr2, _ = fit(y, lm, ss)
             print('\n  mkt-stripped variant: lambda_pt = %+.4f   SE %.4f   '
                   'LR %.2f' % (lam2, se2, lr2))
+            print('  (from v8.8 forward the DEPLOYED composite is the '
+                  'mkt-stripped one, so this\n   variant and the headline '
+                  'converge as pre-v8.8 rows age out of the sample.)')
+
+        if len(eras) > 1:
+            print('\n  PER-ERA FITS -- report these, not the pooled number, '
+                  'while eras are mixed:')
+            for era in sorted(eras):
+                sub = [g for g in primary if g['era'] == era]
+                if len(sub) < 10:
+                    print('    %-12s n=%3d  (too few to fit)' % (era, len(sub)))
+                    continue
+                y3, lm3, s3 = arrays(sub)
+                l3, e3, r3, _ = fit(y3, lm3, s3)
+                print('    %-12s n=%3d  lambda_pt=%+.4f  SE %.4f  '
+                      'CI [%+.4f, %+.4f]  LR %.2f'
+                      % (era, len(sub), l3, e3, l3 - 1.96 * e3,
+                         l3 + 1.96 * e3, r3))
 
     print('\n' + '-' * 70)
-    print('SECONDARIES -- reported every run, read by NO rule. Excluded from '
-          'the gate\ncount. Present so that a disagreement with the primary is '
-          'visible, not so\nthat a better-looking number can be adopted after '
-          'the fact.')
+    print('SECONDARIES -- reported every run, read by NO rule. Present so that '
+          'a disagreement\nwith the primary is visible, not so that a '
+          'better-looking number can be adopted\nafter the fact.')
     print('-' * 70)
     for label, kw in (('+ backfill (pre-v7.5 sp_score)', dict(backfill=True)),
                       ('+ DEGRADED rows', dict(degraded=True)),
@@ -463,14 +535,18 @@ def main():
 
     reconcile(games)
 
-    print('\n  Verdict rule (pre-registered 2026-07-24, sample definition '
-          'pinned 2026-07-28):')
-    print('  move LAMBDA off 0 only if the 95% CI on LAMBDA_PT excludes 0 on '
-          'the positive')
-    print('  side, on the PRIMARY sample, at n >= ~%d PRIMARY games, and only '
-          'with this' % GATE_N)
-    print('  output in front of Benjamin. A secondary crossing zero is not a '
-          'trigger.')
+    print('\n  NO VERDICT RULE IS IN FORCE.')
+    print('  The Item 6 rule (pre-registered 2026-07-24) was SUSPENDED '
+          '2026-07-28 and does')
+    print('  not apply to any figure above, at any n. The Phase 3 replacement '
+          'is not yet')
+    print('  written; when it is, it lands in this file together with its rule '
+          '(queue Item H)')
+    print('  and must specify: per-market sample definition, per-market n, '
+          'ERA HOMOGENEITY,')
+    print('  and the multiple-comparisons correction -- testing four markets '
+          'is four chances')
+    print('  to fool yourself. LAMBDA does not move before then. It is 0.0.')
 
 
 if __name__ == '__main__':
