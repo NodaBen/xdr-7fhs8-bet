@@ -16,6 +16,16 @@ stat weights, and the BLEND is re-standardized -- see the SCALING block. `sit`
 was already built this way in v8.9 and `mu` never ranked, so the composite now
 contains no rank-based term at all. Weights are UNCHANGED. This is the third
 scale change in the project's history: composite_diff sd 18.48 -> 15.51.
+
+v8.11 (queue Item E): empirical-Bayes shrinkage on `sp`. A starter's blended read
+is damped toward the league mean by n/(n+36) on season IP, then the category is
+re-standardized so scale is held and no weight moves between categories. `HR/FB`
+leaves the blend -- measured corr(H1,H2) = -0.008 across 161 starters, no true
+spread to detect. Weights are UNCHANGED. The sp CATEGORY's population scale is
+held by construction (sd 19.49 -> 19.36); composite_diff on a given board widens
+~9% because announced starters are a better-sampled subset than the pool average
+and re-standardization concentrates spread onto them. That is the intended
+effect. 0/16 sign flips on the live board -- a sharpening, not a reordering.
 """
 import json, math, re, statistics
 from fg_client import leaders, strip_html
@@ -314,8 +324,35 @@ def zindex(snap):
     lazily so any caller that loads a snapshot from disk still works."""
     if '_zi' in snap: return snap['_zi']
     zi = {}
-    zi['sp'] = _stat_index([p for p in snap['pit'] if (p.get('GS') or 0) >= 1], SP_STATS)
-    zi['sp30'] = _stat_index([p for p in snap['pit30'] if (p.get('GS') or 0) >= 1], SP_STATS)
+    season_pool = [p for p in snap['pit'] if (p.get('GS') or 0) >= 1]
+    l30_pool = [p for p in snap['pit30'] if (p.get('GS') or 0) >= 1]
+    zi['sp'] = _stat_index(season_pool, SP_STATS_LIVE)
+    zi['sp30'] = _stat_index(l30_pool, SP_STATS_LIVE)
+
+    # v8.11 Item E. Shrinkage narrows the SP blend; re-standardizing restores the
+    # category's scale so shrinkage REORDERS WITHIN sp rather than moving weight
+    # between categories. That distinction is load-bearing: measured on the same
+    # split halves, sp (0.602 at the median starter's 62 IP) is MORE reliable
+    # than pen (0.499 at 383 IP) and off (0.425 at 4026 PA), so letting sp narrow
+    # would have handed influence to the least reliable category in the model.
+    #
+    # Standardization is against the POOL, never against the night's announced
+    # starters -- slate-relative scaling is exactly what v8.10 removed. A
+    # consequence worth naming: announced starters are a non-random, BETTER
+    # sampled subset of the pool, so they shrink less than the pool average and
+    # re-standardization gives them more spread than before. Influence
+    # concentrates on the pitchers we actually have a read on. Intended.
+    by_id = {int(p['xMLBAMID']): p for p in l30_pool if p.get('xMLBAMID') is not None}
+    shrunk = []
+    for p in season_pool:
+        pid = p.get('xMLBAMID')
+        l30 = by_id.get(int(pid)) if pid is not None else None
+        z = zmean([(_row_z(p, zi['sp'], SP_STATS_LIVE), .55),
+                   (_row_z(l30, zi['sp30'], SP_STATS_LIVE), .45)])
+        if z is None: continue
+        ip = p.get('IP') or 0.0
+        shrunk.append(z * ip / (ip + SP_SHRINK_K))
+    zi['sp_shrunk_sd'] = _pstdev(shrunk)
 
     # OFFENSE. Each recency window is standardized against its OWN 30-team
     # population -- L7 is noisier in raw units than the season and must not
@@ -386,6 +423,53 @@ VELO_SIGMA_MAX = 3.0 / 24.79       # 0.1210  (reached at a +/-1.5 mph swing)
 # weakness (v7.5).
 SP_TBD_SCORE = 43.3                # -0.34 sigma; was 38.0 on the pct scale
 
+# ---------------------------------------------------------------------------
+# EMPIRICAL-BAYES RELIABILITY (v8.11, queue Item E)
+#
+# "A pitcher with 3 starts should not swing the composite like one with 25."
+# Measured from NON-OVERLAPPING split halves (2026-03-01..05-31 vs 06-01..07-28),
+# matched on xMLBAMID, n=161 starters with >=15 IP in both windows. Reported as
+# half-to-half predictive correlation, the interpretable form of reliability:
+#
+#   stat        w     corr(H1,H2)          95% CI         k (IP)
+#   xFIP      .22        0.505      [+0.380, +0.612]        46
+#   SIERA     .22        0.525      [+0.403, +0.628]        42
+#   xERA      .12        0.498      [+0.372, +0.606]        46
+#   K-BB%     .18        0.563      [+0.447, +0.660]        37
+#   C+SwStr%  .14        0.463      [+0.332, +0.577]        53
+#   SwStr%    .07        0.600      [+0.491, +0.691]        30
+#   HR/FB     .05       -0.008      [-0.163, +0.147]       none
+#
+# WHAT "RELIABILITY" MEANS HERE, because it changes how the number reads. A
+# split-half estimate conflates measurement noise with genuine talent drift. For
+# a FORECASTING application that is the correct quantity -- we are predicting
+# tonight, and drift is exactly as unpredictable from the line as noise is. It
+# would be the wrong quantity if we were estimating measurement error. This is
+# predictive reliability and it is deliberately the thing being measured.
+#
+# SP_SHRINK_K is measured on the BLEND directly, not averaged from the per-stat
+# k's above: corr(H1,H2) = 0.559 at 45.4 IP/window => k = 35.9, CI [23.7, 57.2].
+# (The weighted mean of the per-stat k's is 41.0 -- consistent, inside the CI,
+# but the direct measurement is the better estimate of the quantity actually
+# used.) The CI is wide. This is a MEASURED CONSTANT, to be RE-MEASURED on a
+# larger sample -- never tuned against lambda, win rate, or ROI (locked rule 6).
+SP_K = {'xFIP': 46.0, 'SIERA': 42.0, 'xERA': 46.0, 'K-BB%': 37.0,
+        'C+SwStr%': 53.0, 'SwStr%': 30.0,
+        # No measurable true spread between starters at n=161: corr -0.008 with
+        # the CI straddling zero cleanly. The same estimator that produced the
+        # six k's above produced this. It is not a hand-removal of an input --
+        # it is what the reliability measurement returned. Retained in SP_STATS
+        # so a future re-measure turns it back on by changing one value here.
+        'HR/FB': None}
+SP_SHRINK_K = 36.0                 # IP at which own line and league mean weigh equally
+
+# The blend runs over stats with measurable true spread. Dropping a zero-
+# reliability stat and giving it a posterior mean of 0 are EXACTLY equivalent
+# once the blend is re-standardized (both differ only by the constant weight
+# ratio, which the re-standardization divides out). Dropping is the clearer of
+# the two to read.
+SP_STATS_LIVE = [(k, w, hb) for k, w, hb in SP_STATS if SP_K.get(k) is not None]
+
 def sp_score(name, pid, snap, flags):
     """Returns (score, resolved). resolved=False means the model has no real
     read on this starter and the side must not be published as scouting."""
@@ -406,19 +490,29 @@ def sp_score(name, pid, snap, flags):
     if pid is not None and 'name' in (how_s, how_l) and 'id' not in (how_s, how_l):
         flags.append(INFO + f'SP {name}: matched by name, not id — check xMLBAMID')
     zi = zindex(snap)
-    z = zmean([(_row_z(season, zi['sp'], SP_STATS), .55),
-               (_row_z(l30, zi['sp30'], SP_STATS), .45)])
+    z = zmean([(_row_z(season, zi['sp'], SP_STATS_LIVE), .55),
+               (_row_z(l30, zi['sp30'], SP_STATS_LIVE), .45)])
     # Velocity trend modifier: L30 FBv vs season FBv. v8.10 expresses it in
     # SIGMA, not in literal score points. Under pct() the SP population sd was
     # 24.79, so the historical +/-3 points was 0.121 sigma; carrying "+/-3" across
     # unchanged into a distribution with sd 19.63 would have quietly promoted it
-    # to 0.153 sigma -- a 1.7x weight increase nobody voted for. Applied before
-    # the clamp so there is still exactly one clamp rule.
+    # to 0.153 sigma -- a 1.7x weight increase nobody voted for. Applied BEFORE
+    # shrinkage because it is part of the read, not evidence about how far to
+    # trust it; and before the clamp so there is still exactly one clamp rule.
     if z is not None and season and l30 and season.get('FBv') and l30.get('FBv'):
         dv = l30['FBv'] - season['FBv']
         z += max(-VELO_SIGMA_MAX, min(VELO_SIGMA_MAX, dv * VELO_SIGMA_PER_MPH))
+    # v8.11 Item E: shrink ONCE, on total season innings, then restore scale.
+    # Once, not per-window, because pit30 is a SUBSET of pit -- the last 30 days
+    # are counted in both, and shrinking each window separately would shrink the
+    # overlapping innings twice on an incoherent effective sample size. A
+    # pitcher's evidence is his season innings; the .55/.45 recency blend is a
+    # separate claim about weighting recent form, not a second sample.
+    if z is not None:
+        ip = (season or {}).get('IP') or (l30 or {}).get('IP') or 0.0
+        z = z * ip / (ip + SP_SHRINK_K) / zi['sp_shrunk_sd']
     if not l30: flags.append(INFO + f'SP {name}: no L30 sample')
-    if not season: flags.append(INFO + f'SP {name}: no season sample — L30 only, unshrunk')
+    if not season: flags.append(INFO + f'SP {name}: no season sample — L30 only, shrunk on L30 IP')
     return to_score(z), True
 
 # ---------------- OFFENSE (25%) ----------------
@@ -618,7 +712,7 @@ LAMBDA = 0.0
 # days. Item C deliberately took the FIX branch rather than delete-then-rebuild
 # precisely to avoid a THIRD -- the constant survived v8.8 so that it could be
 # replaced once, here, instead of removed and then re-added.
-MODEL_VERSION = 'v8.10'
+MODEL_VERSION = 'v8.11'
 
 
 def _prior_logit(odds):

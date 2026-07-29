@@ -12,6 +12,142 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v8.11 — 2026-07-28 — empirical-Bayes shrinkage on SP (queue Item E)
+
+A starter's read is damped toward the league mean by his own sample size, then
+the category is re-standardized so no weight moves between categories. `HR/FB`
+leaves the blend on a reliability measurement. `MODEL_VERSION` → `v8.11`.
+`LAMBDA` is still `0.0`. Paper-only. Zero Odds API credits.
+`grades_archive.jsonl` unchanged at 47 rows.
+
+One file: `model.py`.
+
+### 1. `k` was measured, not asserted
+
+Non-overlapping split halves (2026-03-01..05-31 vs 06-01..07-28), matched on
+`xMLBAMID`, **n=161** starters with ≥15 IP in both windows:
+
+| stat | w | corr(H1,H2) | 95% CI | k (IP) |
+|---|---|---|---|---|
+| xFIP | .22 | 0.505 | [+0.380, +0.612] | 46 |
+| SIERA | .22 | 0.525 | [+0.403, +0.628] | 42 |
+| xERA | .12 | 0.498 | [+0.372, +0.606] | 46 |
+| K-BB% | .18 | 0.563 | [+0.447, +0.660] | 37 |
+| C+SwStr% | .14 | 0.463 | [+0.332, +0.577] | 53 |
+| SwStr% | .07 | 0.600 | [+0.491, +0.691] | 30 |
+| **HR/FB** | .05 | **−0.008** | **[−0.163, +0.147]** | **none** |
+
+`SP_SHRINK_K = 36` is measured on the **blend directly**, not averaged from the
+per-stat k's: corr(H1,H2) = 0.559 at 45.4 IP/window → k = 35.9, **CI [23.7,
+57.2]**. The weighted mean of the per-stat k's is 41.0 — consistent, inside the
+CI, but the direct measurement is the better estimate of the quantity used. **The
+CI is wide.** This is a measured constant to be **re-measured** on a larger
+sample, never tuned (locked rule 6).
+
+Shrinkage curve, `w(n) = n/(n+36)`:
+
+```
+season IP    10    20    30    40    62    80   100   120   143
+own line    22%   36%   45%   53%   63%   69%   74%   77%   80%
+```
+
+**A starter's line at mid-season is roughly 60% signal.**
+
+**What "reliability" means here, because it changes how the number reads:** a
+split-half estimate conflates measurement noise with genuine talent drift. For a
+*forecasting* application that is the **correct** quantity — we are predicting
+tonight, and drift is exactly as unpredictable from the line as noise is. It
+would be the wrong quantity if we were estimating measurement error.
+
+### 2. Two defects in the first prototype, caught before trusting it
+
+- **Double-shrinking an overlap.** `pit30` is a *subset* of `pit`. Shrinking each
+  window separately then blending .55/.45 shrinks the overlapping innings twice
+  on an incoherent effective sample. Shrinkage now applies **once**, to the
+  blended read, on total season IP.
+- **Wrong re-standardization constant.** The first pass divided by the mean of
+  the two pools' separate sds; the .55/.45 combination has its own sd and it is
+  now measured on the combination.
+
+### 3. The scale decision, and why it was not the obvious one
+
+| | SP population sd | effect |
+|---|---|---|
+| (a) shrink only | 19.49 → 10.82 | SP narrows; ~half its influence transfers to `off`/`pen` |
+| **(b) shrink + re-standardize** ✓ | 19.49 → **19.36** | SP keeps scale; small samples move toward the middle *relative to* large ones |
+
+(a) is correct only if `off` and `pen` are **more** reliable than SP. Measured on
+the same split halves, at the sample actually in hand:
+
+```
+sp    62 IP (median starter)   reliability 0.602
+pen  383 IP                    reliability 0.499
+off 4026 PA                    reliability 0.425
+```
+
+**They are comparable, and `off` is the worst of the three.** (a) would have
+handed roughly half of SP's influence to the *least* reliable category in the
+model. **(b) shipped.** It also has the property that it is safe regardless of
+how the offense finding in §5 resolves, because it moves no weight.
+
+Standardization is against the **pool**, never the night's announced starters —
+slate-relative scaling is what v8.10 removed.
+
+### 4. Measured effect
+
+```
+sp   category diff sd (board)  23.24 -> 27.55
+composite_diff sd (board)      15.93 -> 17.32   (ratio 1.087)
+sign flips                     0/16
+SP POPULATION sd               19.49 -> 19.36   <- the scale held by construction
+```
+
+**Zero sign flips.** Nothing reversed; this is a sharpening.
+
+The ~9% widening of `composite_diff` is **not** scale drift and not a bug:
+announced starters are a non-random, *better-sampled* subset of the pool, so they
+shrink less than the pool average and re-standardization concentrates spread onto
+them. Influence moves to the pitchers we actually have a read on. Intended — but
+it does mean λ is on a ~9% different scale, hence the version bump.
+
+`HR/FB` is retained in `SP_STATS` (so a re-measure re-enables it by changing one
+value in `SP_K`) and excluded from `SP_STATS_LIVE`. Dropping a zero-reliability
+stat and giving it a posterior mean of 0 are **exactly equivalent** once the
+blend is re-standardized; dropping is the clearer of the two to read. Its
+standalone effect is near-nil (mean move 0.65pt, **zero** movers >5pt) — the
+substance of this item is the IP shrinkage (mean 3.26, max 12.30).
+
+### 5. Recorded against interest — a finding bigger than this item, NOT acted on
+
+Measuring `off` reliability to decide (a) vs (b) turned up something out of
+scope. Team offense, split halves, **n=30**:
+
+| off stat | w | corr(H1,H2) | 95% CI |
+|---|---|---|---|
+| **wRC+** | **.58** | **−0.065** | [−0.416, +0.302] |
+| ISO | .05 | −0.063 | [−0.414, +0.304] |
+| OBP | .05 | 0.173 | [−0.200, +0.502] |
+| Hard% | .09 | 0.184 | [−0.189, +0.510] |
+| BB% | .05 | 0.302 | [−0.066, +0.597] |
+| **Barrel%** | .10 | **0.409** | [+0.057, +0.671] |
+| **K%** | .08 | **0.524** | [+0.202, +0.744] |
+
+Checked against the raw ladder before reporting: the four worst first-half
+offenses (COL 79.1, PHI 83.0, NYM 83.8, SDP 84.4) all finished the second half
+**above** average, +19 to +25. Near-total mean reversion.
+
+**wRC+ is 58% of `off`, and `off` is 27.8% of the composite — so ~16% of the
+composite rests on a stat with no demonstrated predictive reliability.** The only
+two offense inputs whose CIs clear zero are the *skill* stats (K%, Barrel%, 18%
+of the category); the *outcome* stats (wRC+, ISO, OBP, 68%) do not.
+
+**n=30. Those CIs are wide and a modest positive correlation cannot be ruled
+out.** SP's n=161 makes its numbers well-determined; offense's do not. Suggestive,
+not established. **Filed as queue Item J.** Deliberately untouched here — a third
+change would make this era boundary unattributable.
+
+---
+
 ## v8.10 — 2026-07-28 — magnitude replaces rank (queue Item D)
 
 `pct()` is deleted. `sp`, `off` and `pen` are z-scored. `MODEL_VERSION` → `v8.10`
