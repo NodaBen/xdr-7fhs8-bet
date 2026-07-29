@@ -8,7 +8,8 @@
   "awaySP_id": 666200,
   "homeSP_id": 687473,
   "venue": "loanDepot park",
-  "gameDate": "2026-07-29T16:10:00Z"
+  "gameDate": "2026-07-29T16:10:00Z",
+  "started": true
  },
  {
   "gamePk": 823351,
@@ -19,7 +20,8 @@
   "awaySP_id": 593958,
   "homeSP_id": 683003,
   "venue": "PNC Park",
-  "gameDate": "2026-07-29T16:35:00Z"
+  "gameDate": "2026-07-29T16:35:00Z",
+  "started": true
  },
  {
   "gamePk": 822702,
@@ -30,7 +32,8 @@
   "awaySP_id": 702056,
   "homeSP_id": 641793,
   "venue": "Nationals Park",
-  "gameDate": "2026-07-29T17:05:00Z"
+  "gameDate": "2026-07-29T17:05:00Z",
+  "started": true
  },
  {
   "gamePk": 824242,
@@ -41,7 +44,8 @@
   "awaySP_id": 669432,
   "homeSP_id": 669373,
   "venue": "Comerica Park",
-  "gameDate": "2026-07-29T17:10:00Z"
+  "gameDate": "2026-07-29T17:10:00Z",
+  "started": true
  },
  {
   "gamePk": 823596,
@@ -52,7 +56,8 @@
   "awaySP_id": 700363,
   "homeSP_id": 640455,
   "venue": "Citi Field",
-  "gameDate": "2026-07-29T17:10:00Z"
+  "gameDate": "2026-07-29T17:10:00Z",
+  "started": true
  },
  {
   "gamePk": 823598,
@@ -63,7 +68,8 @@
   "awaySP_id": 519242,
   "homeSP_id": 681035,
   "venue": "Citi Field",
-  "gameDate": "2026-07-29T23:10:00Z"
+  "gameDate": "2026-07-29T23:10:00Z",
+  "started": false
  },
  {
   "gamePk": 823192,
@@ -74,7 +80,8 @@
   "awaySP_id": 623381,
   "homeSP_id": 657277,
   "venue": "Oracle Park",
-  "gameDate": "2026-07-29T19:45:00Z"
+  "gameDate": "2026-07-29T19:45:00Z",
+  "started": true
  },
  {
   "gamePk": 823273,
@@ -85,7 +92,8 @@
   "awaySP_id": 687312,
   "homeSP_id": 606996,
   "venue": "Petco Park",
-  "gameDate": "2026-07-29T20:10:00Z"
+  "gameDate": "2026-07-29T20:10:00Z",
+  "started": true
  },
  {
   "gamePk": 822947,
@@ -96,7 +104,8 @@
   "awaySP_id": 669022,
   "homeSP_id": 668984,
   "venue": "Tropicana Field",
-  "gameDate": "2026-07-29T22:40:00Z"
+  "gameDate": "2026-07-29T22:40:00Z",
+  "started": false
  },
  {
   "gamePk": 824487,
@@ -107,7 +116,8 @@
   "awaySP_id": 676282,
   "homeSP_id": 663903,
   "venue": "Great American Ball Park",
-  "gameDate": "2026-07-29T23:10:00Z"
+  "gameDate": "2026-07-29T23:10:00Z",
+  "started": false
  },
  {
   "gamePk": 823677,
@@ -118,7 +128,8 @@
   "awaySP_id": 677976,
   "homeSP_id": 657746,
   "venue": "Target Field",
-  "gameDate": "2026-07-29T23:40:00Z"
+  "gameDate": "2026-07-29T23:40:00Z",
+  "started": false
  },
  {
   "gamePk": 824567,
@@ -129,7 +140,8 @@
   "awaySP_id": 693645,
   "homeSP_id": 663436,
   "venue": "Rate Field",
-  "gameDate": "2026-07-29T23:40:00Z"
+  "gameDate": "2026-07-29T23:40:00Z",
+  "started": false
  },
  {
   "gamePk": 823022,
@@ -140,7 +152,8 @@
   "awaySP_id": 571510,
   "homeSP_id": 669160,
   "venue": "Busch Stadium",
-  "gameDate": "2026-07-29T23:45:00Z"
+  "gameDate": "2026-07-29T23:45:00Z",
+  "started": false
  },
  {
   "gamePk": 824002,
@@ -151,7 +164,8 @@
   "awaySP_id": 669713,
   "homeSP_id": 680570,
   "venue": "Angel Stadium",
-  "gameDate": "2026-07-30T01:38:00Z"
+  "gameDate": "2026-07-30T01:38:00Z",
+  "started": false
  },
  {
   "gamePk": 824973,
@@ -162,7 +176,8 @@
   "awaySP_id": 663776,
   "homeSP_id": 682052,
   "venue": "Sutter Health Park",
-  "gameDate": "2026-07-30T01:40:00Z"
+  "gameDate": "2026-07-30T01:40:00Z",
+  "started": false
  },
  {
   "gamePk": 823924,
@@ -173,6 +188,7 @@
   "awaySP_id": 676106,
   "homeSP_id": 641778,
   "venue": "UNIQLO Field at Dodger Stadium",
-  "gameDate": "2026-07-30T02:10:00Z"
+  "gameDate": "2026-07-30T02:10:00Z",
+  "started": false
  }
 ]
