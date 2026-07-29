@@ -141,23 +141,23 @@
    },
    {
     "book": "betonlineag",
-    "homeML": 102,
-    "awayML": -112
+    "homeML": 104,
+    "awayML": -115
    },
    {
     "book": "lowvig",
-    "homeML": 102,
-    "awayML": -112
+    "homeML": 104,
+    "awayML": -115
    },
    {
     "book": "mybookieag",
-    "homeML": 100,
-    "awayML": -117
+    "homeML": 104,
+    "awayML": -122
    },
    {
     "book": "betmgm",
-    "homeML": -102,
-    "awayML": -118
+    "homeML": 100,
+    "awayML": -120
    },
    {
     "book": "draftkings",
@@ -171,22 +171,22 @@
    },
    {
     "book": "betrivers",
-    "homeML": 104,
-    "awayML": -118
+    "homeML": 105,
+    "awayML": -120
    },
    {
     "book": "betus",
-    "homeML": 104,
-    "awayML": -114
+    "homeML": 105,
+    "awayML": -115
    }
   ],
-  "homeML_novig": 0.4805,
-  "awayML_novig": 0.5195,
+  "homeML_novig": 0.4771,
+  "awayML_novig": 0.5229,
   "books_used": 9,
-  "book_spread": 0.0085,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "book_spread": 0.009,
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "824242": {
   "home": "Detroit Tigers",
@@ -194,7 +194,7 @@
   "commence": "2026-07-29T17:11:00Z",
   "book": "draftkings",
   "homeML": -178,
-  "awayML": 147,
+  "awayML": 146,
   "total": null,
   "all_books": [
    {
@@ -204,18 +204,18 @@
    },
    {
     "book": "betonlineag",
-    "homeML": -185,
-    "awayML": 167
+    "homeML": -186,
+    "awayML": 168
    },
    {
     "book": "lowvig",
-    "homeML": -185,
-    "awayML": 167
+    "homeML": -186,
+    "awayML": 168
    },
    {
     "book": "mybookieag",
-    "homeML": -189,
-    "awayML": 159
+    "homeML": -196,
+    "awayML": 165
    },
    {
     "book": "betmgm",
@@ -225,7 +225,7 @@
    {
     "book": "draftkings",
     "homeML": -178,
-    "awayML": 147
+    "awayML": 146
    },
    {
     "book": "bovada",
@@ -234,8 +234,8 @@
    },
    {
     "book": "betus",
-    "homeML": -185,
-    "awayML": 162
+    "homeML": -186,
+    "awayML": 163
    },
    {
     "book": "betrivers",
@@ -243,13 +243,13 @@
     "awayML": 160
    }
   ],
-  "homeML_novig": 0.6281,
-  "awayML_novig": 0.3719,
+  "homeML_novig": 0.6293,
+  "awayML_novig": 0.3707,
   "books_used": 9,
-  "book_spread": 0.0215,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "book_spread": 0.0253,
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "823596": {
   "home": "New York Mets",
@@ -267,13 +267,13 @@
    },
    {
     "book": "mybookieag",
-    "homeML": -107,
-    "awayML": -110
+    "homeML": -102,
+    "awayML": -115
    },
    {
     "book": "bovada",
-    "homeML": -111,
-    "awayML": -109
+    "homeML": -107,
+    "awayML": -113
    },
    {
     "book": "betrivers",
@@ -282,13 +282,13 @@
    },
    {
     "book": "lowvig",
-    "homeML": -102,
-    "awayML": -108
+    "homeML": -101,
+    "awayML": -109
    },
    {
     "book": "betonlineag",
-    "homeML": -102,
-    "awayML": -108
+    "homeML": -101,
+    "awayML": -109
    },
    {
     "book": "draftkings",
@@ -302,17 +302,17 @@
    },
    {
     "book": "betus",
-    "homeML": -103,
-    "awayML": -107
+    "homeML": -101,
+    "awayML": -109
    }
   ],
-  "homeML_novig": 0.4952,
-  "awayML_novig": 0.5048,
+  "homeML_novig": 0.492,
+  "awayML_novig": 0.508,
   "books_used": 9,
-  "book_spread": 0.013,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "book_spread": 0.0144,
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "823598": {
   "home": "New York Mets",
@@ -373,53 +373,53 @@
   "awayML_novig": 0.5816,
   "books_used": 9,
   "book_spread": 0.0189,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "823192": {
   "home": "San Francisco Giants",
   "away": "Milwaukee Brewers",
   "commence": "2026-07-29T19:46:00Z",
   "book": "draftkings",
-  "homeML": 108,
-  "awayML": -130,
+  "homeML": -105,
+  "awayML": -114,
   "total": null,
   "all_books": [
    {
     "book": "fanduel",
-    "homeML": 108,
-    "awayML": -126
+    "homeML": -112,
+    "awayML": -104
    },
    {
     "book": "betonlineag",
-    "homeML": 110,
-    "awayML": -121
+    "homeML": -103,
+    "awayML": -107
    },
    {
     "book": "lowvig",
-    "homeML": 110,
-    "awayML": -121
+    "homeML": -103,
+    "awayML": -107
    },
    {
     "book": "mybookieag",
-    "homeML": 106,
-    "awayML": -125
+    "homeML": -106,
+    "awayML": -111
    },
    {
     "book": "betmgm",
-    "homeML": 105,
-    "awayML": -125
+    "homeML": -110,
+    "awayML": -110
    },
    {
     "book": "draftkings",
-    "homeML": 108,
-    "awayML": -130
+    "homeML": -105,
+    "awayML": -114
    },
    {
     "book": "bovada",
-    "homeML": 110,
-    "awayML": -132
+    "homeML": -105,
+    "awayML": -115
    },
    {
     "book": "betrivers",
@@ -428,25 +428,25 @@
    },
    {
     "book": "betus",
-    "homeML": 110,
-    "awayML": -121
+    "homeML": -102,
+    "awayML": -108
    }
   ],
-  "homeML_novig": 0.4644,
-  "awayML_novig": 0.5356,
+  "homeML_novig": 0.4932,
+  "awayML_novig": 0.5068,
   "books_used": 9,
-  "book_spread": 0.0168,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "book_spread": 0.0365,
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "823273": {
   "home": "San Diego Padres",
   "away": "Colorado Rockies",
   "commence": "2026-07-29T20:11:00Z",
   "book": "draftkings",
-  "homeML": -163,
-  "awayML": 135,
+  "homeML": -158,
+  "awayML": 131,
   "total": null,
   "all_books": [
    {
@@ -466,42 +466,42 @@
    },
    {
     "book": "mybookieag",
-    "homeML": -158,
-    "awayML": 134
-   },
-   {
-    "book": "bovada",
-    "homeML": -165,
+    "homeML": -164,
     "awayML": 139
    },
    {
-    "book": "draftkings",
-    "homeML": -163,
-    "awayML": 135
-   },
-   {
-    "book": "betmgm",
-    "homeML": -170,
+    "book": "bovada",
+    "homeML": -168,
     "awayML": 140
    },
    {
+    "book": "draftkings",
+    "homeML": -158,
+    "awayML": 131
+   },
+   {
+    "book": "betmgm",
+    "homeML": -160,
+    "awayML": 135
+   },
+   {
     "book": "betrivers",
-    "homeML": -162,
-    "awayML": 138
+    "homeML": -167,
+    "awayML": 143
    },
    {
     "book": "betus",
-    "homeML": -155,
-    "awayML": 138
+    "homeML": -157,
+    "awayML": 140
    }
   ],
-  "homeML_novig": 0.5946,
-  "awayML_novig": 0.4054,
+  "homeML_novig": 0.5951,
+  "awayML_novig": 0.4049,
   "books_used": 9,
-  "book_spread": 0.0128,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "book_spread": 0.0173,
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "822947": {
   "home": "Tampa Bay Rays",
@@ -524,8 +524,8 @@
    },
    {
     "book": "bovada",
-    "homeML": -143,
-    "awayML": 120
+    "homeML": -148,
+    "awayML": 124
    },
    {
     "book": "draftkings",
@@ -549,22 +549,22 @@
    },
    {
     "book": "betus",
-    "homeML": -140,
-    "awayML": 126
+    "homeML": -141,
+    "awayML": 127
    },
    {
     "book": "betrivers",
-    "homeML": -143,
-    "awayML": 123
+    "homeML": -141,
+    "awayML": 120
    }
   ],
-  "homeML_novig": 0.5691,
-  "awayML_novig": 0.4309,
+  "homeML_novig": 0.5697,
+  "awayML_novig": 0.4303,
   "books_used": 9,
-  "book_spread": 0.011,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "book_spread": 0.0117,
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "824487": {
   "home": "Cincinnati Reds",
@@ -625,9 +625,9 @@
   "awayML_novig": 0.5535,
   "books_used": 9,
   "book_spread": 0.0147,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "823677": {
   "home": "Minnesota Twins",
@@ -688,9 +688,9 @@
   "awayML_novig": 0.36,
   "books_used": 9,
   "book_spread": 0.0116,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "824567": {
   "home": "Chicago White Sox",
@@ -733,8 +733,8 @@
    },
    {
     "book": "bovada",
-    "homeML": 123,
-    "awayML": -147
+    "homeML": 124,
+    "awayML": -148
    },
    {
     "book": "betus",
@@ -747,13 +747,13 @@
     "awayML": -148
    }
   ],
-  "homeML_novig": 0.4278,
-  "awayML_novig": 0.5722,
+  "homeML_novig": 0.4276,
+  "awayML_novig": 0.5724,
   "books_used": 9,
-  "book_spread": 0.0042,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "book_spread": 0.0038,
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "823022": {
   "home": "St. Louis Cardinals",
@@ -776,8 +776,8 @@
    },
    {
     "book": "bovada",
-    "homeML": -109,
-    "awayML": -111
+    "homeML": -108,
+    "awayML": -112
    },
    {
     "book": "betonlineag",
@@ -810,13 +810,13 @@
     "awayML": -114
    }
   ],
-  "homeML_novig": 0.4987,
-  "awayML_novig": 0.5013,
+  "homeML_novig": 0.4984,
+  "awayML_novig": 0.5016,
   "books_used": 9,
   "book_spread": 0.0121,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "824002": {
   "home": "Los Angeles Angels",
@@ -877,9 +877,9 @@
   "awayML_novig": 0.5474,
   "books_used": 9,
   "book_spread": 0.0189,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "824973": {
   "home": "Athletics",
@@ -907,8 +907,8 @@
    },
    {
     "book": "mybookieag",
-    "homeML": 128,
-    "awayML": -151
+    "homeML": 129,
+    "awayML": -152
    },
    {
     "book": "betmgm",
@@ -936,21 +936,21 @@
     "awayML": -145
    }
   ],
-  "homeML_novig": 0.4193,
-  "awayML_novig": 0.5807,
+  "homeML_novig": 0.4192,
+  "awayML_novig": 0.5808,
   "books_used": 9,
   "book_spread": 0.0086,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  },
  "823924": {
   "home": "Los Angeles Dodgers",
   "away": "Seattle Mariners",
   "commence": "2026-07-30T02:11:00Z",
   "book": "draftkings",
-  "homeML": -158,
-  "awayML": 131,
+  "homeML": -168,
+  "awayML": 139,
   "total": null,
   "all_books": [
    {
@@ -960,13 +960,13 @@
    },
    {
     "book": "mybookieag",
-    "homeML": -159,
-    "awayML": 135
+    "homeML": -164,
+    "awayML": 138
    },
    {
     "book": "bovada",
-    "homeML": -174,
-    "awayML": 143
+    "homeML": -172,
+    "awayML": 142
    },
    {
     "book": "lowvig",
@@ -980,8 +980,8 @@
    },
    {
     "book": "draftkings",
-    "homeML": -158,
-    "awayML": 131
+    "homeML": -168,
+    "awayML": 139
    },
    {
     "book": "betmgm",
@@ -999,12 +999,12 @@
     "awayML": 142
    }
   ],
-  "homeML_novig": 0.5967,
-  "awayML_novig": 0.4033,
+  "homeML_novig": 0.5987,
+  "awayML_novig": 0.4013,
   "books_used": 9,
-  "book_spread": 0.0209,
-  "fetched_at": "2026-07-29T16:10:18.914746+00:00",
+  "book_spread": 0.0158,
+  "fetched_at": "2026-07-29T16:50:32.991275+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-29T16:10:18.915037+00:00"
+  "snapped_at": "2026-07-29T16:50:32.991645+00:00"
  }
 }
