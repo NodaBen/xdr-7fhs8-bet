@@ -41,9 +41,34 @@ v8.7 (queue Item 6 pre-registration, Item 4f) -- THE SAMPLE DEFINITION IS NOW
    labeled SECONDARIES on every run. See SAMPLE_BLOCK below and the v8.7
    CHANGELOG entry, which also records the argument AGAINST this exclusion.
 
+v8.12 (queue Item H1) -- THE REPLACEMENT GATE IS PRE-REGISTERED HERE, AND THIS
+   FILE ENFORCES IT. Four things land together:
+
+   1. THE PRIMARY ENDPOINT IS NO LONGER THE OUTCOME. It is closing-line
+      movement. Measured on the sample in hand, the outcome endpoint needs
+      n ~ 5,400 games to detect a plausible effect at the registered alpha;
+      the movement endpoint needs ~130. A gate at n=150 on outcomes is a gate
+      whose answer is knowable before it runs. See REGISTRATION_2026-07-29.
+   2. THE PRIMARY IS BLINDED until the registered n. This tool runs daily,
+      which is continuous looking. It now prints sample health and refuses to
+      print the primary statistic until the gate fires.
+   3. BLOCKED sides are excluded. The v8.7 definition predates the severity
+      split and named only DEGRADED, so sides the model has NO OPINION on --
+      a neutral 50.0 into 44% of the composite -- were entering the primary.
+   4. THE ERA IS ENFORCED BY A FIXTURE, not by trust. A digest over the
+      composite-determining constants and functions of model.py is compared to
+      the registered one on every run. Changing the composite without bumping
+      MODEL_VERSION now fails loudly instead of silently pooling two eras.
+
+   MODEL_VERSION IS DELIBERATELY NOT BUMPED BY THIS COMMIT. Nothing here
+   touches the composite. Bumping it would void the accrual this file exists
+   to protect -- the v8.9.1 precedent.
+
 Usage:  python3 fit_lambda.py
 LAMBDA changes only with this interval in front of Benjamin (locked rule).
 """
+import ast
+import hashlib
 import glob
 import json
 import math
@@ -72,6 +97,119 @@ AUTH_EXPECT = {'n': 35, 'lam': -0.7570, 'se': 0.6112, 'lr': 1.66,
                'brier_mkt': 0.2449, 'brier_model': 0.2917}
 AUTH_TOL = {'lam': 5e-3, 'se': 5e-3, 'lr': 2e-2, 'per_date': 5e-3, 'brier': 5e-4}
 
+# --- THE REGISTERED GATE (queue Item H1, 2026-07-29) ------------------------
+# Written and signed off BEFORE its data existed. The first game it reads is
+# 2026-07-29, snapshotted at 11:05 ET the day this was registered and graded
+# 2026-07-30. Every figure this project has produced to date is on a retired
+# model and is EXCLUDED by ERA, not by preference.
+#
+# Full text and grounds: REGISTRATION_2026-07-29_CLV_GATE.md. That file is a
+# locked record. This block is its executable half; they must not diverge.
+GATE = {
+    'registered': '2026-07-29',
+    'era': 'v8.11',            # the ONLY MODEL_VERSION admitted to the primary
+    'first_date': '2026-07-29',
+    'n': 150,                  # primary games, one row per game
+    'alpha': 0.05,             # FAMILY-WISE, Holm-Bonferroni
+    'sided': 'one, positive',
+    'markets': ('ml_full', 'f5'),   # m = 2. The family is fixed here, now.
+    'endpoint': 'clv',         # logit(close_novig) - logit(pt_novig) on comp_diff
+}
+
+# Composite-determining surface of model.py. The digest below is taken over the
+# AST of these names -- comment and whitespace edits do not trip it, behaviour
+# changes do. This is a TRIPWIRE, not a proof: a NEW constant introduced under a
+# new name would not be listed here and would not be caught. It exists to make
+# the common failure (edit a weight, forget the version bump) loud.
+ERA_NAMES = (
+    'CAT_WEIGHTS', 'COMPOSITE_EXCLUDE', 'SCORE_SPREAD', 'SCORE_CLAMP',
+    'SP_STATS', 'SP_K', 'SP_SHRINK_K', 'SP_TBD_SCORE',
+    'VELO_SIGMA_PER_MPH', 'VELO_SIGMA_MAX',
+    'OFF_STATS', 'OFF_WINDOWS', 'SIT_SPREAD', 'SIT_CLAMP',
+    'composite_weights', 'to_score', 'zmean', 'zindex', '_row_z',
+    'sp_score', 'off_score', 'pen_scores', 'matchup_score', 'sit_score',
+    'mkt_score', 'run_slate',
+)
+# Measured 2026-07-29 at HEAD 5c54956, model.py at v8.11. Verified by execution
+# that it is sensitive to a weight change, a shrinkage-constant change and an
+# in-function stat weight, and insensitive to comment and whitespace edits.
+ERA_DIGEST = '7192aa6724f20b69'
+
+
+def model_digest(path=None):
+    """AST digest of the composite-determining surface of model.py.
+
+    Deliberately does NOT import model -- fit_lambda is a read-only analysis
+    tool and must not acquire a dependency on the scraping stack (curl_cffi,
+    network) to compute a hash.
+    """
+    path = path or os.path.join(HERE, 'model.py')
+    try:
+        tree = ast.parse(open(path).read())
+    except (OSError, SyntaxError) as exc:
+        return None, ['model.py unreadable: %s' % exc]
+    want, seen, chunks = set(ERA_NAMES), set(), []
+    for node in tree.body:
+        name = None
+        if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+            name = node.name
+        elif isinstance(node, ast.Assign) and len(node.targets) == 1 \
+                and isinstance(node.targets[0], ast.Name):
+            name = node.targets[0].id
+        if name in want:
+            seen.add(name)
+            # strip the docstring: prose is not behaviour
+            body = getattr(node, 'body', None)
+            if body and isinstance(body[0], ast.Expr) \
+                    and isinstance(body[0].value, ast.Constant) \
+                    and isinstance(body[0].value.value, str):
+                node.body = body[1:] or [ast.Pass()]
+            chunks.append('%s::%s' % (name, ast.unparse(node)))
+    missing = sorted(want - seen)
+    digest = hashlib.sha256('\n'.join(sorted(chunks)).encode()).hexdigest()[:16]
+    return digest, missing
+
+
+def model_version(path=None):
+    """MODEL_VERSION read from source, again without importing."""
+    path = path or os.path.join(HERE, 'model.py')
+    try:
+        for node in ast.parse(open(path).read()).body:
+            if isinstance(node, ast.Assign) and len(node.targets) == 1 \
+                    and getattr(node.targets[0], 'id', None) == 'MODEL_VERSION' \
+                    and isinstance(node.value, ast.Constant):
+                return node.value.value
+    except (OSError, SyntaxError):
+        pass
+    return None
+
+
+def era_fixture():
+    """Returns (ok, lines). Fails LOUD, never silently."""
+    dig, missing = model_digest()
+    mv = model_version()
+    lines, ok = [], True
+    lines.append('  ERA FIXTURE: MODEL_VERSION=%s  digest=%s  (registered %s / %s)'
+                 % (mv, dig, GATE['era'], ERA_DIGEST))
+    if missing:
+        lines.append('  ::warning:: fixture could not locate in model.py: %s'
+                     % ', '.join(missing))
+    if mv != GATE['era']:
+        ok = False
+        lines.append('  ::error:: MODEL_VERSION is %s, the gate is registered '
+                     'on %s. The deployed model is not the\n             '
+                     'registered one. The accrual freeze is broken: this gate '
+                     'is VOID until\n             re-registered in writing '
+                     '(see the non-suspension clause).' % (mv, GATE['era']))
+    elif ERA_DIGEST != 'PENDING' and dig != ERA_DIGEST:
+        ok = False
+        lines.append('  ::error:: the composite surface of model.py CHANGED but '
+                     'MODEL_VERSION did not.\n             That is a silent era '
+                     'boundary -- the exact failure this fixture exists\n'
+                     '             for. Resolve before any figure below is '
+                     'quoted.')
+    return ok, lines
+
 UNITS_BLOCK = """
 UNITS -- read this before quoting any lambda from this project
   lambda_pt     coefficient on composite_diff, in RAW COMPOSITE POINTS
@@ -94,6 +232,39 @@ UNITS -- read this before quoting any lambda from this project
 
 def logit(p):
     return math.log(p / (1.0 - p))
+
+
+# `cats` is archived rounded to 0.1 while `composite` was computed from the
+# unrounded values, so the recombination is exact only to +/-0.05. 0.06 is that
+# bound, not a fudge factor: at 0.02 it rejected 26 rows that are arithmetically
+# correct.
+FAMILY_TOL = 0.06
+
+
+def composite_family(row):
+    """Which composite formula ACTUALLY produced this row, by arithmetic.
+
+    The era stamp is metadata and can be wrong -- 30 rows on 2026-07-28 carry
+    'pre-v8.8' because the build that froze them predated the stamping code,
+    not because they are a distinct era. This recomputes the composite from the
+    archived `cats` both ways and reports which one reproduces the stored value.
+    Evidence, not calendar. Returns 'with-mkt' | 'no-mkt' | None.
+    """
+    c, comp = row.get('cats'), row.get('composite')
+    if not c or comp is None:
+        return None
+    try:
+        full = sum(c[k] * v for k, v in WEIGHTS.items())
+        w2 = {k: v for k, v in WEIGHTS.items() if k != 'mkt'}
+        nom = sum(c[k] * v for k, v in w2.items()) / sum(w2.values())
+    except KeyError:
+        return None
+    a, b = abs(full - comp) < FAMILY_TOL, abs(nom - comp) < FAMILY_TOL
+    if a and not b:
+        return 'with-mkt'
+    if b and not a:
+        return 'no-mkt'
+    return None            # ambiguous (both formulas collide) or neither
 
 
 def load_snapshots():
@@ -153,13 +324,38 @@ def load_games():
         # `mkt` from it, and lambda_pt is per composite POINT. Pooling eras
         # fits one parameter to two regressors. Unstamped rows predate the
         # stamp and are labelled as such rather than assumed current.
-        era = h.get('model_version') or 'pre-v8.8'
+        era = h.get('model_version') or 'unstamped'
+        # v8.12. Reconcile the stamp against the arithmetic. 'pre-v8.8' is not
+        # an era -- it is the absence of a stamp on rows the v8.8 backfill did
+        # not reach. Where the arithmetic says with-mkt and the stamp says only
+        # "before the stamp existed", the row belongs to the v8.0 composite
+        # family and is labelled as such. Where stamp and arithmetic CONTRADICT,
+        # the row is quarantined rather than assigned to either.
+        fam = composite_family(h)
+        conflict = False
+        if era in ('pre-v8.8', 'unstamped'):
+            era = {'with-mkt': 'v8.0', 'no-mkt': 'v8.8+'}.get(fam, 'unresolved')
+        elif fam is not None:
+            expect = 'with-mkt' if era in ('<=v7.8', 'v8.0') else 'no-mkt'
+            conflict = (fam != expect)
+
+        # v8.12. BLOCKED means sp_score could not resolve the starter and
+        # returned a neutral 50.0 into 44% of the composite. picks.py already
+        # refuses to stake it; the fit had no matching exclusion, so the v8.7
+        # definition -- written before the severity split existed -- let sides
+        # the model has NO OPINION on into the primary sample.
         usable.append({'date': date, 'pk': pk, 'src': src, 'era': era,
                        'y': 1.0 if h['won'] else 0.0,
                        'lm': logit(h['pt_novig']),
                        'diff': ch - ca,
                        'mp': mp, 'dq': dq,
                        'degraded': 'DEGRADED' in dq,
+                       'blocked': 'BLOCKED' in dq,
+                       'era_conflict': conflict,
+                       # CLV endpoint inputs. close_novig can be absent (no
+                       # closer captured) and the snap can be post-first-pitch.
+                       'close': h.get('close_novig'),
+                       'stale': bool(h.get('stale')),
                        'h_cats': hc, 'a_cats': ac})
     return usable, no_comp, no_mkt, mixed
 
@@ -242,13 +438,46 @@ reason recorded in CHANGELOG.md.
 """
 
 
-def select(games, backfill=False, degraded=False):
-    """Sub-select the fit sample. Defaults are the PRIMARY definition."""
+def select(games, backfill=False, degraded=False, blocked=False, era=None):
+    """Sub-select the fit sample. Defaults are the PRIMARY definition.
+
+    `era` is passed explicitly by the gate path (GATE['era']) and left None by
+    the descriptive/legacy paths, so the historical prints keep reproducing the
+    figures already in the record while the gate reads one era only.
+    """
     out = games
     if not backfill:
         out = [g for g in out if g['src'] == 'archive']
     if not degraded:
         out = [g for g in out if not g['degraded']]
+    if not blocked:
+        out = [g for g in out if not g['blocked']]
+    if era is not None:
+        out = [g for g in out if g['era'] == era]
+    return out
+
+
+def clv_rows(games):
+    """The registered PRIMARY endpoint's rows.
+
+    y = logit(close_novig) - logit(pt_novig), home side, one row per game:
+        how far the market moved, in logits, toward the home side between our
+        11:05 ET snapshot and the close.
+    x = composite_diff.
+
+    Non-stale closers only. A snap taken after first pitch is not a closing
+    price, and MAX_CLOSER_AGE_MIN exists to say so; a gate that read stale
+    closers would be measuring the in-play market.
+
+    NOTE, and it is the whole reason this is a gate and not a result: beating
+    the close is a PROXY for edge, not edge. A model that merely tracks steam
+    predicts movement and earns nothing.
+    """
+    out = []
+    for g in games:
+        if not g['close'] or g['stale']:
+            continue
+        out.append((g['date'], g['diff'], logit(g['close']) - g['lm']))
     return out
 
 
@@ -303,6 +532,58 @@ def fit(y, lm, s):
     return lam, se, lr, nll
 
 
+def ols_clustered(x, y, groups):
+    """Slope of y on x with date-CLUSTERED (CR1) standard errors.
+
+    Clustered because the shock is the DAY, not the game: a slate moves on
+    weather, a news cycle, or a syndicate hitting the board, and treating 15
+    games from one evening as 15 independent observations understates the SE.
+    With G small this is conservative-but-noisy, which is the direction to err
+    when the cost of a false positive is staking money. Inference uses t on
+    G-1 df, not the normal, for the same reason.
+    """
+    x = np.asarray(x, float)
+    y = np.asarray(y, float)
+    n = len(x)
+    xd = x - x.mean()
+    sxx = float(np.dot(xd, xd))
+    if n < 3 or sxx <= 0:
+        return float('nan'), float('nan'), 0
+    beta = float(np.dot(xd, y - y.mean()) / sxx)
+    resid = y - (y.mean() + beta * xd)
+    meat = 0.0
+    gs = sorted(set(groups))
+    for g in gs:
+        m = np.array([q == g for q in groups])
+        meat += float(np.dot(xd[m], resid[m])) ** 2
+    G = len(gs)
+    if G < 2:
+        return beta, float('nan'), G
+    corr = (G / (G - 1.0)) * ((n - 1.0) / (n - 2.0))
+    var = corr * meat / (sxx ** 2)
+    return beta, math.sqrt(var) if var > 0 else float('nan'), G
+
+
+def holm(pvals, alpha):
+    """Holm-Bonferroni step-down. Returns [(label, p, threshold, reject)].
+
+    Holm, not plain Bonferroni: it controls the same family-wise error rate and
+    is uniformly more powerful, so plain Bonferroni is strictly dominated.
+    FWER and not FDR: one false positive here means real money on noise, which
+    is not a rate to be tolerated in expectation.
+    """
+    order = sorted(pvals, key=lambda t: (float('inf') if t[1] != t[1] else t[1]))
+    m = len(order)
+    out, still = [], True
+    for i, (lab, p) in enumerate(order):
+        thr = alpha / (m - i)
+        rej = still and p == p and p <= thr
+        if not rej:
+            still = False
+        out.append((lab, p, thr, rej))
+    return out
+
+
 def brier(y, lm, s, lam):
     p = 1 / (1 + np.exp(-(lm + lam * s)))
     return float(np.mean((p - y) ** 2))
@@ -343,6 +624,164 @@ def report(tag, y, lm, s, games, bootstrap=True, per_date=True):
                 print('    %s: n=%3d  only=%+.3f  without=%+.3f'
                       % (d, int(i_in.sum()), l_in, l_out))
     return lam, se, lr, per
+
+
+GATE_BLOCK = """
+======================================================================
+THE REGISTERED GATE -- pre-registered 2026-07-29, BEFORE its data existed
+======================================================================
+Full text: REGISTRATION_2026-07-29_CLV_GATE.md. This block is its executable
+half. If the two ever disagree, STOP -- do not resolve it in favour of either.
+
+  QUESTION      Which market -- full-game moneyline or F5 -- shows that the
+                composite anticipates the closing line, and does either clear?
+
+  PRIMARY       beta in   logit(close_novig) - logit(pt_novig)
+  ENDPOINT      = alpha + beta * composite_diff
+                One row per game, home side. Non-stale closers only.
+                WHY NOT OUTCOMES: measured on the pre-gate sample, the outcome
+                endpoint needs n ~ 5,400 games to detect a plausible effect at
+                this alpha (SE(lambda_pt) ~ 2/(sd*sqrt(n)), sd 16.7). At n=150
+                only an implausible ~9-point edge could clear. Registering that
+                would be registering a null. Outcome lambda_pt is still fitted
+                and printed on every run as a DESCRIPTIVE secondary, read by no
+                rule, and it remains the only endpoint that measures profit.
+
+  SAMPLE        MODEL_VERSION == %(era)s exactly, archive-composite, one row per
+                game, EXCLUDING any game with a DEGRADED or BLOCKED side.
+                Enforced above by the era fixture, not by trust.
+                First eligible date %(first)s. Everything earlier is a retired
+                model and is excluded BY ERA, not by preference.
+
+  n             %(n)d primary games. ONE LOOK. No interim analysis, no
+                extension. An extension would cost alpha and is not registered.
+
+  TEST          One-sided (positive), family-wise alpha %(alpha).2f, Holm-Bonferroni
+                over m=%(m)d markets: %(markets)s. The family is every market
+                evaluated, REPORTED OR NOT. SEs are date-clustered (CR1),
+                inference on t with G-1 df.
+                A significant NEGATIVE beta authorizes nothing. Fading our own
+                model is a different strategy and needs its own registration.
+
+  BLINDING      The primary statistic is NOT PRINTED until n is reached. This
+                tool runs daily; that is continuous looking, and a human who has
+                watched the number climb cannot un-see it. Sample health, era
+                composition and the outcome secondaries still print.
+
+  IF IT CLEARS  Authorizes STAKING, and nothing else, and only after BOTH
+                go-live blockers ship (exposure/Kelly cap, Edge Score ceiling).
+                Kelly fraction sized on HALF the point estimate, because the
+                endpoint is a proxy for edge and not a measurement of it.
+                Units key to EDGE. Outcome ROI stays unproven for ~2 seasons
+                and no result here changes that.
+
+  IF IT DOES
+  NOT CLEAR     LAMBDA stays 0.0. NO re-test of this composite on more data --
+                that is optional stopping and it is forbidden here in advance.
+                The choice narrows to a different information set, or publish
+                the null and stay an unvalidated card. Both are legitimate.
+
+  NON-SUSPENSION -- binding, restated from DECISION_2026-07-28 s4:
+    A second suspension of a pre-registered gate, ON ANY GROUNDS, is failure of
+    the pre-registration mechanism itself. Should it happen: no lambda estimate
+    this project has produced should be treated as evidence, the correct
+    response is to STOP rather than register a third time, and this clause may
+    not be amended by the session that would benefit from amending it. Any
+    session proposing to move, soften, delay or re-scope this gate -- INCLUDING
+    by changing the composite under it and resetting the era -- must surface
+    that section to Benjamin verbatim first.
+""" % {'era': GATE['era'], 'first': GATE['first_date'], 'n': GATE['n'],
+       'alpha': GATE['alpha'], 'm': len(GATE['markets']),
+       'markets': ', '.join(GATE['markets'])}
+
+
+def gate(games, fixture_ok):
+    """The registered gate. Blinded until n, then one look."""
+    from scipy.stats import t as tdist
+
+    print(GATE_BLOCK)
+    elig = select(games, era=GATE['era'])
+    rows = clv_rows(elig)
+    n = len(rows)
+    dates = sorted({d for d, _, _ in rows})
+
+    dropped_dq = len(select(games, degraded=True, blocked=True, era=GATE['era'])) \
+        - len(elig)
+    no_closer = len(elig) - n
+    print('  SAMPLE HEALTH')
+    print('    era-eligible games (%s)          %4d' % (GATE['era'], len(elig)))
+    print('    dropped: DEGRADED or BLOCKED side %4d' % dropped_dq)
+    print('    dropped: no closer / stale closer %4d' % no_closer)
+    print('    PRIMARY n                         %4d  of %d' % (n, GATE['n']))
+    print('    dates                             %4d  %s'
+          % (len(dates), '%s..%s' % (dates[0], dates[-1]) if dates else '-'))
+    if len(dates) >= 2:
+        rate = n / float(len(dates))
+        left = max(0, GATE['n'] - n)
+        print('    accrual                           %.1f games/date  '
+              '=> ~%d more dates' % (rate, math.ceil(left / rate) if rate else 0))
+
+    conf = [g for g in games if g.get('era_conflict')]
+    if conf:
+        print('    ::error:: %d rows where the era STAMP and the composite '
+              'ARITHMETIC disagree' % len(conf))
+
+    if not fixture_ok:
+        print('\n  GATE VOID -- the era fixture failed above. The deployed model '
+              'is not the\n  registered one. Nothing below is computed.')
+        return
+    if n < GATE['n']:
+        print('\n  *** PRIMARY BLINDED ***   %d of %d games.' % (n, GATE['n']))
+        print('  The registered statistic is deliberately NOT computed or '
+              'printed at this n.')
+        print('  Accumulate. Do not re-scope. Do not peek by re-implementing '
+              'this fit elsewhere.')
+        return
+
+    print('\n  *** GATE FIRES -- ONE LOOK, %d games ***' % n)
+    x = [d for _, d, _ in rows]
+    y = [m for _, _, m in rows]
+    grp = [d for d, _, _ in rows]
+    beta, se, G = ols_clustered(x, y, grp)
+    df = max(1, G - 1)
+    tstat = beta / se if se == se and se > 0 else float('nan')
+    p_one = float(tdist.sf(tstat, df)) if tstat == tstat else float('nan')
+    print('    ml_full   beta %+.6f   CR1 SE %.6f   t %+.2f   df %d   '
+          'one-sided p %.4f' % (beta, se, tstat, df, p_one))
+
+    # F5 has no data path yet (queue Item F). It is carried in the family
+    # REGARDLESS, because the correction is over markets EVALUATED, and a market
+    # dropped after the fact because it was inconvenient is the exact leak Holm
+    # is here to prevent. Untested markets simply cannot reject.
+    pvals = [('ml_full', p_one)]
+    for mk in GATE['markets']:
+        if mk != 'ml_full':
+            pvals.append((mk, float('nan')))
+            print('    %-9s NOT YET INSTRUMENTED (queue Item F). Held in the '
+                  'family; cannot reject.' % mk)
+
+    print('\n  HOLM-BONFERRONI, family-wise alpha %.2f, one-sided, m=%d:'
+          % (GATE['alpha'], len(pvals)))
+    res = holm(pvals, GATE['alpha'])
+    for lab, p, thr, rej in res:
+        print('    %-9s p %s   threshold %.4f   %s'
+              % (lab, ('%.4f' % p) if p == p else '  n/a ', thr,
+                 'REJECT null' if rej else 'no rejection'))
+
+    if any(r[3] for r in res) and beta > 0:
+        print('\n  VERDICT: CLEARED for %s.'
+              % ', '.join(l for l, _, _, r in res if r))
+        print('  Authorizes STAKING ONLY, and only after the exposure/Kelly cap '
+              'and the Edge\n  Score ceiling ship. Kelly on HALF the point '
+              'estimate. This is CLV evidence --\n  a proxy for edge. Outcome '
+              'ROI remains unproven. Take this to Benjamin before\n  one dollar '
+              'moves.')
+    else:
+        print('\n  VERDICT: NOT CLEARED. LAMBDA stays 0.0.')
+        print('  The registered null trigger applies: NO re-test of this '
+              'composite on more data.\n  Move to a different information set, '
+              'or publish the null. Re-running this gate\n  at a larger n is '
+              'optional stopping and was forbidden in advance.')
 
 
 def reconcile(games):
@@ -448,6 +887,17 @@ def main():
     if n == 0:
         return
     print(SUSPENSION_BLOCK)
+
+    fixture_ok, fx = era_fixture()
+    for line in fx:
+        print(line)
+    gate(games, fixture_ok)
+
+    print('\n' + '=' * 70)
+    print('DESCRIPTIVE -- everything below is the OUTCOME endpoint on the '
+          'pooled history.\nIt is read by NO rule, it spans retired model eras, '
+          'and it is NOT the gate.')
+    print('=' * 70)
     print(SAMPLE_BLOCK)
 
     primary = select(games)
@@ -470,12 +920,13 @@ def main():
           % ('  '.join('%s n=%d' % (k, v) for k, v in sorted(eras.items()))
              or 'none'))
     if len(eras) > 1:
-        print('  !! PRIMARY SPANS %d MODEL ERAS. `composite` is not the same '
-              'quantity across\n     them (v8.8 removed mkt) and lambda_pt is '
-              'per composite POINT, so the pooled\n     figure below fits one '
-              'parameter to two regressors. Per-era fits follow.\n'
-              '     Era-homogeneity must be pre-registered as part of queue '
-              'Item H. ::error::' % len(eras))
+        print('  !! THIS DESCRIPTIVE SAMPLE SPANS %d MODEL ERAS. `composite` is '
+              'not the same\n     quantity across them and lambda_pt is per '
+              'composite POINT, so the pooled\n     figure fits one parameter '
+              'to two regressors. Per-era fits follow.\n     This is EXPECTED '
+              'here and is NOT a defect: era homogeneity was registered '
+              '2026-07-29\n     and the GATE reads one era only. This section '
+              'is history, not evidence.' % len(eras))
 
     if np_ < 20:
         print('[fit_lambda] REFUSING a verdict below 20 games. Accumulate.')
@@ -535,18 +986,16 @@ def main():
 
     reconcile(games)
 
-    print('\n  NO VERDICT RULE IS IN FORCE.')
+    print('\n  NO VERDICT RULE READS ANY FIGURE IN THIS DESCRIPTIVE SECTION.')
     print('  The Item 6 rule (pre-registered 2026-07-24) was SUSPENDED '
-          '2026-07-28 and does')
-    print('  not apply to any figure above, at any n. The Phase 3 replacement '
-          'is not yet')
-    print('  written; when it is, it lands in this file together with its rule '
-          '(queue Item H)')
-    print('  and must specify: per-market sample definition, per-market n, '
-          'ERA HOMOGENEITY,')
-    print('  and the multiple-comparisons correction -- testing four markets '
-          'is four chances')
-    print('  to fool yourself. LAMBDA does not move before then. It is 0.0.')
+          '2026-07-28. Its')
+    print('  replacement was pre-registered 2026-07-29 (queue Item H1) and is '
+          'printed at')
+    print('  the TOP of this run, where it cannot be read after the numbers. '
+          'It reads the')
+    print('  CLV endpoint on the %s era only, at n=%d, once. Everything above '
+          'is history.' % (GATE['era'], GATE['n']))
+    print('  LAMBDA does not move before that gate fires. It is 0.0.')
 
 
 if __name__ == '__main__':

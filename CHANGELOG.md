@@ -12,6 +12,108 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Newest first.
 
 ---
 
+## v8.12 — 2026-07-29 — the replacement gate is pre-registered and enforced (queue Item H1)
+
+The suspended Item 6 gate gets a successor: written before its data existed,
+blinded until its n, and read by code rather than by a document. Two files:
+`fit_lambda.py` and the new `REGISTRATION_2026-07-29_CLV_GATE.md`.
+
+**`MODEL_VERSION` is deliberately NOT bumped. It stays `v8.11`.** Nothing here
+touches the composite, and the gate is registered *on* v8.11 — bumping would
+void the accrual this entry exists to protect. Same reasoning as v8.9.1.
+`LAMBDA` is still `0.0`. Paper-only. Zero Odds API credits.
+`grades_archive.jsonl` and `shadow_archive.jsonl` md5-identical before/after.
+
+### 1. The primary endpoint is closing-line movement, not outcomes
+
+Measured before choosing, on 62 pre-gate games (`composite_diff` sd 16.70):
+
+| n | SE(λ_pt) | λ needed to clear | edge on a 1-sd game |
+|---|---|---|---|
+| 150 | 0.0098 | 0.0219 | **9.1 pts** |
+| 500 | 0.0054 | 0.0120 | 5.0 pts |
+| 1000 | 0.0038 | 0.0085 | 3.5 pts |
+
+A plausible true edge is λ ≈ 0.005, which needs **n ≈ 5,400 games (~2.2
+seasons)** at 80% power under this correction. An outcome gate at n=150 is a
+gate whose answer is knowable before it runs. The movement endpoint's residual
+sd is ~38× smaller at the same n.
+
+`lambda_pt` is still fitted and printed every run as a descriptive secondary,
+read by no rule. It remains the only endpoint that measures profit.
+
+### 2. `BLOCKED` sides excluded — a real hole in the v8.7 definition
+
+The v8.7 sample definition named only `DEGRADED` because it predates the
+severity split. `BLOCKED` means `sp_score()` could not resolve the starter and
+returned a neutral `50.0` into 44% of the composite. `picks.py` already refuses
+to stake those sides; the fit had no matching exclusion, so sides the model has
+**no opinion on** were entering the primary. Zero graded rows are affected
+(`BLOCKED` postdates them) and **4 of 32 sides on the 2026-07-29 board are** —
+it starts biting on the gate's first date, which is why it ships now.
+
+### 3. The era is enforced by a fixture
+
+SHA-256 over the AST of the composite-determining surface of `model.py` — 14
+constants and 11 functions, docstrings stripped. Registered digest
+`7192aa6724f20b69` at `v8.11`. **Verified by execution:** the digest changes on
+a `CAT_WEIGHTS` edit, a `SP_SHRINK_K` edit and an in-function `OFF_STATS`
+weight edit; it does not change on comment or whitespace edits. 5/5.
+
+`fit_lambda.py` reads it via `ast` and deliberately **does not import
+`model.py`** — a read-only analysis tool must not acquire a dependency on the
+scraping stack to compute a hash.
+
+Honest limit, stated in the registration: a behaviour change introduced under a
+*new* name is not listed and is not caught. This makes the common failure loud,
+it does not make the class impossible.
+
+### 4. The false third era is gone — by arithmetic, not by assertion
+
+`fit_lambda` reported `<=v7.8` / `pre-v8.8` / `v8.0` and raised
+`PRIMARY SPANS 3 MODEL ERAS ::error::`. There were only ever two.
+
+`pre-v8.8` is not an era — it is the absence of a stamp on 30 rows from 07-28
+whose build predated the stamping code. Checked the way v8.8 checked the
+original stamp, by recomputing `composite` from the archived `cats` both ways:
+
+| date | n | matches with-`mkt` | matches no-`mkt` |
+|---|---|---|---|
+| 07-25 → 07-27 | 82 | 82 | 0 |
+| **07-28** | **30** | **30** | **0** |
+
+Tolerance `0.06`, which is the exact rounding bound (`cats` archived to 0.1,
+`composite` computed unrounded) — at `0.02` it rejected 26 arithmetically
+correct rows. Rows are relabelled from evidence; where stamp and arithmetic
+**contradict**, the row is quarantined rather than assigned to either side.
+
+### 5. Blinding, and the multiplicity correction
+
+- Primary statistic not computed or printed below n=150. The tool runs daily on
+  the grade job; that is continuous looking.
+- Holm–Bonferroni, family-wise α 0.05, one-sided positive, **m=2**
+  (`ml_full`, `f5`). `f5` stays in the family whether or not Item F instruments
+  it — a market dropped after the fact because it was inconvenient is the leak
+  the correction prevents.
+- Date-clustered (CR1) SEs, t on G−1 df. The shock is the day, not the game.
+
+**Recorded against interest:** applying the registered method to the n=62
+exploratory sample gives t +1.97, df 5, one-sided p **0.0533** — it does not
+clear even the uncorrected 0.05. The naive unclustered SE that made the
+exploratory look promising gave p ≈ 0.019. **The registered method kills the
+signal that motivated it**, and that is on record before the real data.
+
+### 6. Verified by execution
+
+Both gate paths exercised in a sandbox rather than waiting for 08-09: forced
+n, gate fires, CR1 + Holm + verdict print; injected β = +0.004, recovered
+exactly, `REJECT null`, go-live clause with its conditions. Holm unit-checked
+on 4 cases including step-down halt and `nan`. The era-conflict tripwire fired
+correctly on 76 deliberately mis-stamped rows. Item 4a reconciliation **still
+PASSES** (n=35, −0.7570 ± 0.6112). Both archives md5-identical.
+
+---
+
 ## v8.11 — 2026-07-28 — empirical-Bayes shrinkage on SP (queue Item E)
 
 A starter's read is damped toward the league mean by his own sample size, then
