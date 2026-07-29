@@ -1,5 +1,107 @@
 [
  {
+  "composite_diff": 9.64,
+  "prob_source": "market",
+  "unvalidated": true,
+  "pick": "Boston Red Sox ML",
+  "game": "Boston Red Sox @ Athletics",
+  "gamePk": 824973,
+  "venue": "Sutter Health Park",
+  "model_prob": 0.5773,
+  "fair_ML": -137,
+  "implied": 0.5951,
+  "edge_pct": -1.78,
+  "edge_score": 73.9,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -163,
+  "target_anchor": "slip",
+  "condition": "OFF unless -163 or better at DK",
+  "chips": [
+   {
+    "stat": "opp SP weak",
+    "value": "35/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "pen edge",
+    "value": "+22",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
+   "total": 10.5,
+   "books_used": 9,
+   "book_spread": 0.0134
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 1
+ },
+ {
+  "composite_diff": 21.01,
+  "prob_source": "market",
+  "unvalidated": true,
+  "pick": "Pittsburgh Pirates ML",
+  "game": "Arizona Diamondbacks @ Pittsburgh Pirates",
+  "gamePk": 823351,
+  "venue": "PNC Park",
+  "model_prob": 0.5467,
+  "fair_ML": -121,
+  "implied": 0.5671,
+  "edge_pct": -2.04,
+  "edge_score": 73.4,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -145,
+  "target_anchor": "slip",
+  "condition": "OFF unless -145 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "80/100",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp SP weak",
+    "value": "29/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
+   "total": 8.5,
+   "books_used": 9,
+   "book_spread": 0.0083
+  },
+  "flags": [
+   "INFO|Arizona Diamondbacks: no Savant batter-vs-pitch data \u2014 matchup neutral"
+  ],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 2
+ },
+ {
   "composite_diff": 28.06,
   "prob_source": "market",
   "unvalidated": true,
@@ -55,7 +157,411 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 1
+  "rank": 3
+ },
+ {
+  "composite_diff": 11.04,
+  "prob_source": "market",
+  "unvalidated": true,
+  "pick": "Cleveland Guardians ML",
+  "game": "Cleveland Guardians @ Cincinnati Reds",
+  "gamePk": 824487,
+  "venue": "Great American Ball Park",
+  "model_prob": 0.5532,
+  "fair_ML": -124,
+  "implied": 0.5745,
+  "edge_pct": -2.13,
+  "edge_score": 73.3,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -150,
+  "target_anchor": "slip",
+  "condition": "OFF unless -150 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "70/100",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "pen edge",
+    "value": "+61",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp bats cold",
+    "value": "30/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
+   "total": 9.0,
+   "books_used": 9,
+   "book_spread": 0.0088
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 4
+ },
+ {
+  "composite_diff": 1.25,
+  "prob_source": "market",
+  "unvalidated": true,
+  "pick": "Washington Nationals ML",
+  "game": "Toronto Blue Jays @ Washington Nationals",
+  "gamePk": 822702,
+  "venue": "Nationals Park",
+  "model_prob": 0.4846,
+  "fair_ML": 106,
+  "implied": 0.5074,
+  "edge_pct": -2.28,
+  "edge_score": 73.0,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -114,
+  "target_anchor": "slip",
+  "condition": "OFF unless -114 or better at DK",
+  "chips": [
+   {
+    "stat": "off edge",
+    "value": "+84",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp bats cold",
+    "value": "16/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
+   "total": 9.0,
+   "books_used": 9,
+   "book_spread": 0.0118
+  },
+  "flags": [
+   "INFO|Washington Nationals: no Savant batter-vs-pitch data \u2014 matchup neutral"
+  ],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 5
+ },
+ {
+  "composite_diff": 17.02,
+  "prob_source": "market",
+  "unvalidated": true,
+  "pick": "Chicago Cubs ML",
+  "game": "Chicago Cubs @ St. Louis Cardinals",
+  "gamePk": 823022,
+  "venue": "Busch Stadium",
+  "model_prob": 0.5009,
+  "fair_ML": -100,
+  "implied": 0.5238,
+  "edge_pct": -2.29,
+  "edge_score": 73.0,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -122,
+  "target_anchor": "slip",
+  "condition": "OFF unless -122 or better at DK",
+  "chips": [
+   {
+    "stat": "pen edge",
+    "value": "+25",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "off edge",
+    "value": "+55",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp bats cold",
+    "value": "27/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
+   "total": 8.0,
+   "books_used": 9,
+   "book_spread": 0.0143
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 6
+ },
+ {
+  "composite_diff": 14.64,
+  "prob_source": "market",
+  "unvalidated": true,
+  "pick": "Texas Rangers ML",
+  "game": "Texas Rangers @ Tampa Bay Rays",
+  "gamePk": 822947,
+  "venue": "Tropicana Field",
+  "model_prob": 0.4339,
+  "fair_ML": 130,
+  "implied": 0.4608,
+  "edge_pct": -2.69,
+  "edge_score": 72.3,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": 106,
+  "target_anchor": "slip",
+  "condition": "OFF unless 106 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "63/100",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp SP weak",
+    "value": "35/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "off edge",
+    "value": "+22",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
+   "total": 7.5,
+   "books_used": 9,
+   "book_spread": 0.0139
+  },
+  "flags": [
+   "INFO|Tampa Bay Rays: no Savant batter-vs-pitch data \u2014 matchup neutral"
+  ],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 7
+ },
+ {
+  "composite_diff": 1.62,
+  "prob_source": "market",
+  "unvalidated": true,
+  "pick": "Seattle Mariners ML",
+  "game": "Seattle Mariners @ Los Angeles Dodgers",
+  "gamePk": 823924,
+  "venue": "UNIQLO Field at Dodger Stadium",
+  "model_prob": 0.4053,
+  "fair_ML": 147,
+  "implied": 0.4329,
+  "edge_pct": -2.76,
+  "edge_score": 72.2,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": 118,
+  "target_anchor": "slip",
+  "condition": "OFF unless 118 or better at DK",
+  "chips": [
+   {
+    "stat": "opp SP weak",
+    "value": "21/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
+   "total": 9.5,
+   "books_used": 9,
+   "book_spread": 0.0291
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 8
+ },
+ {
+  "composite_diff": 22.1,
+  "prob_source": "market",
+  "unvalidated": true,
+  "pick": "Detroit Tigers ML",
+  "game": "Baltimore Orioles @ Detroit Tigers",
+  "gamePk": 824242,
+  "venue": "Comerica Park",
+  "model_prob": 0.6187,
+  "fair_ML": -162,
+  "implied": 0.6466,
+  "edge_pct": -2.79,
+  "edge_score": 72.1,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -205,
+  "target_anchor": "slip",
+  "condition": "OFF unless -205 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "100/100",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
+   "total": 7.5,
+   "books_used": 9,
+   "book_spread": 0.0093
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 9
+ },
+ {
+  "composite_diff": 13.04,
+  "prob_source": "market",
+  "unvalidated": true,
+  "pick": "Atlanta Braves ML",
+  "game": "Atlanta Braves @ New York Mets",
+  "gamePk": 823598,
+  "venue": "Citi Field",
+  "model_prob": 0.5815,
+  "fair_ML": -139,
+  "implied": 0.6094,
+  "edge_pct": -2.79,
+  "edge_score": 72.1,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -174,
+  "target_anchor": "slip",
+  "condition": "OFF unless -174 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "94/100",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
+   "total": 7.5,
+   "books_used": 9,
+   "book_spread": 0.0189
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 10
+ },
+ {
+  "composite_diff": 17.62,
+  "prob_source": "market",
+  "unvalidated": true,
+  "pick": "Philadelphia Phillies ML",
+  "game": "Philadelphia Phillies @ Miami Marlins",
+  "gamePk": 823837,
+  "venue": "loanDepot park",
+  "model_prob": 0.6081,
+  "fair_ML": -155,
+  "implied": 0.6364,
+  "edge_pct": -2.83,
+  "edge_score": 72.0,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -195,
+  "target_anchor": "slip",
+  "condition": "OFF unless -195 or better at DK",
+  "chips": [
+   {
+    "stat": "SP score",
+    "value": "100/100",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "pen edge",
+    "value": "+19",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
+   "total": 7.5,
+   "books_used": 9,
+   "book_spread": 0.0112
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 11
  },
  {
   "composite_diff": 26.58,
@@ -119,31 +625,43 @@
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 2
+  "rank": 12
  },
  {
-  "composite_diff": 22.1,
+  "composite_diff": 18.08,
   "prob_source": "market",
   "unvalidated": true,
-  "pick": "Detroit Tigers ML",
-  "game": "Baltimore Orioles @ Detroit Tigers",
-  "gamePk": 824242,
-  "venue": "Comerica Park",
-  "model_prob": 0.6187,
-  "fair_ML": -162,
-  "implied": 0.6466,
-  "edge_pct": -2.79,
-  "edge_score": 72.1,
+  "pick": "Minnesota Twins ML",
+  "game": "Kansas City Royals @ Minnesota Twins",
+  "gamePk": 823677,
+  "venue": "Target Field",
+  "model_prob": 0.6385,
+  "fair_ML": -177,
+  "implied": 0.6721,
+  "edge_pct": -3.36,
+  "edge_score": 71.1,
   "units": 0,
   "gated": false,
   "divergence": 0.0,
-  "target_price": -205,
-  "target_anchor": "slip",
-  "condition": "OFF unless -205 or better at DK",
+  "target_price": -226,
+  "target_anchor": "vig",
+  "condition": "OFF unless -226 or better at DK",
   "chips": [
    {
     "stat": "SP score",
-    "value": "100/100",
+    "value": "72/100",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp SP weak",
+    "value": "38/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "off edge",
+    "value": "+10",
     "dir": "+",
     "tone": "green"
    }
@@ -152,50 +670,46 @@
    "book": "draftkings",
    "source": "theoddsapi",
    "fetched_at": "2026-07-29T15:05:26.080657+00:00",
-   "total": 7.5,
+   "total": 9.0,
    "books_used": 9,
-   "book_spread": 0.0093
+   "book_spread": 0.0178
   },
-  "flags": [],
+  "flags": [
+   "INFO|Kansas City Royals: no Savant batter-vs-pitch data \u2014 matchup neutral"
+  ],
   "data_quality": "FULL",
   "blocked": false,
   "side_quality": {
    "home": "FULL",
    "away": "FULL"
   },
-  "rank": 3
+  "rank": 13
  },
  {
-  "composite_diff": 21.01,
+  "composite_diff": 2.3,
   "prob_source": "market",
   "unvalidated": true,
-  "pick": "Pittsburgh Pirates ML",
-  "game": "Arizona Diamondbacks @ Pittsburgh Pirates",
-  "gamePk": 823351,
-  "venue": "PNC Park",
-  "model_prob": 0.5467,
-  "fair_ML": -121,
-  "implied": 0.5671,
-  "edge_pct": -2.04,
-  "edge_score": 73.4,
+  "pick": "Atlanta Braves ML",
+  "game": "Atlanta Braves @ New York Mets",
+  "gamePk": 823596,
+  "venue": "Citi Field",
+  "model_prob": 0.5098,
+  "fair_ML": -104,
+  "implied": 0.5327,
+  "edge_pct": -2.29,
+  "edge_score": 59.2,
   "units": 0,
   "gated": false,
   "divergence": 0.0,
-  "target_price": -145,
+  "target_price": -126,
   "target_anchor": "slip",
-  "condition": "OFF unless -145 or better at DK",
+  "condition": "OFF unless -126 or better at DK",
   "chips": [
    {
-    "stat": "SP score",
-    "value": "80/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp SP weak",
-    "value": "29/100",
-    "dir": "-",
-    "tone": "red"
+    "stat": "data",
+    "value": "NO SP READ",
+    "dir": "~",
+    "tone": "neutral"
    }
   ],
   "odds_meta": {
@@ -204,18 +718,19 @@
    "fetched_at": "2026-07-29T15:05:26.080657+00:00",
    "total": 8.5,
    "books_used": 9,
-   "book_spread": 0.0083
+   "book_spread": 0.0116
   },
   "flags": [
-   "INFO|Arizona Diamondbacks: no Savant batter-vs-pitch data \u2014 matchup neutral"
+   "BLOCK|SP AJ Smith-Shawver (id 700363): UNRESOLVED in FanGraphs \u2014 not scored",
+   "INFO|AJ Smith-Shawver: no Savant arsenal \u2014 matchup neutral"
   ],
-  "data_quality": "FULL",
-  "blocked": false,
+  "data_quality": "BLOCKED",
+  "blocked": true,
   "side_quality": {
    "home": "FULL",
-   "away": "FULL"
+   "away": "BLOCKED"
   },
-  "rank": 4
+  "rank": 14
  },
  {
   "composite_diff": 20.89,
@@ -280,379 +795,7 @@
    "home": "FULL",
    "away": "BLOCKED"
   },
-  "rank": 5
- },
- {
-  "composite_diff": 18.08,
-  "prob_source": "market",
-  "unvalidated": true,
-  "pick": "Minnesota Twins ML",
-  "game": "Kansas City Royals @ Minnesota Twins",
-  "gamePk": 823677,
-  "venue": "Target Field",
-  "model_prob": 0.6385,
-  "fair_ML": -177,
-  "implied": 0.6721,
-  "edge_pct": -3.36,
-  "edge_score": 71.1,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": -226,
-  "target_anchor": "vig",
-  "condition": "OFF unless -226 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "72/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp SP weak",
-    "value": "38/100",
-    "dir": "-",
-    "tone": "red"
-   },
-   {
-    "stat": "off edge",
-    "value": "+10",
-    "dir": "+",
-    "tone": "green"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
-   "total": 9.0,
-   "books_used": 9,
-   "book_spread": 0.0178
-  },
-  "flags": [
-   "INFO|Kansas City Royals: no Savant batter-vs-pitch data \u2014 matchup neutral"
-  ],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 6
- },
- {
-  "composite_diff": 17.62,
-  "prob_source": "market",
-  "unvalidated": true,
-  "pick": "Philadelphia Phillies ML",
-  "game": "Philadelphia Phillies @ Miami Marlins",
-  "gamePk": 823837,
-  "venue": "loanDepot park",
-  "model_prob": 0.6081,
-  "fair_ML": -155,
-  "implied": 0.6364,
-  "edge_pct": -2.83,
-  "edge_score": 72.0,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": -195,
-  "target_anchor": "slip",
-  "condition": "OFF unless -195 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "100/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "pen edge",
-    "value": "+19",
-    "dir": "+",
-    "tone": "green"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
-   "total": 7.5,
-   "books_used": 9,
-   "book_spread": 0.0112
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 7
- },
- {
-  "composite_diff": 17.02,
-  "prob_source": "market",
-  "unvalidated": true,
-  "pick": "Chicago Cubs ML",
-  "game": "Chicago Cubs @ St. Louis Cardinals",
-  "gamePk": 823022,
-  "venue": "Busch Stadium",
-  "model_prob": 0.5009,
-  "fair_ML": -100,
-  "implied": 0.5238,
-  "edge_pct": -2.29,
-  "edge_score": 73.0,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": -122,
-  "target_anchor": "slip",
-  "condition": "OFF unless -122 or better at DK",
-  "chips": [
-   {
-    "stat": "pen edge",
-    "value": "+25",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "off edge",
-    "value": "+55",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp bats cold",
-    "value": "27/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
-   "total": 8.0,
-   "books_used": 9,
-   "book_spread": 0.0143
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 8
- },
- {
-  "composite_diff": 14.64,
-  "prob_source": "market",
-  "unvalidated": true,
-  "pick": "Texas Rangers ML",
-  "game": "Texas Rangers @ Tampa Bay Rays",
-  "gamePk": 822947,
-  "venue": "Tropicana Field",
-  "model_prob": 0.4339,
-  "fair_ML": 130,
-  "implied": 0.4608,
-  "edge_pct": -2.69,
-  "edge_score": 72.3,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": 106,
-  "target_anchor": "slip",
-  "condition": "OFF unless 106 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "63/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp SP weak",
-    "value": "35/100",
-    "dir": "-",
-    "tone": "red"
-   },
-   {
-    "stat": "off edge",
-    "value": "+22",
-    "dir": "+",
-    "tone": "green"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
-   "total": 7.5,
-   "books_used": 9,
-   "book_spread": 0.0139
-  },
-  "flags": [
-   "INFO|Tampa Bay Rays: no Savant batter-vs-pitch data \u2014 matchup neutral"
-  ],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 9
- },
- {
-  "composite_diff": 13.04,
-  "prob_source": "market",
-  "unvalidated": true,
-  "pick": "Atlanta Braves ML",
-  "game": "Atlanta Braves @ New York Mets",
-  "gamePk": 823598,
-  "venue": "Citi Field",
-  "model_prob": 0.5815,
-  "fair_ML": -139,
-  "implied": 0.6094,
-  "edge_pct": -2.79,
-  "edge_score": 72.1,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": -174,
-  "target_anchor": "slip",
-  "condition": "OFF unless -174 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "94/100",
-    "dir": "+",
-    "tone": "green"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
-   "total": 7.5,
-   "books_used": 9,
-   "book_spread": 0.0189
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 10
- },
- {
-  "composite_diff": 11.04,
-  "prob_source": "market",
-  "unvalidated": true,
-  "pick": "Cleveland Guardians ML",
-  "game": "Cleveland Guardians @ Cincinnati Reds",
-  "gamePk": 824487,
-  "venue": "Great American Ball Park",
-  "model_prob": 0.5532,
-  "fair_ML": -124,
-  "implied": 0.5745,
-  "edge_pct": -2.13,
-  "edge_score": 73.3,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": -150,
-  "target_anchor": "slip",
-  "condition": "OFF unless -150 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "70/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "pen edge",
-    "value": "+61",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp bats cold",
-    "value": "30/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
-   "total": 9.0,
-   "books_used": 9,
-   "book_spread": 0.0088
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 11
- },
- {
-  "composite_diff": 9.64,
-  "prob_source": "market",
-  "unvalidated": true,
-  "pick": "Boston Red Sox ML",
-  "game": "Boston Red Sox @ Athletics",
-  "gamePk": 824973,
-  "venue": "Sutter Health Park",
-  "model_prob": 0.5773,
-  "fair_ML": -137,
-  "implied": 0.5951,
-  "edge_pct": -1.78,
-  "edge_score": 73.9,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": -163,
-  "target_anchor": "slip",
-  "condition": "OFF unless -163 or better at DK",
-  "chips": [
-   {
-    "stat": "opp SP weak",
-    "value": "35/100",
-    "dir": "-",
-    "tone": "red"
-   },
-   {
-    "stat": "pen edge",
-    "value": "+22",
-    "dir": "+",
-    "tone": "green"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
-   "total": 10.5,
-   "books_used": 9,
-   "book_spread": 0.0134
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 12
+  "rank": 15
  },
  {
   "composite_diff": 8.97,
@@ -715,149 +858,6 @@
   "blocked": false,
   "side_quality": {
    "home": "DEGRADED",
-   "away": "FULL"
-  },
-  "rank": 13
- },
- {
-  "composite_diff": 2.3,
-  "prob_source": "market",
-  "unvalidated": true,
-  "pick": "Atlanta Braves ML",
-  "game": "Atlanta Braves @ New York Mets",
-  "gamePk": 823596,
-  "venue": "Citi Field",
-  "model_prob": 0.5098,
-  "fair_ML": -104,
-  "implied": 0.5327,
-  "edge_pct": -2.29,
-  "edge_score": 59.2,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": -126,
-  "target_anchor": "slip",
-  "condition": "OFF unless -126 or better at DK",
-  "chips": [
-   {
-    "stat": "data",
-    "value": "NO SP READ",
-    "dir": "~",
-    "tone": "neutral"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
-   "total": 8.5,
-   "books_used": 9,
-   "book_spread": 0.0116
-  },
-  "flags": [
-   "BLOCK|SP AJ Smith-Shawver (id 700363): UNRESOLVED in FanGraphs \u2014 not scored",
-   "INFO|AJ Smith-Shawver: no Savant arsenal \u2014 matchup neutral"
-  ],
-  "data_quality": "BLOCKED",
-  "blocked": true,
-  "side_quality": {
-   "home": "FULL",
-   "away": "BLOCKED"
-  },
-  "rank": 14
- },
- {
-  "composite_diff": 1.62,
-  "prob_source": "market",
-  "unvalidated": true,
-  "pick": "Seattle Mariners ML",
-  "game": "Seattle Mariners @ Los Angeles Dodgers",
-  "gamePk": 823924,
-  "venue": "UNIQLO Field at Dodger Stadium",
-  "model_prob": 0.4053,
-  "fair_ML": 147,
-  "implied": 0.4329,
-  "edge_pct": -2.76,
-  "edge_score": 72.2,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": 118,
-  "target_anchor": "slip",
-  "condition": "OFF unless 118 or better at DK",
-  "chips": [
-   {
-    "stat": "opp SP weak",
-    "value": "21/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
-   "total": 9.5,
-   "books_used": 9,
-   "book_spread": 0.0291
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 15
- },
- {
-  "composite_diff": 1.25,
-  "prob_source": "market",
-  "unvalidated": true,
-  "pick": "Washington Nationals ML",
-  "game": "Toronto Blue Jays @ Washington Nationals",
-  "gamePk": 822702,
-  "venue": "Nationals Park",
-  "model_prob": 0.4846,
-  "fair_ML": 106,
-  "implied": 0.5074,
-  "edge_pct": -2.28,
-  "edge_score": 73.0,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": -114,
-  "target_anchor": "slip",
-  "condition": "OFF unless -114 or better at DK",
-  "chips": [
-   {
-    "stat": "off edge",
-    "value": "+84",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp bats cold",
-    "value": "16/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-29T15:05:26.080657+00:00",
-   "total": 9.0,
-   "books_used": 9,
-   "book_spread": 0.0118
-  },
-  "flags": [
-   "INFO|Washington Nationals: no Savant batter-vs-pitch data \u2014 matchup neutral"
-  ],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
    "away": "FULL"
   },
   "rank": 16
