@@ -1,143 +1,72 @@
 [
  {
-  "game": "Atlanta Braves @ New York Mets",
-  "gamePk": 823598,
-  "venue": "Citi Field",
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-29T21:35:19.162722+00:00",
-   "total": 7.5,
-   "books_used": 9,
-   "book_spread": 0.0078
-  },
-  "sides": {
-   "away": {
-    "team": "Atlanta Braves",
-    "sp": "Chris Sale",
-    "sp_id": 519242,
-    "sp_resolved": true,
-    "cats": {
-     "sp": 93.6,
-     "off": 60.5,
-     "pen": 69.5,
-     "mkt": 60.9,
-     "sit": 42.5,
-     "mu": 48.2
-    },
-    "sit_inputs": {
-     "hours_rest": 6.0,
-     "km_7d": 1209.1,
-     "games_7d": 7
-    },
-    "composite": 74.92,
-    "flags": [],
-    "data_quality": "FULL",
-    "model_prob": 0.6092,
-    "fair_ML": -156,
-    "implied": 0.6364,
-    "novig": 0.6092,
-    "edge_pct": -2.72
-   },
-   "home": {
-    "team": "New York Mets",
-    "sp": "Christian Scott",
-    "sp_id": 681035,
-    "sp_resolved": true,
-    "cats": {
-     "sp": 66.9,
-     "off": 55.5,
-     "pen": 70.6,
-     "mkt": 39.1,
-     "sit": 46.5,
-     "mu": 40.0
-    },
-    "sit_inputs": {
-     "hours_rest": 6.0,
-     "km_7d": 0.0,
-     "games_7d": 5
-    },
-    "composite": 61.91,
-    "flags": [],
-    "data_quality": "FULL",
-    "model_prob": 0.3908,
-    "fair_ML": 156,
-    "implied": 0.4098,
-    "novig": 0.3908,
-    "edge_pct": -1.9
-   }
-  },
-  "flags": [],
-  "data_quality": "FULL"
- },
- {
   "game": "Texas Rangers @ Tampa Bay Rays",
-  "gamePk": 822947,
+  "gamePk": 822946,
   "venue": "Tropicana Field",
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-29T21:35:19.162722+00:00",
+   "fetched_at": "2026-07-30T15:05:20.544618+00:00",
    "total": 7.5,
    "books_used": 9,
-   "book_spread": 0.0118
+   "book_spread": 0.0103
   },
   "sides": {
    "away": {
     "team": "Texas Rangers",
-    "sp": "MacKenzie Gore",
-    "sp_id": 669022,
+    "sp": "Cole Winn",
+    "sp_id": 668390,
     "sp_resolved": true,
     "cats": {
-     "sp": 62.9,
-     "off": 66.0,
-     "pen": 42.8,
-     "mkt": 42.9,
-     "sit": 49.1,
+     "sp": 59.1,
+     "off": 64.7,
+     "pen": 52.0,
+     "mkt": 38.2,
+     "sit": 46.4,
      "mu": 50.0
     },
     "sit_inputs": {
-     "hours_rest": 24.0,
+     "hours_rest": 17.5,
      "km_7d": 1490.7,
      "games_7d": 6
     },
-    "composite": 58.9,
+    "composite": 58.16,
     "flags": [
      "INFO|Tampa Bay Rays: no Savant batter-vs-pitch data \u2014 matchup neutral"
     ],
     "data_quality": "FULL",
-    "model_prob": 0.4286,
-    "fair_ML": 133,
-    "implied": 0.4566,
-    "novig": 0.4286,
-    "edge_pct": -2.8
+    "model_prob": 0.382,
+    "fair_ML": 162,
+    "implied": 0.4032,
+    "novig": 0.382,
+    "edge_pct": -2.12
    },
    "home": {
     "team": "Tampa Bay Rays",
-    "sp": "Casey Legumina",
-    "sp_id": 668984,
+    "sp": "Shane McClanahan",
+    "sp_id": 663556,
     "sp_resolved": true,
     "cats": {
-     "sp": 35.0,
-     "off": 43.9,
-     "pen": 67.4,
-     "mkt": 57.1,
-     "sit": 48.2,
-     "mu": 44.8
+     "sp": 56.9,
+     "off": 42.4,
+     "pen": 62.0,
+     "mkt": 61.8,
+     "sit": 45.4,
+     "mu": 48.6
     },
     "sit_inputs": {
-     "hours_rest": 24.0,
+     "hours_rest": 17.5,
      "km_7d": 1789.1,
      "games_7d": 6
     },
-    "composite": 44.23,
+    "composite": 52.58,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.5714,
-    "fair_ML": -133,
-    "implied": 0.5902,
-    "novig": 0.5714,
-    "edge_pct": -1.88
+    "model_prob": 0.618,
+    "fair_ML": -162,
+    "implied": 0.6429,
+    "novig": 0.618,
+    "edge_pct": -2.49
    }
   },
   "flags": [
@@ -146,144 +75,73 @@
   "data_quality": "FULL"
  },
  {
-  "game": "Cleveland Guardians @ Cincinnati Reds",
-  "gamePk": 824487,
-  "venue": "Great American Ball Park",
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-07-29T21:35:19.162722+00:00",
-   "total": 8.5,
-   "books_used": 9,
-   "book_spread": 0.0092
-  },
-  "sides": {
-   "away": {
-    "team": "Cleveland Guardians",
-    "sp": "Joey Cantillo",
-    "sp_id": 676282,
-    "sp_resolved": true,
-    "cats": {
-     "sp": 69.7,
-     "off": 19.6,
-     "pen": 73.9,
-     "mkt": 55.7,
-     "sit": 44.8,
-     "mu": 48.4
-    },
-    "sit_inputs": {
-     "hours_rest": 24.0,
-     "km_7d": 2800.4,
-     "games_7d": 6
-    },
-    "composite": 53.84,
-    "flags": [],
-    "data_quality": "FULL",
-    "model_prob": 0.5572,
-    "fair_ML": -126,
-    "implied": 0.5816,
-    "novig": 0.5572,
-    "edge_pct": -2.44
-   },
-   "home": {
-    "team": "Cincinnati Reds",
-    "sp": "Brady Singer",
-    "sp_id": 663903,
-    "sp_resolved": true,
-    "cats": {
-     "sp": 59.3,
-     "off": 31.2,
-     "pen": 13.4,
-     "mkt": 44.3,
-     "sit": 52.4,
-     "mu": 48.8
-    },
-    "sit_inputs": {
-     "hours_rest": 24.0,
-     "km_7d": 495.1,
-     "games_7d": 5
-    },
-    "composite": 43.0,
-    "flags": [],
-    "data_quality": "FULL",
-    "model_prob": 0.4428,
-    "fair_ML": 126,
-    "implied": 0.4651,
-    "novig": 0.4428,
-    "edge_pct": -2.23
-   }
-  },
-  "flags": [],
-  "data_quality": "FULL"
- },
- {
   "game": "Kansas City Royals @ Minnesota Twins",
-  "gamePk": 823677,
+  "gamePk": 823674,
   "venue": "Target Field",
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-29T21:35:19.162722+00:00",
+   "fetched_at": "2026-07-30T15:05:20.544618+00:00",
    "total": 9.0,
    "books_used": 9,
-   "book_spread": 0.0106
+   "book_spread": 0.0107
   },
   "sides": {
    "away": {
     "team": "Kansas City Royals",
-    "sp": "Randy Dobnak",
-    "sp_id": 677976,
+    "sp": "Noah Cameron",
+    "sp_id": 702070,
     "sp_resolved": true,
     "cats": {
-     "sp": 38.3,
-     "off": 38.8,
-     "pen": 20.5,
-     "mkt": 35.7,
-     "sit": 51.2,
-     "mu": 49.0
+     "sp": 44.9,
+     "off": 44.4,
+     "pen": 21.2,
+     "mkt": 43.8,
+     "sit": 48.7,
+     "mu": 37.1
     },
     "sit_inputs": {
-     "hours_rest": 24.0,
+     "hours_rest": 18.0,
      "km_7d": 873.0,
-     "games_7d": 5
+     "games_7d": 6
     },
-    "composite": 36.83,
+    "composite": 40.85,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.3569,
-    "fair_ML": 180,
-    "implied": 0.3717,
-    "novig": 0.3569,
-    "edge_pct": -1.48
+    "model_prob": 0.4381,
+    "fair_ML": 128,
+    "implied": 0.4566,
+    "novig": 0.4381,
+    "edge_pct": -1.85
    },
    "home": {
     "team": "Minnesota Twins",
-    "sp": "Joe Ryan",
-    "sp_id": 657746,
+    "sp": "Bailey Ober",
+    "sp_id": 641927,
     "sp_resolved": true,
     "cats": {
-     "sp": 72.4,
-     "off": 49.7,
-     "pen": 20.6,
-     "mkt": 64.3,
-     "sit": 50.7,
+     "sp": 44.0,
+     "off": 43.2,
+     "pen": 25.2,
+     "mkt": 56.2,
+     "sit": 51.5,
      "mu": 50.0
     },
     "sit_inputs": {
-     "hours_rest": 24.0,
-     "km_7d": 1014.7,
+     "hours_rest": 18.0,
+     "km_7d": 0.0,
      "games_7d": 5
     },
-    "composite": 55.05,
+    "composite": 41.45,
     "flags": [
      "INFO|Kansas City Royals: no Savant batter-vs-pitch data \u2014 matchup neutral"
     ],
     "data_quality": "FULL",
-    "model_prob": 0.6431,
-    "fair_ML": -180,
-    "implied": 0.6732,
-    "novig": 0.6431,
-    "edge_pct": -3.01
+    "model_prob": 0.5619,
+    "fair_ML": -128,
+    "implied": 0.5885,
+    "novig": 0.5619,
+    "edge_pct": -2.66
    }
   },
   "flags": [
@@ -293,72 +151,72 @@
  },
  {
   "game": "New York Yankees @ Chicago White Sox",
-  "gamePk": 824567,
+  "gamePk": 824568,
   "venue": "Rate Field",
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-29T21:35:19.162722+00:00",
+   "fetched_at": "2026-07-30T15:05:20.544618+00:00",
    "total": 7.5,
    "books_used": 9,
-   "book_spread": 0.0107
+   "book_spread": 0.0096
   },
   "sides": {
    "away": {
     "team": "New York Yankees",
-    "sp": "Cam Schlittler",
-    "sp_id": 693645,
+    "sp": "Ryan Weathers",
+    "sp_id": 677960,
     "sp_resolved": true,
     "cats": {
-     "sp": 92.8,
-     "off": 41.8,
-     "pen": 54.9,
-     "mkt": 57.2,
-     "sit": 50.5,
+     "sp": 82.3,
+     "off": 43.3,
+     "pen": 56.2,
+     "mkt": 48.6,
+     "sit": 48.2,
      "mu": 50.0
     },
     "sit_inputs": {
-     "hours_rest": 24.0,
+     "hours_rest": 18.5,
      "km_7d": 1068.9,
-     "games_7d": 5
+     "games_7d": 6
     },
-    "composite": 67.59,
+    "composite": 63.4,
     "flags": [
      "INFO|Chicago White Sox: no Savant batter-vs-pitch data \u2014 matchup neutral"
     ],
     "data_quality": "FULL",
-    "model_prob": 0.5721,
-    "fair_ML": -134,
-    "implied": 0.5984,
-    "novig": 0.5721,
+    "model_prob": 0.4859,
+    "fair_ML": 106,
+    "implied": 0.5122,
+    "novig": 0.4859,
     "edge_pct": -2.63
    },
    "home": {
     "team": "Chicago White Sox",
-    "sp": "Davis Martin",
-    "sp_id": 663436,
+    "sp": "Sean Burke",
+    "sp_id": 680732,
     "sp_resolved": true,
     "cats": {
-     "sp": 33.2,
-     "off": 47.3,
-     "pen": 37.1,
-     "mkt": 42.8,
-     "sit": 49.7,
-     "mu": 40.3
+     "sp": 89.6,
+     "off": 48.2,
+     "pen": 34.9,
+     "mkt": 51.4,
+     "sit": 51.7,
+     "mu": 42.7
     },
     "sit_inputs": {
-     "hours_rest": 24.0,
-     "km_7d": 1309.2,
+     "hours_rest": 18.5,
+     "km_7d": 0.0,
      "games_7d": 6
     },
-    "composite": 39.28,
+    "composite": 64.46,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.4279,
-    "fair_ML": 134,
-    "implied": 0.4484,
-    "novig": 0.4279,
-    "edge_pct": -2.05
+    "model_prob": 0.5141,
+    "fair_ML": -106,
+    "implied": 0.5349,
+    "novig": 0.5141,
+    "edge_pct": -2.08
    }
   },
   "flags": [
@@ -368,289 +226,510 @@
  },
  {
   "game": "Chicago Cubs @ St. Louis Cardinals",
-  "gamePk": 823022,
+  "gamePk": 823023,
   "venue": "Busch Stadium",
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-29T21:35:19.162722+00:00",
-   "total": 8.0,
+   "fetched_at": "2026-07-30T15:05:20.544618+00:00",
+   "total": 8.5,
    "books_used": 9,
-   "book_spread": 0.0134
+   "book_spread": 0.0129
   },
   "sides": {
    "away": {
     "team": "Chicago Cubs",
-    "sp": "Matthew Boyd",
-    "sp_id": 571510,
+    "sp": "Javier Assad",
+    "sp_id": 665871,
     "sp_resolved": true,
     "cats": {
-     "sp": 52.9,
-     "off": 82.7,
-     "pen": 49.6,
-     "mkt": 49.7,
-     "sit": 48.9,
-     "mu": 49.4
+     "sp": 38.2,
+     "off": 86.1,
+     "pen": 53.8,
+     "mkt": 48.7,
+     "sit": 48.8,
+     "mu": 42.1
     },
     "sit_inputs": {
-     "hours_rest": 24.0,
-     "km_7d": 1557.5,
+     "hours_rest": 18.5,
+     "km_7d": 896.3,
      "games_7d": 6
     },
-    "composite": 60.21,
+    "composite": 55.06,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.4971,
-    "fair_ML": 101,
-    "implied": 0.5261,
-    "novig": 0.4971,
-    "edge_pct": -2.9
+    "model_prob": 0.4874,
+    "fair_ML": 105,
+    "implied": 0.5122,
+    "novig": 0.4874,
+    "edge_pct": -2.48
    },
    "home": {
     "team": "St. Louis Cardinals",
-    "sp": "Dustin May",
-    "sp_id": 669160,
+    "sp": "Andre Pallante",
+    "sp_id": 669467,
     "sp_resolved": true,
     "cats": {
-     "sp": 59.0,
-     "off": 26.9,
-     "pen": 24.2,
-     "mkt": 50.3,
+     "sp": 50.2,
+     "off": 26.7,
+     "pen": 21.5,
+     "mkt": 51.3,
+     "sit": 51.7,
+     "mu": 38.4
+    },
+    "sit_inputs": {
+     "hours_rest": 18.5,
+     "km_7d": 0.0,
+     "games_7d": 7
+    },
+    "composite": 38.63,
+    "flags": [],
+    "data_quality": "FULL",
+    "model_prob": 0.5126,
+    "fair_ML": -105,
+    "implied": 0.5327,
+    "novig": 0.5126,
+    "edge_pct": -2.01
+   }
+  },
+  "flags": [],
+  "data_quality": "FULL"
+ },
+ {
+  "game": "Pittsburgh Pirates @ Cincinnati Reds",
+  "gamePk": 824488,
+  "venue": "Great American Ball Park",
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-30T15:05:20.544618+00:00",
+   "total": 9.5,
+   "books_used": 9,
+   "book_spread": 0.005
+  },
+  "sides": {
+   "away": {
+    "team": "Pittsburgh Pirates",
+    "sp": "Yohan Ram\u00edrez",
+    "sp_id": 670990,
+    "sp_resolved": true,
+    "cats": {
+     "sp": 54.0,
+     "off": 54.7,
+     "pen": 43.3,
+     "mkt": 51.2,
+     "sit": 55.5,
+     "mu": 51.8
+    },
+    "sit_inputs": {
+     "hours_rest": 30.58,
+     "km_7d": 412.8,
+     "games_7d": 6
+    },
+    "composite": 52.46,
+    "flags": [],
+    "data_quality": "FULL",
+    "model_prob": 0.5118,
+    "fair_ML": -105,
+    "implied": 0.5349,
+    "novig": 0.5118,
+    "edge_pct": -2.31
+   },
+   "home": {
+    "team": "Cincinnati Reds",
+    "sp": "Rhett Lowder",
+    "sp_id": 695076,
+    "sp_resolved": true,
+    "cats": {
+     "sp": 36.3,
+     "off": 27.1,
+     "pen": 9.5,
+     "mkt": 48.8,
+     "sit": 52.4,
+     "mu": 37.6
+    },
+    "sit_inputs": {
+     "hours_rest": 24.0,
+     "km_7d": 495.1,
+     "games_7d": 6
+    },
+    "composite": 30.59,
+    "flags": [],
+    "data_quality": "FULL",
+    "model_prob": 0.4882,
+    "fair_ML": 105,
+    "implied": 0.5122,
+    "novig": 0.4882,
+    "edge_pct": -2.4
+   }
+  },
+  "flags": [],
+  "data_quality": "FULL"
+ },
+ {
+  "game": "Miami Marlins @ New York Mets",
+  "gamePk": 823595,
+  "venue": "Citi Field",
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-30T15:05:20.544618+00:00",
+   "total": 7.0,
+   "books_used": 9,
+   "book_spread": 0.0064
+  },
+  "sides": {
+   "away": {
+    "team": "Miami Marlins",
+    "sp": "Eury P\u00e9rez",
+    "sp_id": 691587,
+    "sp_resolved": true,
+    "cats": {
+     "sp": 64.5,
+     "off": 59.4,
+     "pen": 56.7,
+     "mkt": 45.7,
+     "sit": 51.2,
+     "mu": 49.0
+    },
+    "sit_inputs": {
+     "hours_rest": 31.0,
+     "km_7d": 1766.6,
+     "games_7d": 6
+    },
+    "composite": 60.22,
+    "flags": [],
+    "data_quality": "FULL",
+    "model_prob": 0.4573,
+    "fair_ML": 119,
+    "implied": 0.4785,
+    "novig": 0.4573,
+    "edge_pct": -2.12
+   },
+   "home": {
+    "team": "New York Mets",
+    "sp": "Nolan McLean",
+    "sp_id": 690997,
+    "sp_resolved": true,
+    "cats": {
+     "sp": 78.4,
+     "off": 46.5,
+     "pen": 67.9,
+     "mkt": 54.3,
      "sit": 54.1,
-     "mu": 27.2
+     "mu": 42.3
     },
     "sit_inputs": {
      "hours_rest": 24.0,
      "km_7d": 0.0,
      "games_7d": 6
     },
-    "composite": 42.87,
+    "composite": 64.71,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.5029,
-    "fair_ML": -101,
-    "implied": 0.5215,
-    "novig": 0.5029,
-    "edge_pct": -1.86
+    "model_prob": 0.5427,
+    "fair_ML": -119,
+    "implied": 0.5671,
+    "novig": 0.5427,
+    "edge_pct": -2.44
    }
   },
   "flags": [],
   "data_quality": "FULL"
  },
  {
-  "game": "Houston Astros @ Los Angeles Angels",
-  "gamePk": 824002,
-  "venue": "Angel Stadium",
+  "game": "Washington Nationals @ Atlanta Braves",
+  "gamePk": 824894,
+  "venue": "Truist Park",
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-29T21:35:19.162722+00:00",
+   "fetched_at": "2026-07-30T15:05:20.544618+00:00",
    "total": 9.5,
    "books_used": 9,
-   "book_spread": 0.014
+   "book_spread": 0.0087
   },
   "sides": {
    "away": {
-    "team": "Houston Astros",
-    "sp": "Hayden Wesneski",
-    "sp_id": 669713,
-    "sp_resolved": false,
+    "team": "Washington Nationals",
+    "sp": "Jake Irvin",
+    "sp_id": 663623,
+    "sp_resolved": true,
     "cats": {
-     "sp": 50.0,
-     "off": 57.0,
-     "pen": 41.7,
-     "mkt": 54.7,
-     "sit": 44.9,
+     "sp": 52.4,
+     "off": 100.0,
+     "pen": 13.2,
+     "mkt": 42.1,
+     "sit": 53.8,
+     "mu": 41.0
+    },
+    "sit_inputs": {
+     "hours_rest": 30.17,
+     "km_7d": 867.2,
+     "games_7d": 6
+    },
+    "composite": 58.81,
+    "flags": [
+     "INFO|SP Jake Irvin: no L30 sample"
+    ],
+    "data_quality": "FULL",
+    "model_prob": 0.421,
+    "fair_ML": 138,
+    "implied": 0.4367,
+    "novig": 0.421,
+    "edge_pct": -1.57
+   },
+   "home": {
+    "team": "Atlanta Braves",
+    "sp": "Grant Holmes",
+    "sp_id": 656550,
+    "sp_resolved": true,
+    "cats": {
+     "sp": 37.6,
+     "off": 53.5,
+     "pen": 65.2,
+     "mkt": 57.9,
+     "sit": 49.2,
      "mu": 50.0
     },
     "sit_inputs": {
-     "hours_rest": 24.0,
-     "km_7d": 2786.1,
-     "games_7d": 5
+     "hours_rest": 24.08,
+     "km_7d": 1496.5,
+     "games_7d": 6
     },
-    "composite": 50.16,
+    "composite": 47.93,
     "flags": [
-     "BLOCK|SP Hayden Wesneski (id 669713): UNRESOLVED in FanGraphs \u2014 not scored",
-     "INFO|Hayden Wesneski: no Savant arsenal \u2014 matchup neutral"
+     "INFO|Washington Nationals: no Savant batter-vs-pitch data \u2014 matchup neutral"
     ],
-    "data_quality": "BLOCKED",
-    "model_prob": 0.5469,
-    "fair_ML": -121,
-    "implied": 0.5671,
-    "novig": 0.5469,
-    "edge_pct": -2.02
-   },
-   "home": {
-    "team": "Los Angeles Angels",
-    "sp": "Grayson Rodriguez",
-    "sp_id": 680570,
-    "sp_resolved": true,
-    "cats": {
-     "sp": 16.8,
-     "off": 24.7,
-     "pen": 54.6,
-     "mkt": 45.3,
-     "sit": 52.1,
-     "mu": 45.1
-    },
-    "sit_inputs": {
-     "hours_rest": 24.0,
-     "km_7d": 600.6,
-     "games_7d": 5
-    },
-    "composite": 28.98,
-    "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.4531,
-    "fair_ML": 121,
-    "implied": 0.4785,
-    "novig": 0.4531,
-    "edge_pct": -2.54
+    "model_prob": 0.579,
+    "fair_ML": -138,
+    "implied": 0.6094,
+    "novig": 0.579,
+    "edge_pct": -3.04
    }
   },
   "flags": [
-   "BLOCK|SP Hayden Wesneski (id 669713): UNRESOLVED in FanGraphs \u2014 not scored",
-   "INFO|Hayden Wesneski: no Savant arsenal \u2014 matchup neutral"
+   "INFO|SP Jake Irvin: no L30 sample",
+   "INFO|Washington Nationals: no Savant batter-vs-pitch data \u2014 matchup neutral"
   ],
-  "data_quality": "BLOCKED"
+  "data_quality": "FULL"
  },
  {
   "game": "Boston Red Sox @ Athletics",
-  "gamePk": 824973,
+  "gamePk": 824974,
   "venue": "Sutter Health Park",
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-29T21:35:19.162722+00:00",
-   "total": 10.5,
+   "fetched_at": "2026-07-30T15:05:20.544618+00:00",
+   "total": 10.0,
    "books_used": 9,
-   "book_spread": 0.0106
+   "book_spread": 0.0118
   },
   "sides": {
    "away": {
     "team": "Boston Red Sox",
-    "sp": "Patrick Sandoval",
-    "sp_id": 663776,
+    "sp": "Sonny Gray",
+    "sp_id": 543243,
     "sp_resolved": true,
     "cats": {
-     "sp": 49.6,
-     "off": 40.9,
-     "pen": 56.8,
-     "mkt": 57.9,
+     "sp": 55.3,
+     "off": 46.6,
+     "pen": 69.5,
+     "mkt": 61.7,
      "sit": 40.1,
-     "mu": 47.8
+     "mu": 38.3
     },
     "sit_inputs": {
      "hours_rest": 24.0,
      "km_7d": 4223.1,
-     "games_7d": 5
+     "games_7d": 6
     },
-    "composite": 47.57,
+    "composite": 53.5,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.5793,
-    "fair_ML": -138,
-    "implied": 0.6094,
-    "novig": 0.5793,
-    "edge_pct": -3.01
+    "model_prob": 0.6172,
+    "fair_ML": -161,
+    "implied": 0.6491,
+    "novig": 0.6172,
+    "edge_pct": -3.19
    },
    "home": {
     "team": "Athletics",
-    "sp": "Jacob Lopez",
-    "sp_id": 682052,
+    "sp": "Mason Barnett",
+    "sp_id": 686930,
     "sp_resolved": true,
     "cats": {
-     "sp": 34.6,
-     "off": 41.2,
-     "pen": 35.3,
-     "mkt": 42.1,
+     "sp": 34.5,
+     "off": 40.1,
+     "pen": 33.8,
+     "mkt": 38.3,
      "sit": 46.0,
-     "mu": 45.1
+     "mu": 49.3
     },
     "sit_inputs": {
      "hours_rest": 24.0,
      "km_7d": 2432.8,
-     "games_7d": 5
+     "games_7d": 6
     },
-    "composite": 37.79,
+    "composite": 37.34,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.4207,
-    "fair_ML": 138,
-    "implied": 0.4367,
-    "novig": 0.4207,
-    "edge_pct": -1.6
+    "model_prob": 0.3828,
+    "fair_ML": 161,
+    "implied": 0.3968,
+    "novig": 0.3828,
+    "edge_pct": -1.4
    }
   },
   "flags": [],
   "data_quality": "FULL"
  },
  {
+  "game": "San Francisco Giants @ San Diego Padres",
+  "gamePk": 823271,
+  "venue": "Petco Park",
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-07-30T15:05:20.544618+00:00",
+   "total": 8.5,
+   "books_used": 9,
+   "book_spread": 0.0265
+  },
+  "sides": {
+   "away": {
+    "team": "San Francisco Giants",
+    "sp": null,
+    "sp_id": null,
+    "sp_resolved": false,
+    "cats": {
+     "sp": 43.3,
+     "off": 55.2,
+     "pen": 22.2,
+     "mkt": 41.4,
+     "sit": 54.1,
+     "mu": 50.0
+    },
+    "sit_inputs": {
+     "hours_rest": 29.92,
+     "km_7d": 737.0,
+     "games_7d": 6
+    },
+    "composite": 44.14,
+    "flags": [
+     "DEGRADED|SP TBD \u2014 replacement-level assumed"
+    ],
+    "data_quality": "DEGRADED",
+    "model_prob": 0.4139,
+    "fair_ML": 142,
+    "implied": 0.4348,
+    "novig": 0.4139,
+    "edge_pct": -2.09
+   },
+   "home": {
+    "team": "San Diego Padres",
+    "sp": "JP Sears",
+    "sp_id": 676664,
+    "sp_resolved": true,
+    "cats": {
+     "sp": 45.8,
+     "off": 65.5,
+     "pen": 57.2,
+     "mkt": 58.6,
+     "sit": 44.3,
+     "mu": 50.0
+    },
+    "sit_inputs": {
+     "hours_rest": 29.5,
+     "km_7d": 3646.6,
+     "games_7d": 5
+    },
+    "composite": 53.21,
+    "flags": [
+     "INFO|San Francisco Giants: no Savant batter-vs-pitch data \u2014 matchup neutral"
+    ],
+    "data_quality": "FULL",
+    "model_prob": 0.5861,
+    "fair_ML": -142,
+    "implied": 0.6109,
+    "novig": 0.5861,
+    "edge_pct": -2.48
+   }
+  },
+  "flags": [
+   "DEGRADED|SP TBD \u2014 replacement-level assumed",
+   "INFO|San Francisco Giants: no Savant batter-vs-pitch data \u2014 matchup neutral"
+  ],
+  "data_quality": "DEGRADED"
+ },
+ {
   "game": "Seattle Mariners @ Los Angeles Dodgers",
-  "gamePk": 823924,
+  "gamePk": 823921,
   "venue": "UNIQLO Field at Dodger Stadium",
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-07-29T21:35:19.162722+00:00",
-   "total": 9.5,
+   "fetched_at": "2026-07-30T15:05:20.544618+00:00",
+   "total": 9.0,
    "books_used": 9,
-   "book_spread": 0.013
+   "book_spread": 0.01
   },
   "sides": {
    "away": {
     "team": "Seattle Mariners",
-    "sp": "Emerson Hancock",
-    "sp_id": 676106,
+    "sp": "Bryan Woo",
+    "sp_id": 693433,
     "sp_resolved": true,
     "cats": {
-     "sp": 54.4,
-     "off": 46.7,
-     "pen": 67.5,
-     "mkt": 38.6,
+     "sp": 65.4,
+     "off": 46.5,
+     "pen": 67.2,
+     "mkt": 41.4,
      "sit": 47.6,
-     "mu": 31.6
+     "mu": 35.2
     },
     "sit_inputs": {
      "hours_rest": 24.0,
      "km_7d": 1966.0,
-     "games_7d": 5
+     "games_7d": 6
     },
-    "composite": 53.15,
+    "composite": 58.05,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.3857,
-    "fair_ML": 159,
-    "implied": 0.4049,
-    "novig": 0.3857,
-    "edge_pct": -1.92
+    "model_prob": 0.4139,
+    "fair_ML": 142,
+    "implied": 0.4348,
+    "novig": 0.4139,
+    "edge_pct": -2.09
    },
    "home": {
     "team": "Los Angeles Dodgers",
-    "sp": "Eric Lauer",
-    "sp_id": 641778,
+    "sp": "Roki Sasaki",
+    "sp_id": 808963,
     "sp_resolved": true,
     "cats": {
-     "sp": 21.0,
-     "off": 81.4,
-     "pen": 86.4,
-     "mkt": 61.4,
+     "sp": 62.0,
+     "off": 80.7,
+     "pen": 85.0,
+     "mkt": 58.6,
      "sit": 41.0,
-     "mu": 48.3
+     "mu": 58.5
     },
     "sit_inputs": {
      "hours_rest": 24.0,
      "km_7d": 3947.7,
-     "games_7d": 4
+     "games_7d": 5
     },
-    "composite": 51.14,
+    "composite": 69.3,
     "flags": [],
     "data_quality": "FULL",
-    "model_prob": 0.6143,
-    "fair_ML": -159,
-    "implied": 0.6416,
-    "novig": 0.6143,
-    "edge_pct": -2.73
+    "model_prob": 0.5861,
+    "fair_ML": -142,
+    "implied": 0.6109,
+    "novig": 0.5861,
+    "edge_pct": -2.48
    }
   },
   "flags": [],
