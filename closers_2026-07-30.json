@@ -456,13 +456,13 @@
    },
    {
     "book": "bovada",
-    "homeML": 159,
-    "awayML": -194
+    "homeML": 161,
+    "awayML": -196
    },
    {
     "book": "mybookieag",
-    "homeML": 156,
-    "awayML": -185
+    "homeML": 159,
+    "awayML": -189
    },
    {
     "book": "draftkings",
@@ -471,8 +471,8 @@
    },
    {
     "book": "betrivers",
-    "homeML": 155,
-    "awayML": -180
+    "homeML": 163,
+    "awayML": -190
    },
    {
     "book": "betmgm",
@@ -481,13 +481,13 @@
    },
    {
     "book": "lowvig",
-    "homeML": 159,
-    "awayML": -176
+    "homeML": 160,
+    "awayML": -177
    },
    {
     "book": "betonlineag",
-    "homeML": 159,
-    "awayML": -176
+    "homeML": 160,
+    "awayML": -177
    },
    {
     "book": "betus",
@@ -495,13 +495,13 @@
     "awayML": -181
    }
   ],
-  "homeML_novig": 0.3744,
-  "awayML_novig": 0.6256,
+  "homeML_novig": 0.372,
+  "awayML_novig": 0.628,
   "books_used": 9,
-  "book_spread": 0.0098,
-  "fetched_at": "2026-07-30T23:10:18.931631+00:00",
+  "book_spread": 0.0092,
+  "fetched_at": "2026-07-31T00:50:16.698438+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-30T23:10:18.931923+00:00"
+  "snapped_at": "2026-07-31T00:50:16.698732+00:00"
  },
  "823271": {
   "home": "San Diego Padres",
@@ -519,8 +519,8 @@
    },
    {
     "book": "bovada",
-    "homeML": -172,
-    "awayML": 142
+    "homeML": -170,
+    "awayML": 141
    },
    {
     "book": "mybookieag",
@@ -534,8 +534,8 @@
    },
    {
     "book": "betrivers",
-    "homeML": -167,
-    "awayML": 140
+    "homeML": -162,
+    "awayML": 143
    },
    {
     "book": "betmgm",
@@ -544,35 +544,35 @@
    },
    {
     "book": "betus",
-    "homeML": -163,
-    "awayML": 145
+    "homeML": -162,
+    "awayML": 144
    },
    {
     "book": "betonlineag",
-    "homeML": -165,
-    "awayML": 149
+    "homeML": -164,
+    "awayML": 148
    },
    {
     "book": "lowvig",
-    "homeML": -165,
-    "awayML": 149
+    "homeML": -164,
+    "awayML": 148
    }
   ],
-  "homeML_novig": 0.6035,
-  "awayML_novig": 0.3965,
+  "homeML_novig": 0.6028,
+  "awayML_novig": 0.3972,
   "books_used": 9,
   "book_spread": 0.0126,
-  "fetched_at": "2026-07-30T23:10:18.931631+00:00",
+  "fetched_at": "2026-07-31T00:50:16.698438+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-30T23:10:18.931923+00:00"
+  "snapped_at": "2026-07-31T00:50:16.698732+00:00"
  },
  "823921": {
   "home": "Los Angeles Dodgers",
   "away": "Seattle Mariners",
   "commence": "2026-07-31T02:11:00Z",
   "book": "draftkings",
-  "homeML": -156,
-  "awayML": 129,
+  "homeML": -150,
+  "awayML": 124,
   "total": null,
   "all_books": [
    {
@@ -587,46 +587,46 @@
    },
    {
     "book": "lowvig",
-    "homeML": -145,
-    "awayML": 131
-   },
-   {
-    "book": "mybookieag",
-    "homeML": -154,
-    "awayML": 130
-   },
-   {
-    "book": "betonlineag",
-    "homeML": -145,
-    "awayML": 131
-   },
-   {
-    "book": "bovada",
-    "homeML": -150,
-    "awayML": 126
-   },
-   {
-    "book": "draftkings",
-    "homeML": -156,
-    "awayML": 129
-   },
-   {
-    "book": "betrivers",
-    "homeML": -157,
+    "homeML": -146,
     "awayML": 132
    },
    {
-    "book": "betus",
-    "homeML": -145,
+    "book": "mybookieag",
+    "homeML": -151,
+    "awayML": 128
+   },
+   {
+    "book": "betonlineag",
+    "homeML": -146,
+    "awayML": 132
+   },
+   {
+    "book": "bovada",
+    "homeML": -155,
     "awayML": 130
+   },
+   {
+    "book": "draftkings",
+    "homeML": -150,
+    "awayML": 124
+   },
+   {
+    "book": "betrivers",
+    "homeML": -155,
+    "awayML": 135
+   },
+   {
+    "book": "betus",
+    "homeML": -146,
+    "awayML": 131
    }
   ],
-  "homeML_novig": 0.5778,
-  "awayML_novig": 0.4222,
+  "homeML_novig": 0.5779,
+  "awayML_novig": 0.4221,
   "books_used": 9,
-  "book_spread": 0.0192,
-  "fetched_at": "2026-07-30T23:10:18.931631+00:00",
+  "book_spread": 0.0211,
+  "fetched_at": "2026-07-31T00:50:16.698438+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-07-30T23:10:18.931923+00:00"
+  "snapped_at": "2026-07-31T00:50:16.698732+00:00"
  }
 }
