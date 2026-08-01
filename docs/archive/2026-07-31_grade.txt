@@ -1,0 +1,14 @@
+[shadow] +30 rows (15 games, 28 with CLV) -> shadow_archive.jsonl
+              <40%  n=  3  actual  33.3%  model  38.8%
+            40-50%  n= 12  actual  58.3%  model  45.5%
+            50-60%  n= 12  actual  41.7%  model  54.5%
+            60-70%  n=  3  actual  66.7%  model  61.2%
+[shadow] 294 rows | 147 games (effective n for averages) | 11 dates
+     <40%  n=  42  actual  54.8%  model  32.0%  gap +22.8
+   40-50%  n= 105  actual  45.7%  model  45.6%  gap  +0.1
+   50-60%  n= 105  actual  54.3%  model  54.4%  gap  -0.1
+   60-70%  n=  27  actual  40.7%  model  63.4%  gap -22.7
+     70%+  n=  15  actual  53.3%  model  76.3%  gap -23.0
+  Brier  model 0.2626  |  market 0.2472 (n=294)
+  Lower Brier is better. If the market beats the model, the model is not yet adding information.
+PICK                          U  MODEL  CLOSE    CLV  RES    P/L  STATUS
