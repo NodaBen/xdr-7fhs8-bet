@@ -818,8 +818,8 @@
   "away": "Boston Red Sox",
   "commence": "2026-08-01T02:11:00Z",
   "book": "draftkings",
-  "homeML": -136,
-  "awayML": 113,
+  "homeML": -137,
+  "awayML": 114,
   "total": null,
   "all_books": [
    {
@@ -829,28 +829,28 @@
    },
    {
     "book": "mybookieag",
-    "homeML": -134,
-    "awayML": 114
+    "homeML": -135,
+    "awayML": 115
    },
    {
     "book": "bovada",
-    "homeML": -139,
-    "awayML": 116
+    "homeML": -138,
+    "awayML": 115
    },
    {
     "book": "betrivers",
     "homeML": -136,
-    "awayML": 120
+    "awayML": 118
    },
    {
     "book": "draftkings",
-    "homeML": -136,
-    "awayML": 113
+    "homeML": -137,
+    "awayML": 114
    },
    {
     "book": "lowvig",
-    "homeML": -132,
-    "awayML": 120
+    "homeML": -133,
+    "awayML": 121
    },
    {
     "book": "betonlineag",
@@ -868,13 +868,13 @@
     "awayML": 121
    }
   ],
-  "homeML_novig": 0.5553,
-  "awayML_novig": 0.4447,
+  "homeML_novig": 0.5555,
+  "awayML_novig": 0.4445,
   "books_used": 9,
-  "book_spread": 0.0084,
-  "fetched_at": "2026-08-01T01:14:12.649612+00:00",
+  "book_spread": 0.0052,
+  "fetched_at": "2026-08-01T01:50:15.486526+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-08-01T01:14:12.649969+00:00"
+  "snapped_at": "2026-08-01T01:50:15.487081+00:00"
  },
  "823111": {
   "home": "Seattle Mariners",
@@ -887,8 +887,8 @@
   "all_books": [
    {
     "book": "fanduel",
-    "homeML": -160,
-    "awayML": 148
+    "homeML": -154,
+    "awayML": 142
    },
    {
     "book": "lowvig",
@@ -917,8 +917,8 @@
    },
    {
     "book": "bovada",
-    "homeML": -163,
-    "awayML": 137
+    "homeML": -164,
+    "awayML": 138
    },
    {
     "book": "betrivers",
@@ -931,12 +931,12 @@
     "awayML": 140
    }
   ],
-  "homeML_novig": 0.5985,
-  "awayML_novig": 0.4015,
+  "homeML_novig": 0.5976,
+  "awayML_novig": 0.4024,
   "books_used": 9,
   "book_spread": 0.0228,
-  "fetched_at": "2026-08-01T01:14:12.649612+00:00",
+  "fetched_at": "2026-08-01T01:50:15.486526+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-08-01T01:14:12.649969+00:00"
+  "snapped_at": "2026-08-01T01:50:15.487081+00:00"
  }
 }
