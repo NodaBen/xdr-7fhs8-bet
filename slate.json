@@ -8,7 +8,8 @@
   "awaySP_id": 687273,
   "homeSP_id": 592332,
   "venue": "Rogers Centre",
-  "gameDate": "2026-08-01T19:07:00Z"
+  "gameDate": "2026-08-01T19:07:00Z",
+  "started": true
  },
  {
   "gamePk": 823109,
@@ -19,7 +20,8 @@
   "awaySP_id": 687570,
   "homeSP_id": 669302,
   "venue": "T-Mobile Park",
-  "gameDate": "2026-08-01T20:10:00Z"
+  "gameDate": "2026-08-01T20:10:00Z",
+  "started": true
  },
  {
   "gamePk": 822944,
@@ -30,7 +32,8 @@
   "awaySP_id": 663855,
   "homeSP_id": 656876,
   "venue": "Tropicana Field",
-  "gameDate": "2026-08-01T20:10:00Z"
+  "gameDate": "2026-08-01T20:10:00Z",
+  "started": true
  },
  {
   "gamePk": 823594,
@@ -41,7 +44,8 @@
   "awaySP_id": 663969,
   "homeSP_id": 804267,
   "venue": "Citi Field",
-  "gameDate": "2026-08-01T20:10:00Z"
+  "gameDate": "2026-08-01T20:10:00Z",
+  "started": true
  },
  {
   "gamePk": 824485,
@@ -52,7 +56,8 @@
   "awaySP_id": 677952,
   "homeSP_id": 671096,
   "venue": "Great American Ball Park",
-  "gameDate": "2026-08-01T22:40:00Z"
+  "gameDate": "2026-08-01T22:40:00Z",
+  "started": false
  },
  {
   "gamePk": 824808,
@@ -63,7 +68,8 @@
   "awaySP_id": 650911,
   "homeSP_id": 669358,
   "venue": "Oriole Park at Camden Yards",
-  "gameDate": "2026-08-01T23:05:00Z"
+  "gameDate": "2026-08-01T23:05:00Z",
+  "started": false
  },
  {
   "gamePk": 824162,
@@ -74,7 +80,8 @@
   "awaySP_id": 594798,
   "homeSP_id": 669854,
   "venue": "Daikin Park",
-  "gameDate": "2026-08-01T23:10:00Z"
+  "gameDate": "2026-08-01T23:10:00Z",
+  "started": false
  },
  {
   "gamePk": 824405,
@@ -85,7 +92,8 @@
   "awaySP_id": 684442,
   "homeSP_id": 800048,
   "venue": "Progressive Field",
-  "gameDate": "2026-08-01T23:15:00Z"
+  "gameDate": "2026-08-01T23:15:00Z",
+  "started": false
  },
  {
   "gamePk": 824890,
@@ -96,7 +104,8 @@
   "awaySP_id": 571945,
   "homeSP_id": 625643,
   "venue": "Truist Park",
-  "gameDate": "2026-08-01T23:15:00Z"
+  "gameDate": "2026-08-01T23:15:00Z",
+  "started": false
  },
  {
   "gamePk": 824649,
@@ -107,7 +116,8 @@
   "awaySP_id": 608331,
   "homeSP_id": 656849,
   "venue": "Wrigley Field",
-  "gameDate": "2026-08-01T23:15:00Z"
+  "gameDate": "2026-08-01T23:15:00Z",
+  "started": false
  },
  {
   "gamePk": 824326,
@@ -118,7 +128,8 @@
   "awaySP_id": 679883,
   "homeSP_id": 663372,
   "venue": "Coors Field",
-  "gameDate": "2026-08-02T00:10:00Z"
+  "gameDate": "2026-08-02T00:10:00Z",
+  "started": false
  },
  {
   "gamePk": 823269,
@@ -129,7 +140,8 @@
   "awaySP_id": 641816,
   "homeSP_id": 621111,
   "venue": "Petco Park",
-  "gameDate": "2026-08-02T00:40:00Z"
+  "gameDate": "2026-08-02T00:40:00Z",
+  "started": false
  },
  {
   "gamePk": 823920,
@@ -140,18 +152,20 @@
   "awaySP_id": 801139,
   "homeSP_id": 808967,
   "venue": "UNIQLO Field at Dodger Stadium",
-  "gameDate": "2026-08-02T01:10:00Z"
+  "gameDate": "2026-08-02T01:10:00Z",
+  "started": false
  },
  {
   "gamePk": 824000,
   "away": "Milwaukee Brewers",
   "home": "Los Angeles Angels",
   "awaySP": "Robert Gasser",
-  "homeSP": "Jos\u00e9 Soriano",
+  "homeSP": "Brent Suter",
   "awaySP_id": 688107,
-  "homeSP_id": 667755,
+  "homeSP_id": 608718,
   "venue": "Angel Stadium",
-  "gameDate": "2026-08-02T01:38:00Z"
+  "gameDate": "2026-08-02T01:38:00Z",
+  "started": false
  },
  {
   "gamePk": 824972,
@@ -162,6 +176,7 @@
   "awaySP_id": 664285,
   "homeSP_id": 678022,
   "venue": "Sutter Health Park",
-  "gameDate": "2026-08-02T01:40:00Z"
+  "gameDate": "2026-08-02T01:40:00Z",
+  "started": false
  }
 ]
