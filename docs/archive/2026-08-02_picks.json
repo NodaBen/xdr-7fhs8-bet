@@ -366,24 +366,24 @@
   "rank": 7
  },
  {
-  "composite_diff": 13.53,
+  "composite_diff": 13.42,
   "prob_source": "market",
   "unvalidated": true,
   "pick": "Los Angeles Dodgers ML",
   "game": "Boston Red Sox @ Los Angeles Dodgers",
   "gamePk": 823919,
   "venue": "UNIQLO Field at Dodger Stadium",
-  "model_prob": 0.6237,
-  "fair_ML": -166,
-  "implied": 0.6491,
-  "edge_pct": -2.54,
+  "model_prob": 0.625,
+  "fair_ML": -167,
+  "implied": 0.6503,
+  "edge_pct": -2.53,
   "edge_score": 72.6,
   "units": 0,
   "gated": false,
   "divergence": 0.0,
-  "target_price": -207,
+  "target_price": -208,
   "target_anchor": "slip",
-  "condition": "OFF unless -207 or better at DK",
+  "condition": "OFF unless -208 or better at DK",
   "chips": [
    {
     "stat": "SP score",
@@ -401,10 +401,10 @@
   "odds_meta": {
    "book": "draftkings",
    "source": "theoddsapi",
-   "fetched_at": "2026-08-02T15:05:15.600419+00:00",
+   "fetched_at": "2026-08-02T21:35:17.157968+00:00",
    "total": 8.5,
    "books_used": 9,
-   "book_spread": 0.0124
+   "book_spread": 0.0145
   },
   "flags": [],
   "data_quality": "FULL",
