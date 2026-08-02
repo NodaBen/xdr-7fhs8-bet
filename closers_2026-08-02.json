@@ -886,62 +886,62 @@
   "away": "Boston Red Sox",
   "commence": "2026-08-02T23:21:00Z",
   "book": "draftkings",
-  "homeML": -186,
-  "awayML": 153,
+  "homeML": -185,
+  "awayML": 152,
   "total": null,
   "all_books": [
    {
     "book": "fanduel",
-    "homeML": -172,
-    "awayML": 158
+    "homeML": -180,
+    "awayML": 166
    },
    {
     "book": "betonlineag",
-    "homeML": -178,
-    "awayML": 161
+    "homeML": -167,
+    "awayML": 151
    },
    {
     "book": "lowvig",
-    "homeML": -178,
-    "awayML": 161
+    "homeML": -167,
+    "awayML": 151
    },
    {
     "book": "mybookieag",
     "homeML": -181,
-    "awayML": 153
-   },
-   {
-    "book": "draftkings",
-    "homeML": -186,
-    "awayML": 153
-   },
-   {
-    "book": "bovada",
-    "homeML": -184,
     "awayML": 152
    },
    {
+    "book": "draftkings",
+    "homeML": -185,
+    "awayML": 152
+   },
+   {
+    "book": "bovada",
+    "homeML": -182,
+    "awayML": 150
+   },
+   {
     "book": "betmgm",
-    "homeML": -190,
-    "awayML": 155
+    "homeML": -175,
+    "awayML": 145
    },
    {
     "book": "betus",
-    "homeML": -178,
-    "awayML": 157
+    "homeML": -173,
+    "awayML": 153
    },
    {
     "book": "betrivers",
-    "homeML": -186,
-    "awayML": 160
+    "homeML": -180,
+    "awayML": 155
    }
   ],
-  "homeML_novig": 0.6232,
-  "awayML_novig": 0.3768,
+  "homeML_novig": 0.6173,
+  "awayML_novig": 0.3827,
   "books_used": 9,
-  "book_spread": 0.0087,
-  "fetched_at": "2026-08-02T19:30:16.868020+00:00",
+  "book_spread": 0.0218,
+  "fetched_at": "2026-08-02T22:30:16.591588+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-08-02T19:30:16.868479+00:00"
+  "snapped_at": "2026-08-02T22:30:16.591842+00:00"
  }
 }
