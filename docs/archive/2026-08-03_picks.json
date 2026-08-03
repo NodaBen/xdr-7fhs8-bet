@@ -1,5 +1,114 @@
 [
  {
+  "composite_diff": 7.35,
+  "prob_source": "market",
+  "unvalidated": true,
+  "pick": "San Diego Padres ML",
+  "game": "San Diego Padres @ Arizona Diamondbacks",
+  "gamePk": 825095,
+  "venue": "Chase Field",
+  "model_prob": 0.4848,
+  "fair_ML": 106,
+  "implied": 0.505,
+  "edge_pct": -2.02,
+  "edge_score": 73.5,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -113,
+  "target_anchor": "slip",
+  "condition": "OFF unless -113 or better at DK",
+  "chips": [
+   {
+    "stat": "opp SP weak",
+    "value": "42/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "off edge",
+    "value": "+16",
+    "dir": "+",
+    "tone": "green"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-08-03T15:05:27.570415+00:00",
+   "total": 9.0,
+   "books_used": 9,
+   "book_spread": 0.0228
+  },
+  "flags": [
+   "INFO|Arizona Diamondbacks: no Savant batter-vs-pitch data \u2014 matchup neutral",
+   "INFO|San Diego Padres: no Savant batter-vs-pitch data \u2014 matchup neutral"
+  ],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 1
+ },
+ {
+  "composite_diff": 22.32,
+  "prob_source": "market",
+  "unvalidated": true,
+  "pick": "Houston Astros ML",
+  "game": "Toronto Blue Jays @ Houston Astros",
+  "gamePk": 824160,
+  "venue": "Daikin Park",
+  "model_prob": 0.5438,
+  "fair_ML": -119,
+  "implied": 0.569,
+  "edge_pct": -2.52,
+  "edge_score": 72.6,
+  "units": 0,
+  "gated": false,
+  "divergence": 0.0,
+  "target_price": -146,
+  "target_anchor": "slip",
+  "condition": "OFF unless -146 or better at DK",
+  "chips": [
+   {
+    "stat": "opp SP weak",
+    "value": "29/100",
+    "dir": "-",
+    "tone": "red"
+   },
+   {
+    "stat": "off edge",
+    "value": "+72",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp bats cold",
+    "value": "20/100",
+    "dir": "-",
+    "tone": "red"
+   }
+  ],
+  "odds_meta": {
+   "book": "draftkings",
+   "source": "theoddsapi",
+   "fetched_at": "2026-08-03T15:05:27.570415+00:00",
+   "total": 9.0,
+   "books_used": 9,
+   "book_spread": 0.0119
+  },
+  "flags": [],
+  "data_quality": "FULL",
+  "blocked": false,
+  "side_quality": {
+   "home": "FULL",
+   "away": "FULL"
+  },
+  "rank": 2
+ },
+ {
   "composite_diff": 39.66,
   "prob_source": "market",
   "unvalidated": true,
@@ -51,126 +160,6 @@
    "total": 8.0,
    "books_used": 9,
    "book_spread": 0.0098
-  },
-  "flags": [],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 1
- },
- {
-  "composite_diff": 28.89,
-  "prob_source": "market",
-  "unvalidated": true,
-  "pick": "Tampa Bay Rays ML",
-  "game": "Tampa Bay Rays @ Colorado Rockies",
-  "gamePk": 824324,
-  "venue": "Coors Field",
-  "model_prob": 0.6049,
-  "fair_ML": -153,
-  "implied": 0.635,
-  "edge_pct": -3.01,
-  "edge_score": 71.7,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": -194,
-  "target_anchor": "vig",
-  "condition": "OFF unless -194 or better at DK",
-  "chips": [
-   {
-    "stat": "SP score",
-    "value": "76/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp SP weak",
-    "value": "28/100",
-    "dir": "-",
-    "tone": "red"
-   },
-   {
-    "stat": "pen edge",
-    "value": "+20",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "off edge",
-    "value": "+16",
-    "dir": "+",
-    "tone": "green"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-08-03T15:05:27.570415+00:00",
-   "total": 11.5,
-   "books_used": 9,
-   "book_spread": 0.0081
-  },
-  "flags": [
-   "INFO|Tampa Bay Rays: no Savant batter-vs-pitch data \u2014 matchup neutral"
-  ],
-  "data_quality": "FULL",
-  "blocked": false,
-  "side_quality": {
-   "home": "FULL",
-   "away": "FULL"
-  },
-  "rank": 2
- },
- {
-  "composite_diff": 22.32,
-  "prob_source": "market",
-  "unvalidated": true,
-  "pick": "Houston Astros ML",
-  "game": "Toronto Blue Jays @ Houston Astros",
-  "gamePk": 824160,
-  "venue": "Daikin Park",
-  "model_prob": 0.5438,
-  "fair_ML": -119,
-  "implied": 0.569,
-  "edge_pct": -2.52,
-  "edge_score": 72.6,
-  "units": 0,
-  "gated": false,
-  "divergence": 0.0,
-  "target_price": -146,
-  "target_anchor": "slip",
-  "condition": "OFF unless -146 or better at DK",
-  "chips": [
-   {
-    "stat": "opp SP weak",
-    "value": "29/100",
-    "dir": "-",
-    "tone": "red"
-   },
-   {
-    "stat": "off edge",
-    "value": "+72",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp bats cold",
-    "value": "20/100",
-    "dir": "-",
-    "tone": "red"
-   }
-  ],
-  "odds_meta": {
-   "book": "draftkings",
-   "source": "theoddsapi",
-   "fetched_at": "2026-08-03T15:05:27.570415+00:00",
-   "total": 9.0,
-   "books_used": 9,
-   "book_spread": 0.0119
   },
   "flags": [],
   "data_quality": "FULL",
@@ -238,30 +227,42 @@
   "rank": 4
  },
  {
-  "composite_diff": 7.35,
+  "composite_diff": 28.89,
   "prob_source": "market",
   "unvalidated": true,
-  "pick": "San Diego Padres ML",
-  "game": "San Diego Padres @ Arizona Diamondbacks",
-  "gamePk": 825095,
-  "venue": "Chase Field",
-  "model_prob": 0.4848,
-  "fair_ML": 106,
-  "implied": 0.505,
-  "edge_pct": -2.02,
-  "edge_score": 73.5,
+  "pick": "Tampa Bay Rays ML",
+  "game": "Tampa Bay Rays @ Colorado Rockies",
+  "gamePk": 824324,
+  "venue": "Coors Field",
+  "model_prob": 0.6049,
+  "fair_ML": -153,
+  "implied": 0.635,
+  "edge_pct": -3.01,
+  "edge_score": 71.7,
   "units": 0,
   "gated": false,
   "divergence": 0.0,
-  "target_price": -113,
-  "target_anchor": "slip",
-  "condition": "OFF unless -113 or better at DK",
+  "target_price": -194,
+  "target_anchor": "vig",
+  "condition": "OFF unless -194 or better at DK",
   "chips": [
    {
+    "stat": "SP score",
+    "value": "76/100",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
     "stat": "opp SP weak",
-    "value": "42/100",
+    "value": "28/100",
     "dir": "-",
     "tone": "red"
+   },
+   {
+    "stat": "pen edge",
+    "value": "+20",
+    "dir": "+",
+    "tone": "green"
    },
    {
     "stat": "off edge",
@@ -274,13 +275,12 @@
    "book": "draftkings",
    "source": "theoddsapi",
    "fetched_at": "2026-08-03T15:05:27.570415+00:00",
-   "total": 9.0,
+   "total": 11.5,
    "books_used": 9,
-   "book_spread": 0.0228
+   "book_spread": 0.0081
   },
   "flags": [
-   "INFO|Arizona Diamondbacks: no Savant batter-vs-pitch data \u2014 matchup neutral",
-   "INFO|San Diego Padres: no Savant batter-vs-pitch data \u2014 matchup neutral"
+   "INFO|Tampa Bay Rays: no Savant batter-vs-pitch data \u2014 matchup neutral"
   ],
   "data_quality": "FULL",
   "blocked": false,
@@ -291,40 +291,28 @@
   "rank": 5
  },
  {
-  "composite_diff": 5.09,
+  "composite_diff": 1.03,
   "prob_source": "market",
   "unvalidated": true,
-  "pick": "Philadelphia Phillies ML",
-  "game": "Washington Nationals @ Philadelphia Phillies",
-  "gamePk": 823431,
-  "venue": "Citizens Bank Park",
-  "model_prob": 0.5943,
-  "fair_ML": -146,
-  "implied": 0.6241,
-  "edge_pct": -2.98,
-  "edge_score": 58.0,
+  "pick": "Los Angeles Dodgers ML",
+  "game": "Los Angeles Dodgers @ Chicago Cubs",
+  "gamePk": 824647,
+  "venue": "Wrigley Field",
+  "model_prob": 0.5339,
+  "fair_ML": -115,
+  "implied": 0.5575,
+  "edge_pct": -2.36,
+  "edge_score": 59.1,
   "units": 0,
   "gated": false,
   "divergence": 0.0,
-  "target_price": -185,
+  "target_price": -140,
   "target_anchor": "slip",
-  "condition": "OFF unless -185 or better at DK",
+  "condition": "OFF unless -140 or better at DK",
   "chips": [
    {
-    "stat": "SP score",
-    "value": "63/100",
-    "dir": "+",
-    "tone": "green"
-   },
-   {
-    "stat": "opp SP TBD",
-    "value": "unannounced",
-    "dir": "~",
-    "tone": "neutral"
-   },
-   {
     "stat": "pen edge",
-    "value": "+66",
+    "value": "+20",
     "dir": "+",
     "tone": "green"
    },
@@ -339,13 +327,12 @@
    "book": "draftkings",
    "source": "theoddsapi",
    "fetched_at": "2026-08-03T15:05:27.570415+00:00",
-   "total": 9.0,
+   "total": 8.0,
    "books_used": 9,
-   "book_spread": 0.0079
+   "book_spread": 0.0061
   },
   "flags": [
-   "DEGRADED|SP TBD \u2014 replacement-level assumed",
-   "INFO|Washington Nationals: no Savant batter-vs-pitch data \u2014 matchup neutral"
+   "DEGRADED|SP TBD \u2014 replacement-level assumed"
   ],
   "data_quality": "DEGRADED",
   "blocked": false,
@@ -408,28 +395,40 @@
   "rank": 7
  },
  {
-  "composite_diff": 1.03,
+  "composite_diff": 5.09,
   "prob_source": "market",
   "unvalidated": true,
-  "pick": "Los Angeles Dodgers ML",
-  "game": "Los Angeles Dodgers @ Chicago Cubs",
-  "gamePk": 824647,
-  "venue": "Wrigley Field",
-  "model_prob": 0.5339,
-  "fair_ML": -115,
-  "implied": 0.5575,
-  "edge_pct": -2.36,
-  "edge_score": 59.1,
+  "pick": "Philadelphia Phillies ML",
+  "game": "Washington Nationals @ Philadelphia Phillies",
+  "gamePk": 823431,
+  "venue": "Citizens Bank Park",
+  "model_prob": 0.5943,
+  "fair_ML": -146,
+  "implied": 0.6241,
+  "edge_pct": -2.98,
+  "edge_score": 58.0,
   "units": 0,
   "gated": false,
   "divergence": 0.0,
-  "target_price": -140,
+  "target_price": -185,
   "target_anchor": "slip",
-  "condition": "OFF unless -140 or better at DK",
+  "condition": "OFF unless -185 or better at DK",
   "chips": [
    {
+    "stat": "SP score",
+    "value": "63/100",
+    "dir": "+",
+    "tone": "green"
+   },
+   {
+    "stat": "opp SP TBD",
+    "value": "unannounced",
+    "dir": "~",
+    "tone": "neutral"
+   },
+   {
     "stat": "pen edge",
-    "value": "+20",
+    "value": "+66",
     "dir": "+",
     "tone": "green"
    },
@@ -444,12 +443,13 @@
    "book": "draftkings",
    "source": "theoddsapi",
    "fetched_at": "2026-08-03T15:05:27.570415+00:00",
-   "total": 8.0,
+   "total": 9.0,
    "books_used": 9,
-   "book_spread": 0.0061
+   "book_spread": 0.0079
   },
   "flags": [
-   "DEGRADED|SP TBD \u2014 replacement-level assumed"
+   "DEGRADED|SP TBD \u2014 replacement-level assumed",
+   "INFO|Washington Nationals: no Savant batter-vs-pitch data \u2014 matchup neutral"
   ],
   "data_quality": "DEGRADED",
   "blocked": false,
