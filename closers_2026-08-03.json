@@ -445,8 +445,8 @@
   "away": "San Diego Padres",
   "commence": "2026-08-04T01:41:00Z",
   "book": "draftkings",
-  "homeML": -114,
-  "awayML": -105,
+  "homeML": -110,
+  "awayML": -110,
   "total": null,
   "all_books": [
    {
@@ -456,51 +456,51 @@
    },
    {
     "book": "betonlineag",
-    "homeML": -112,
-    "awayML": 102
+    "homeML": -105,
+    "awayML": -105
    },
    {
     "book": "lowvig",
-    "homeML": -112,
-    "awayML": 102
+    "homeML": -105,
+    "awayML": -105
    },
    {
     "book": "mybookieag",
-    "homeML": -114,
-    "awayML": -103
+    "homeML": -110,
+    "awayML": -107
    },
    {
     "book": "draftkings",
-    "homeML": -114,
-    "awayML": -105
+    "homeML": -110,
+    "awayML": -110
    },
    {
     "book": "betmgm",
-    "homeML": -115,
-    "awayML": -105
+    "homeML": -110,
+    "awayML": -110
    },
    {
     "book": "betus",
-    "homeML": -107,
-    "awayML": -103
+    "homeML": -103,
+    "awayML": -107
    },
    {
     "book": "bovada",
-    "homeML": -112,
-    "awayML": -108
+    "homeML": -107,
+    "awayML": -113
    },
    {
     "book": "betrivers",
-    "homeML": -113,
-    "awayML": 100
+    "homeML": -104,
+    "awayML": -110
    }
   ],
-  "homeML_novig": 0.5112,
-  "awayML_novig": 0.4888,
+  "homeML_novig": 0.4997,
+  "awayML_novig": 0.5003,
   "books_used": 9,
-  "book_spread": 0.0119,
-  "fetched_at": "2026-08-04T00:30:22.359323+00:00",
+  "book_spread": 0.0184,
+  "fetched_at": "2026-08-04T01:10:19.397460+00:00",
   "source": "theoddsapi",
-  "snapped_at": "2026-08-04T00:30:22.359644+00:00"
+  "snapped_at": "2026-08-04T01:10:19.397681+00:00"
  }
 }
